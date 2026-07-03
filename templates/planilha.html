@@ -35,7 +35,6 @@
             padding: 6px 0 10px;
         }
 
-        /* ===== CABEÇALHO COMPACTO ===== */
         .cabecalho-skeuo {
             padding: 8px 16px;
             border-bottom: 2px solid #b28b5e;
@@ -64,7 +63,6 @@
         }
         .badge-dia-edicao.visivel { display: inline-block; }
 
-        /* ===== BARRA DE AÇÕES ===== */
         .top-actions {
             padding: 0 10px; display: flex; justify-content: space-between;
             align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 8px;
@@ -78,8 +76,6 @@
         }
         .btn-skeuo:active { transform: translateY(3px); box-shadow: 0 1px 0 #7a4f2c; }
         .btn-skeuo:disabled { opacity: 0.45; cursor: default; transform: none; box-shadow: none; }
-        
-        /* Botão Salvar em Destaque */
         .btn-salvar-master {
             background: radial-gradient(circle at 30% 20%, #2ecc71, #27ae60) !important;
             color: white !important;
@@ -87,7 +83,6 @@
         }
         .btn-salvar-master:active { box-shadow: 0 1px 0 #1e7e43 !important; }
 
-        /* ===== SYNC ===== */
         .info-bar {
             display: flex; justify-content: flex-end; align-items: center;
             padding: 0 12px 6px; gap: 8px;
@@ -105,11 +100,14 @@
             touch-action: manipulation;
         }
 
-        /* ===== BOTÕES DOS DIAS ===== */
         .dias-botoes {
-            display: grid; grid-template-columns: repeat(7, 1fr);
-            gap: 4px; margin: 0 8px 8px; padding: 8px;
-            background: #ddcdac; border-radius: 28px;
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 4px;
+            margin: 0 8px 8px;
+            padding: 8px;
+            background: #ddcdac;
+            border-radius: 28px;
             box-shadow: inset 0 0 0 2px #fef1cf, inset 0 0 0 4px #c2a570;
         }
         .btn-dia {
@@ -135,7 +133,6 @@
             box-shadow: 0 3px 0 #3e6b3e;
         }
 
-        /* ===== TABELA ===== */
         .table-wrapper {
             overflow-x: auto; margin: 0 8px;
             background: #ddcdac; padding: 6px; border-radius: 18px;
@@ -173,7 +170,6 @@
             background: #fff8e0 !important;
         }
 
-        /* Status colors */
         .input-hora[data-status="DM"], .input-hora[data-status="CM"] { background: #ffb366; border-color: #cc5200; color: #662200; font-weight: bold; }
         .input-hora[data-status="VO"], .input-hora[data-status="CQ"], .input-hora[data-status="TN"] { background: #99ccff; border-color: #0066cc; color: #003366; font-weight: bold; }
         .input-hora[data-status="EA"], .input-hora[data-status="TR"] { background: #ffff99; border-color: #cccc00; color: #666600; font-weight: bold; }
@@ -191,7 +187,6 @@
             padding: 6px;
         }
 
-        /* ===== RODAPÉ ===== */
         .info-footer {
             display: flex; justify-content: flex-end; align-items: center;
             margin: 6px 12px 0; gap: 8px;
@@ -202,7 +197,6 @@
             box-shadow: inset 0 1px 3px #ffdf9a, 0 2px 4px black;
         }
 
-        /* ===== MODAIS ===== */
         .modal-senha, .modal-detalhe, .modal-ajuda, .modal-menu-dia {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.75); backdrop-filter: blur(4px);
@@ -279,7 +273,6 @@
 <div class="skeuo-container">
     <div class="planilha-card">
 
-        <!-- CABEÇALHO -->
         <div class="cabecalho-skeuo">
             <div class="title-area">
                 <h1>✈️ REGISTRO DE HORAS</h1>
@@ -291,7 +284,6 @@
             </div>
         </div>
 
-        <!-- AÇÕES -->
         <div class="top-actions">
             <div class="button-group">
                 <button class="btn-skeuo" id="btnDesbloquear">🔐 DESBLOQUEAR</button>
@@ -302,16 +294,13 @@
             </div>
         </div>
 
-        <!-- SYNC + AJUDA -->
         <div class="info-bar">
             <span class="sync-status" id="syncStatus">💾 Sincronizado</span>
             <button class="btn-ajuda" id="btnAjuda" title="Legenda">?</button>
         </div>
 
-        <!-- BOTÕES DOS DIAS -->
-        <div class="botoes-dias" id="botoesDias"></div>
+        <div class="dias-botoes" id="botoesDias"></div>
 
-        <!-- TABELA -->
         <div class="table-wrapper">
             <table class="planilha" id="tabelaHoras">
                 <thead id="tableHeader"></thead>
@@ -320,7 +309,6 @@
             </table>
         </div>
 
-        <!-- RODAPÉ -->
         <div class="info-footer">
             <div class="status-chip" id="editModeChip">📖 VISUALIZAÇÃO</div>
         </div>
@@ -347,12 +335,12 @@ const MES_STORAGE_KEY = 'planilha_mes_selecionado';
 function salvarMesNoStorage(mes) { localStorage.setItem(MES_STORAGE_KEY, mes); }
 function obterMesDoStorage() { return localStorage.getItem(MES_STORAGE_KEY) || null; }
 
-// ===== PADRONIZAÇÃO DE NOMES DO BACKEND (Crucial para o Ronalldo e Andrade) =====
+// ===== MAPEAMENTO DE NOMES =====
 const DISPLAY_NAME_MAP = {
     "Albert Otto Azevedo": "Otto",
     "Vitor da Costa Bento": "Bento",
     "Andrade": "Andrade",
-    "Ronaldo": "Ronalldo" // Força o nome do banco a virar Ronalldo na tela
+    "Ronaldo": "Ronalldo"  // Força o nome do banco a virar Ronalldo na tela
 };
 function getDisplayName(fullName) {
     return DISPLAY_NAME_MAP[fullName] || fullName.split(' ')[0];
@@ -405,7 +393,6 @@ const ESCALA_MENSAL = {
     "Serafim": ["SO","FR","SO","SO","SO","SO","FR","SO","SO","SO","SO","FR","SO","SO","SO","SO","FR","FS","FS","RE","SO","SO","SO","SO","FR","SO","SO","SO","FR","SO","SO"]
 };
 
-// ===== ATUALIZADO: Andrade incluído no grupo CESSNA para a interface saber onde ele está =====
 const GRUPOS_PILOTO = {
     "CARAVAN": ["Cleiton","Joao","Pascoal","Lindomar","Perisson","Rui","Yago"],
     "COPILOTO": ["Cauê","Ruben","Ernesto","Daniela","Thales","Serafim","Ronalldo","Rodrigo"]
@@ -533,7 +520,6 @@ function ativarEdicaoDia(diaIndex) {
         const status = ESCALA_MENSAL[nome]?.[diaIndex] || "";
         const inp = row.cells[diaIndex+1]?.querySelector('.input-hora');
         if (!inp) return;
-
         if (status === "SO") {
             inp.disabled = false;
             inp.placeholder = "0,0";
@@ -737,8 +723,6 @@ async function carregarDoBackend() {
                     inp.type = 'text'; inp.inputMode = 'decimal'; inp.className = 'input-hora';
                     
                     let valor = data.logs[p.name]?.[i+1] || 0;
-                    if (p.name === "Daniela" && i === 1) valor = 0;
-
                     const statusOriginal = ESCALA_MENSAL[nomeExibicao]?.[i] || "";
                     if (valor > 0) inp.value = formatarHora(valor);
                     else if (statusOriginal && statusOriginal !== "SO") inp.value = statusOriginal;
@@ -746,21 +730,12 @@ async function carregarDoBackend() {
                     atualizarCorInput(inp);
                     inp.disabled = true;
 
-                    // Gatilho de Long Press
+                    // Long press para FS/RE
                     let lp;
                     inp.addEventListener('touchstart', () => { lp = setTimeout(() => { if (isEditing && diaEditandoIndex === i) habilitarEdicaoStatus(inp, row, i); }, 600); });
                     inp.addEventListener('touchend', () => clearTimeout(lp));
 
                     inp.addEventListener('input', () => { if (isEditing) { atualizarTotalLinha(row); recalcularTudo(); } });
-                    
-                    // Tratamento de Enter no Input de Horas
-                    inp.addEventListener('keydown', (e) => {
-                        if (e.key === 'Enter') {
-                            e.preventDefault();
-                            inp.blur(); 
-                        }
-                    });
-
                     inp.addEventListener('blur', () => {
                         if (isEditing) {
                             const v = parseHora(inp.value);
@@ -774,14 +749,20 @@ async function carregarDoBackend() {
                     td.appendChild(inp);
                     row.appendChild(td);
                 }
-                row.innerHTML += `<td class="total-cell">0,0</td>`;
+                const totalCell = document.createElement('td');
+                totalCell.className = 'total-cell';
+                totalCell.textContent = '0,0';
+                row.appendChild(totalCell);
                 tbody.appendChild(row);
             }
         }
         recalcularTudo();
         criarBotoesDias();
         document.getElementById('syncStatus').innerHTML = '💾 Sincronizado';
-    } catch(e) { document.getElementById('syncStatus').innerHTML = '❌ Erro'; }
+    } catch(e) { 
+        console.error(e);
+        document.getElementById('syncStatus').innerHTML = '❌ Erro'; 
+    }
 }
 
 async function salvarNoBackend() {
@@ -806,13 +787,18 @@ async function salvarNoBackend() {
         });
         showToast("✅ Alterações salvas com sucesso!");
         document.getElementById('syncStatus').innerHTML = '💾 Sincronizado';
-    } catch(e) { document.getElementById('syncStatus').innerHTML = '❌ Erro'; }
+    } catch(e) { 
+        document.getElementById('syncStatus').innerHTML = '❌ Erro'; 
+        showToast("❌ Erro ao salvar", 3000);
+    }
 }
 
 function criarBotoesDias() {
-    const container = document.getElementById('botoesDias'); container.innerHTML = '';
+    const container = document.getElementById('botoesDias');
+    container.innerHTML = '';
     for (let i = 0; i < DIAS; i++) {
-        const btn = document.createElement('button'); btn.className = 'btn-dia';
+        const btn = document.createElement('button');
+        btn.className = 'btn-dia';
         btn.innerHTML = `<span class="dia-num">${String(i+1).padStart(2,'00')}</span><span class="dia-total"></span>`;
         btn.onclick = () => mostrarMenuDia(i, btn);
         container.appendChild(btn);
@@ -828,7 +814,8 @@ function selecionarDia(i, btn) {
 
 function exibirModalSenha() {
     return new Promise((resolve) => {
-        const modalDiv = document.createElement('div'); modalDiv.className = 'modal-senha';
+        const modalDiv = document.createElement('div');
+        modalDiv.className = 'modal-senha';
         modalDiv.innerHTML = `<div class="card-senha">
             <h3>🔐 AUTENTICAÇÃO</h3>
             <input type="password" id="senhaInput" placeholder="Senha">
@@ -851,8 +838,8 @@ async function login() {
         document.getElementById('btnLimpar').disabled = false;
         document.getElementById('btnBloquear').disabled = false;
         document.getElementById('btnSalvarManual').disabled = false;
+        document.getElementById('campoMes').disabled = false;
         showToast("🔓 Modo edição ativo!");
-        carregarDoBackend();
     } else if (senha !== null) showToast("❌ Senha incorreta.");
 }
 
@@ -863,16 +850,56 @@ function bloquear() {
     document.getElementById('btnLimpar').disabled = true;
     document.getElementById('btnBloquear').disabled = true;
     document.getElementById('btnSalvarManual').disabled = true;
+    document.getElementById('campoMes').disabled = true;
     showToast("🔒 Modo leitura ativado.");
 }
 
+function limpar() {
+    if (!isEditing) return showToast("Desbloqueie primeiro.");
+    if (confirm("Limpar todos os valores de horas?")) {
+        document.querySelectorAll('.input-hora').forEach(inp => {
+            if (!inp.disabled) inp.value = '';
+        });
+        recalcularTudo();
+        salvarNoBackend();
+    }
+}
+
+function mostrarAjuda() {
+    const itens = [
+        { cor: '#ffb366', texto: 'DM / CM — Dispensa Médica / Revalidação' },
+        { cor: '#99ccff', texto: 'VO / CQ / TN — Em Voo / Voo Cheque / Trein. Voo' },
+        { cor: '#ffff99', texto: 'EA / TR — Exp. Administrativo / Trein. Solo' },
+        { cor: '#90ee90', texto: 'FR — Folga Regulamentar' },
+        { cor: '#ff9999', texto: 'FS — Folga Social (long press para editar)' },
+        { cor: '#ccffcc', texto: 'FE — Férias' },
+        { cor: '#ffccff', texto: 'RE — Reserva na Empresa' },
+        { cor: '#ffffff', texto: 'SO — Sobreaviso (editável)' }
+    ];
+    let html = `<div class="card-ajuda"><h3>📖 Legenda</h3>`;
+    itens.forEach(item => {
+        html += `<div class="ajuda-item"><div class="ajuda-cor" style="background:${item.cor};">${item.texto.split('—')[0].trim()}</div><span>${item.texto}</span></div>`;
+    });
+    html += `<button class="btn-fechar" id="fecharAjuda">Fechar</button></div>`;
+    const modal = document.createElement('div');
+    modal.className = 'modal-ajuda';
+    modal.innerHTML = html;
+    document.body.appendChild(modal);
+    modal.querySelector('#fecharAjuda').onclick = () => modal.remove();
+}
+
+// ===== EVENTOS =====
 document.getElementById('btnDesbloquear').onclick = login;
 document.getElementById('btnBloquear').onclick = bloquear;
+document.getElementById('btnLimpar').onclick = limpar;
 document.getElementById('btnSalvarManual').onclick = salvarNoBackend;
 document.getElementById('btnSairDia').onclick = sairEdicaoDia;
-document.getElementById('btnAjuda').onclick = () => showAjuda();
+document.getElementById('btnAjuda').onclick = mostrarAjuda;
 
+// ===== INICIALIZAÇÃO =====
+const mesSalvo = obterMesDoStorage();
+if (mesSalvo) document.getElementById('campoMes').value = mesSalvo;
 carregarDoBackend();
 </script>
 </body>
-</html>
+            </html>
