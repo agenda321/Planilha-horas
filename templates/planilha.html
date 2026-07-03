@@ -64,7 +64,7 @@
         }
         .badge-dia-edicao.visivel { display: inline-block; }
 
-        /* ===== BARRA DE AÇÕES COMPACTA ===== */
+        /* ===== BARRA DE AÇÕES ===== */
         .top-actions {
             padding: 0 10px; display: flex; justify-content: space-between;
             align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 8px;
@@ -77,9 +77,17 @@
             transition: 0.05s linear; touch-action: manipulation;
         }
         .btn-skeuo:active { transform: translateY(3px); box-shadow: 0 1px 0 #7a4f2c; }
-        .btn-skeuo:disabled { opacity: 0.45; cursor: default; transform: none; }
+        .btn-skeuo:disabled { opacity: 0.45; cursor: default; transform: none; box-shadow: none; }
+        
+        /* Botão Salvar em Destaque */
+        .btn-salvar-master {
+            background: radial-gradient(circle at 30% 20%, #2ecc71, #27ae60) !important;
+            color: white !important;
+            box-shadow: 0 4px 0 #1e7e43 !important;
+        }
+        .btn-salvar-master:active { box-shadow: 0 1px 0 #1e7e43 !important; }
 
-        /* ===== SYNC + AJUDA ===== */
+        /* ===== SYNC ===== */
         .info-bar {
             display: flex; justify-content: flex-end; align-items: center;
             padding: 0 12px 6px; gap: 8px;
@@ -103,7 +111,6 @@
             gap: 4px; margin: 0 8px 8px; padding: 8px;
             background: #ddcdac; border-radius: 28px;
             box-shadow: inset 0 0 0 2px #fef1cf, inset 0 0 0 4px #c2a570;
-            touch-action: none;
         }
         .btn-dia {
             background: radial-gradient(circle at 30% 20%, #f0dc9f, #c29a5e);
@@ -166,7 +173,7 @@
             background: #fff8e0 !important;
         }
 
-        /* Status colors via data-status */
+        /* Status colors */
         .input-hora[data-status="DM"], .input-hora[data-status="CM"] { background: #ffb366; border-color: #cc5200; color: #662200; font-weight: bold; }
         .input-hora[data-status="VO"], .input-hora[data-status="CQ"], .input-hora[data-status="TN"] { background: #99ccff; border-color: #0066cc; color: #003366; font-weight: bold; }
         .input-hora[data-status="EA"], .input-hora[data-status="TR"] { background: #ffff99; border-color: #cccc00; color: #666600; font-weight: bold; }
@@ -184,7 +191,7 @@
             padding: 6px;
         }
 
-        /* ===== RODAPÉ COMPACTO ===== */
+        /* ===== RODAPÉ ===== */
         .info-footer {
             display: flex; justify-content: flex-end; align-items: center;
             margin: 6px 12px 0; gap: 8px;
@@ -201,7 +208,7 @@
             background: rgba(0,0,0,0.75); backdrop-filter: blur(4px);
             display: flex; align-items: center; justify-content: center; z-index: 2000;
         }
-        .card-senha, .card-detalhe, .card-ajuda {
+        .card-senha, .card-detalhe, .card-ajuda, .card-menu-dia {
             background: #fdf5e6; border-radius: 32px; width: 92%; max-width: 500px;
             padding: 20px; box-shadow: 0 20px 35px black; max-height: 88vh; overflow-y: auto;
         }
@@ -215,20 +222,15 @@
         .btn-modal {
             background: #a07143; color: white; border: none;
             padding: 8px 20px; border-radius: 60px; cursor: pointer;
-            font-size: 0.9rem; touch-action: manipulation;
+            font-size: 0.9rem;
         }
         .btn-fechar {
             background: #b07842; border: none; padding: 10px 28px;
             border-radius: 60px; color: white; margin-top: 16px; cursor: pointer;
             display: block; margin-left: auto; margin-right: auto;
-            touch-action: manipulation;
         }
 
-        /* ===== MENU DIA ===== */
-        .card-menu-dia {
-            background: #fdf5e6; border-radius: 32px; width: 85%; max-width: 300px;
-            padding: 20px; box-shadow: 0 20px 35px black; text-align: center;
-        }
+        .card-menu-dia { max-width: 300px; text-align: center; }
         .card-menu-dia h3 { margin: 0 0 16px; color: #3b2a1f; font-size: 1.1rem; }
         .menu-dia-opcoes { display: flex; flex-direction: column; gap: 10px; }
         .btn-menu-opcao {
@@ -236,16 +238,14 @@
             border: none; padding: 12px 20px; border-radius: 60px;
             font-size: 0.9rem; font-weight: bold; color: #3b2a1f;
             box-shadow: 0 4px 0 #7a4f2c; cursor: pointer;
-            touch-action: manipulation;
         }
         .btn-menu-opcao:active { transform: translateY(2px); box-shadow: 0 2px 0 #7a4f2c; }
         .btn-menu-cancelar {
             background: #c0a070; border: none; padding: 10px 20px;
             border-radius: 60px; font-size: 0.85rem; color: white;
-            margin-top: 4px; cursor: pointer; touch-action: manipulation;
+            margin-top: 4px; cursor: pointer;
         }
 
-        /* ===== AJUDA ===== */
         .card-ajuda { max-width: 360px; }
         .ajuda-item {
             display: flex; align-items: center; gap: 10px;
@@ -258,38 +258,12 @@
             justify-content: center; font-size: 0.7rem; font-weight: bold;
         }
 
-        /* ===== COMPARATIVO TABELA ===== */
-        .tabela-detalhe {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
-        }
-        .tabela-detalhe th, .tabela-detalhe td {
-            border: 1px solid #ccb28b;
-            padding: 8px;
-            text-align: left;
-        }
-        .tabela-detalhe th {
-            background: #e8d5b0;
-            font-weight: bold;
-            text-align: center;
-        }
-        .progress-bar-wrap {
-            background: #e0cfa8;
-            border-radius: 10px;
-            height: 12px;
-            width: 100%;
-            overflow: hidden;
-        }
-        .barra-fill {
-            background: #e67e22;
-            height: 100%;
-            border-radius: 10px;
-            width: 0%;
-            transition: width 0.3s ease;
-        }
+        .tabela-detalhe { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        .tabela-detalhe th, .tabela-detalhe td { border: 1px solid #ccb28b; padding: 8px; text-align: left; }
+        .tabela-detalhe th { background: #e8d5b0; font-weight: bold; text-align: center; }
+        .progress-bar-wrap { background: #e0cfa8; border-radius: 10px; height: 12px; width: 100%; overflow: hidden; }
+        .barra-fill { background: #e67e22; height: 100%; border-radius: 10px; width: 0%; transition: width 0.3s ease; }
 
-        /* ===== TOAST ===== */
         .toast {
             position: fixed; top: 16px; left: 50%; transform: translateX(-50%);
             background: #3b2a1f; color: #ffe1a0; padding: 8px 20px;
@@ -305,6 +279,7 @@
 <div class="skeuo-container">
     <div class="planilha-card">
 
+        <!-- CABEÇALHO -->
         <div class="cabecalho-skeuo">
             <div class="title-area">
                 <h1>✈️ REGISTRO DE HORAS</h1>
@@ -316,22 +291,27 @@
             </div>
         </div>
 
+        <!-- AÇÕES -->
         <div class="top-actions">
             <div class="button-group">
                 <button class="btn-skeuo" id="btnDesbloquear">🔐 DESBLOQUEAR</button>
+                <button class="btn-skeuo btn-salvar-master" id="btnSalvarManual" disabled>💾 SALVAR ALTERAÇÕES</button>
                 <button class="btn-skeuo" id="btnLimpar" disabled>🧹 LIMPAR</button>
                 <button class="btn-skeuo" id="btnBloquear" disabled>🔒 BLOQUEAR</button>
                 <button class="btn-skeuo" id="btnSairDia" style="display:none">✖ SAIR</button>
             </div>
         </div>
 
+        <!-- SYNC + AJUDA -->
         <div class="info-bar">
             <span class="sync-status" id="syncStatus">💾 Sincronizado</span>
             <button class="btn-ajuda" id="btnAjuda" title="Legenda">?</button>
         </div>
 
-        <div class="dias-botoes" id="botoesDias"></div>
+        <!-- BOTÕES DOS DIAS -->
+        <div class="botoes-dias" id="botoesDias"></div>
 
+        <!-- TABELA -->
         <div class="table-wrapper">
             <table class="planilha" id="tabelaHoras">
                 <thead id="tableHeader"></thead>
@@ -340,6 +320,7 @@
             </table>
         </div>
 
+        <!-- RODAPÉ -->
         <div class="info-footer">
             <div class="status-chip" id="editModeChip">📖 VISUALIZAÇÃO</div>
         </div>
@@ -348,7 +329,6 @@
 </div>
 
 <script>
-// ===== TOAST =====
 function showToast(msg, duracao = 2500) {
     let toast = document.getElementById('toast');
     if (!toast) {
@@ -363,246 +343,69 @@ function showToast(msg, duracao = 2500) {
     toast._timer = setTimeout(() => toast.classList.remove('show'), duracao);
 }
 
-// ===== PERSISTÊNCIA DO MÊS =====
 const MES_STORAGE_KEY = 'planilha_mes_selecionado';
+function salvarMesNoStorage(mes) { localStorage.setItem(MES_STORAGE_KEY, mes); }
+function obterMesDoStorage() { return localStorage.getItem(MES_STORAGE_KEY) || null; }
 
-function salvarMesNoStorage(mes) {
-    localStorage.setItem(MES_STORAGE_KEY, mes);
-}
-
-function obterMesDoStorage() {
-    return localStorage.getItem(MES_STORAGE_KEY) || null;
-}
-
-// ===== MAPEAMENTO DE NOMES =====
+// ===== PADRONIZAÇÃO DE NOMES DO BACKEND (Crucial para o Ronalldo e Andrade) =====
 const DISPLAY_NAME_MAP = {
     "Albert Otto Azevedo": "Otto",
     "Vitor da Costa Bento": "Bento",
-    "Andrade": "Andrade"
+    "Andrade": "Andrade",
+    "Ronaldo": "Ronalldo" // Força o nome do banco a virar Ronalldo na tela
 };
 function getDisplayName(fullName) {
     return DISPLAY_NAME_MAP[fullName] || fullName.split(' ')[0];
 }
 
-// ===== ESCALA MENSAL COMPATÍVEL COM ESCALA.PY (JULHO 2026) =====
+// ===== ESCALA MENSAL (JULHO 2026) =====
 const ESCALA_MENSAL = {
-    "Adelio": [
-        "SO","SO","SO","SO","FR","SO","SO","SO","SO","FR",
-        "SO","SO","SO","FR","SO","SO","FR","FS","FS","RE",
-        "SO","SO","SO","SO","SO","FR","SO","SO","SO","FR","SO"
-    ],
-    "Otto": [
-        "SO","SO","FR","FS","FS","FE","FE","FE","FE","FE",
-        "FE","FE","FE","FE","FE","FE","FE","FE","FE","FE",
-        "RE","SO","SO","SO","SO","SO","FR","SO","SO","SO","SO"
-    ],
-    "Andre": [
-        "SO","FR","SO","FR","SO","SO","SO","SO","FR","SO",
-        "SO","SO","SO","FR","SO","SO","SO","SO","FR","SO",
-        "SO","SO","SO","FR","FS","FS","RE","SO","FR","SO","SO"
-    ],
-    "Cleiton": [
-        "SO","SO","SO","FR","SO","SO","SO","FR","SO","FR",
-        "FS","FS","RE","SO","SO","SO","SO","FR","SO","SO",
-        "SO","FR","SO","SO","SO","FR","SO","SO","SO","SO","SO"
-    ],
-    "Cleverson": [
-        "SO","SO","SO","SO","FR","SO","SO","SO","FR","SO",
-        "SO","SO","FR","SO","SO","SO","SO","SO","FR","SO",
-        "SO","SO","SO","FR","FS","FS","RE","SO","SO","FR","SO"
-    ],
-    "Dany": [ // Sincronizado de Danielle Pereira para Dany
-        "SO","SO","SO","FR","SO","SO","SO","FR","SO","SO",
-        "SO","SO","FR","SO","SO","SO","FR","FS","FS","RE",
-        "SO","SO","FR","SO","SO","SO","FR","SO","SO","SO","SO"
-    ],
-    "Edson": [
-        "SO","SO","FR","FS","FS","RE","SO","SO","SO","SO",
-        "FR","SO","SO","SO","SO","FR","SO","SO","SO","SO",
-        "FR","SO","SO","SO","FR","SO","SO","SO","FR","SO","SO"
-    ],
-    "Fausto": [
-        "SO","SO","FR","FS","FS","RE","SO","SO","SO","FR",
-        "SO","SO","SO","SO","FR","SO","SO","SO","SO","FR",
-        "SO","SO","SO","SO","FR","SO","SO","SO","FR","SO","SO"
-    ],
-    "Costa": [
-        "SO","SO","FR","FS","FS","RE","SO","SO","SO","SO",
-        "FR","SO","SO","FR","SO","SO","SO","SO","FR","SO",
-        "SO","SO","FR","SO","SO","SO","SO","FR","SO","SO","SO"
-    ],
-    "Frank": [
-        "SO","SO","FR","FS","FS","FE","FE","FE","FE","FE",
-        "FE","FE","FE","FE","FE","FE","FE","FE","FE","FE",
-        "RE","SO","SO","SO","SO","SO","FR","SO","SO","SO","SO"
-    ],
-    "Gabriel": [
-        "SO","SO","SO","SO","FR","SO","SO","SO","SO","FR",
-        "FS","FS","RE","SO","SO","SO","FR","SO","SO","SO",
-        "FR","SO","SO","SO","FR","SO","SO","SO","FR","SO","SO"
-    ],
-    "Hazafe": [
-        "FR","SO","SO","SO","FR","SO","SO","SO","SO","FR",
-        "FS","FS","RE","SO","SO","SO","SO","SO","FR","SO",
-        "SO","SO","SO","FR","SO","SO","SO","FR","SO","SO","SO"
-    ],
-    "Igorh": [
-        "SO","SO","FR","SO","SO","SO","SO","SO","SO","FR",
-        "FS","FS","FE","FE","FE","FE","FE","FE","FE","FE",
-        "FE","FE","FE","FE","FE","FE","FE","RE","SO","SO","SO"
-    ],
-    "Amarildo": [
-        "SO","FR","SO","FR","SO","SO","SO","FR","SO","FR",
-        "SO","SO","FR","SO","SO","SO","FR","FS","FS","RE",
-        "SO","SO","SO","SO","SO","FR","SO","SO","SO","SO","SO"
-    ],
-    "Joao": [
-        "SO","SO","FR","FS","FS","RE","SO","SO","SO","FR",
-        "SO","SO","SO","SO","FR","SO","SO","SO","FR","SO",
-        "SO","SO","SO","FR","SO","SO","SO","SO","FR","SO","SO"
-    ],
-    "Dayvid": [
-        "SO","SO","FR","FS","FS","RE","SO","SO","SO","FR",
-        "SO","SO","SO","FR","SO","SO","SO","SO","FR","SO",
-        "SO","SO","FR","SO","SO","SO","SO","FR","SO","SO","SO"
-    ],
-    "Leandro": [
-        "SO","SO","FR","FS","FS","RE","SO","SO","SO","SO",
-        "FR","SO","SO","SO","SO","FR","SO","SO","SO","FR",
-        "SO","SO","SO","FR","SO","SO","SO","SO","FR","SO","SO"
-    ],
-    "Lindomar": [
-        "SO","FR","SO","SO","SO","FR","SO","SO","SO","FR",
-        "FS","FS","RE","SO","SO","SO","SO","FR","SO","SO",
-        "SO","SO","FR","SO","SO","SO","FR","SO","SO","SO","SO"
-    ],
-    "Lucas": [
-        "FR","SO","SO","SO","SO","SO","FR","SO","SO","SO",
-        "SO","SO","FR","SO","SO","SO","SO","SO","FR","SO",
-        "SO","SO","SO","FR","FS","FS","RE","SO","SO","SO","FR"
-    ],
-    "Luiz": [
-        "SO","SO","FR","SO","SO","SO","SO","FR","SO","SO",
-        "SO","FR","SO","SO","SO","SO","SO","FR","SO","SO",
-        "SO","SO","SO","FR","FS","FS","RE","SO","SO","SO","FR"
-    ],
-    "Matias": [
-        "SO","FR","SO","SO","SO","SO","FR","SO","SO","SO",
-        "SO","FR","SO","SO","SO","SO","SO","FR","SO","SO",
-        "SO","SO","SO","FR","FS","FS","FR","RE","SO","SO","SO"
-    ],
-    "Milton": [
-        "SO","SO","SO","SO","FR","SO","SO","SO","SO","FR",
-        "SO","SO","SO","FR","SO","SO","FR","FS","FS","RE",
-        "SO","SO","SO","FR","SO","SO","SO","SO","FR","SO","SO"
-    ],
-    "Andrade": [
-        "SO","SO","SO","FR","SO","SO","SO","FR","SO","SO",
-        "SO","FR","SO","SO","SO","SO","FR","FS","FS","RE",
-        "SO","SO","SO","SO","FR","SO","SO","SO","SO","FR","SO"
-    ],
-    "Pascoal": [
-        "SO","SO","SO","FR","SO","SO","SO","FR","SO","SO",
-        "SO","SO","FR","SO","SO","SO","SO","FR","SO","SO",
-        "SO","SO","SO","FR","FS","FS","RE","SO","SO","FR","SO"
-    ],
-    "Paulo": [
-        "FE","FE","FE","FE","FE","FE","FE","FE","FE","FE",
-        "FE","FE","FE","FE","FE","FE","FE","FE","FE","FE",
-        "FE","FE","FE","FE","FE","FE","FE","FE","FE","FE","RE"
-    ],
-    "Perisson": [
-        "FE","FE","FE","FE","FE","FE","FE","FE","FE","FR",
-        "FS","FS","RE","SO","SO","SO","FR","SO","SO","SO",
-        "FR","SO","SO","FR","SO","SO","FR","SO","SO","SO","FR"
-    ],
-    "Renan": [
-        "SO","SO","SO","FR","SO","SO","SO","SO","FR","SO",
-        "SO","SO","FR","SO","SO","SO","FR","FS","FS","RE",
-        "SO","SO","SO","SO","FR","SO","SO","SO","SO","FR","SO"
-    ],
-    "Roberto": [
-        "SO","SO","SO","SO","FR","SO","SO","SO","SO","SO",
-        "FR","SO","SO","SO","SO","SO","FR","FS","FS","RE",
-        "SO","SO","FR","SO","SO","SO","SO","FR","SO","SO","FR"
-    ],
-    "Ronie": [
-        "SO","FR","SO","SO","SO","SO","FR","SO","SO","SO",
-        "SO","SO","FR","SO","SO","SO","SO","SO","FR","SO",
-        "SO","SO","SO","FR","FS","FS","RE","SO","SO","FR","SO"
-    ],
-    "Rui": [
-        "SO","SO","FR","FS","FS","RE","SO","SO","SO","SO",
-        "FR","SO","SO","SO","SO","SO","FR","SO","SO","SO",
-        "SO","FR","SO","SO","SO","FR","SO","SO","FR","SO","SO"
-    ],
-    "Sergio": [
-        "SO","SO","FR","SO","SO","SO","SO","SO","SO","FR",
-        "FS","FS","FE","FE","FE","FE","FE","FE","FE","FE",
-        "FE","FE","FE","FE","FE","FE","FE","RE","SO","SO","SO"
-    ],
-    "Victor": [
-        "SO","SO","SO","FR","SO","SO","SO","FR","SO","SO",
-        "SO","SO","FR","SO","SO","SO","FR","FS","FS","RE",
-        "SO","SO","SO","FR","SO","SO","SO","SO","FR","SO","SO"
-    ],
-    "Bento": [
-        "SO","FR","SO","SO","SO","SO","FR","SO","SO","SO",
-        "SO","FR","SO","SO","SO","SO","FR","FS","FS","RE",
-        "SO","SO","SO","SO","FR","SO","SO","SO","SO","FR","SO"
-    ],
-    "Wellber": [
-        "SO","SO","FR","SO","SO","FR","SO","SO","SO","FR",
-        "FS","FS","RE","SO","SO","FR","SO","SO","SO","SO",
-        "FR","SO","SO","SO","SO","FR","SO","SO","SO","SO","SO"
-    ],
-    "Yago": [
-        "SO","SO","FR","FS","FS","FE","FE","FE","FE","FE",
-        "FE","FE","FE","FE","FE","FE","FE","FE","FE","FE",
-        "RE","SO","SO","SO","SO","SO","FR","SO","SO","SO","SO"
-    ],
-    "Cauê": [
-        "SO","SO","FR","FS","FS","RE","SO","SO","SO","SO",
-        "FR","SO","SO","SO","FR","SO","SO","SO","SO","FR",
-        "SO","SO","SO","SO","FR","SO","SO","SO","FR","SO","SO"
-    ],
-    "Daniela": [
-        "SO","SO","SO","SO","FR","SO","SO","SO","SO","FR",
-        "FS","FS","RE","SO","SO","SO","FR","SO","SO","SO",
-        "FR","SO","SO","FR","SO","SO","SO","FR","SO","SO","SO"
-    ],
-    "Ernesto": [
-        "SO","SO","FR","SO","SO","SO","FR","SO","SO","FR",
-        "FS","FS","RE","SO","SO","SO","SO","FR","SO","SO",
-        "SO","SO","FR","SO","SO","SO","SO","SO","FR","SO","SO"
-    ],
-    "Ruben": [
-        "FR","SO","SO","SO","FR","SO","SO","SO","SO","FR",
-        "FS","FS","RE","SO","SO","FR","SO","SO","SO","SO",
-        "FR","SO","SO","SO","SO","FR","SO","SO","SO","SO","SO"
-    ],
-    "Rodrigo": [
-        "SO","SO","FR","SO","SO","SO","SO","FR","SO","SO",
-        "SO","SO","FR","SO","SO","SO","FR","FS","FS","RE",
-        "SO","SO","SO","SO","FR","SO","SO","SO","FR","SO","SO"
-    ],
-    "Ronalldo": [
-        "SO","SO","FR","SO","SO","FR","SO","SO","SO","SO",
-        "SO","FR","SO","SO","SO","SO","SO","FR","SO","SO",
-        "SO","SO","SO","FR","FS","FS","RE","SO","SO","FR","SO"
-    ],
-    "Thales": [
-        "SO","SO","SO","FR","SO","SO","SO","SO","SO","FR",
-        "SO","SO","SO","SO","FR","SO","SO","SO","SO","FR",
-        "SO","SO","SO","FR","FS","FS","RE","SO","SO","SO","FR"
-    ],
-    "Serafim": [
-        "SO","FR","SO","SO","SO","SO","FR","SO","SO","SO",
-        "SO","FR","SO","SO","SO","SO","FR","FS","FS","RE",
-        "SO","SO","SO","SO","FR","SO","SO","SO","FR","SO","SO"
-    ]
+    "Adelio": ["SO","SO","SO","SO","FR","SO","SO","SO","SO","FR","SO","SO","SO","FR","SO","SO","FR","FS","FS","RE","SO","SO","SO","SO","SO","FR","SO","SO","SO","FR","SO"],
+    "Otto": ["SO","SO","FR","FS","FS","FE","FE","FE","FE","FE","FE","FE","FE","FE","FE","FE","FE","FE","FE","FE","RE","SO","SO","SO","SO","SO","FR","SO","SO","SO","SO"],
+    "Andre": ["SO","FR","SO","FR","SO","SO","SO","SO","FR","SO","SO","SO","SO","FR","SO","SO","SO","SO","FR","SO","SO","SO","SO","FR","FS","FS","RE","SO","FR","SO","SO"],
+    "Cleiton": ["SO","SO","SO","FR","SO","SO","SO","FR","SO","FR","FS","FS","RE","SO","SO","SO","SO","FR","SO","SO","SO","FR","SO","SO","SO","FR","SO","SO","SO","SO","SO"],
+    "Cleverson": ["SO","SO","SO","SO","FR","SO","SO","SO","FR","SO","SO","SO","FR","SO","SO","SO","SO","SO","FR","SO","SO","SO","SO","FR","FS","FS","RE","SO","SO","FR","SO"],
+    "Dany": ["SO","SO","SO","FR","SO","SO","SO","FR","SO","SO","SO","SO","FR","SO","SO","SO","FR","FS","FS","RE","SO","SO","FR","SO","SO","SO","FR","SO","SO","SO","SO"],
+    "Edson": ["SO","SO","FR","FS","FS","RE","SO","SO","SO","SO","FR","SO","SO","SO","SO","FR","SO","SO","SO","SO","FR","SO","SO","SO","FR","SO","SO","SO","FR","SO","SO"],
+    "Fausto": ["SO","SO","FR","FS","FS","RE","SO","SO","SO","FR","SO","SO","SO","SO","FR","SO","SO","SO","SO","FR","SO","SO","SO","SO","FR","SO","SO","SO","FR","SO","SO"],
+    "Costa": ["SO","SO","FR","FS","FS","RE","SO","SO","SO","SO","FR","SO","SO","FR","SO","SO","SO","SO","FR","SO","SO","SO","FR","SO","SO","SO","SO","FR","SO","SO","SO"],
+    "Frank": ["SO","SO","FR","FS","FS","FE","FE","FE","FE","FE","FE","FE","FE","FE","FE","FE","FE","FE","FE","FE","RE","SO","SO","SO","SO","SO","FR","SO","SO","SO","SO"],
+    "Gabriel": ["SO","SO","SO","SO","FR","SO","SO","SO","SO","FR","FS","FS","RE","SO","SO","SO","FR","SO","SO","SO","FR","SO","SO","SO","FR","SO","SO","SO","FR","SO","SO"],
+    "Hazafe": ["FR","SO","SO","SO","FR","SO","SO","SO","SO","FR","FS","FS","RE","SO","SO","SO","SO","SO","FR","SO","SO","SO","SO","FR","SO","SO","SO","FR","SO","SO","SO"],
+    "Igorh": ["SO","SO","FR","SO","SO","SO","SO","SO","SO","FR","FS","FS","FE","FE","FE","FE","FE","FE","FE","FE","FE","FE","FE","FE","FE","FE","FE","RE","SO","SO","SO"],
+    "Amarildo": ["SO","FR","SO","FR","SO","SO","SO","FR","SO","FR","SO","SO","FR","SO","SO","SO","FR","FS","FS","RE","SO","SO","SO","SO","SO","FR","SO","SO","SO","SO","SO"],
+    "Joao": ["SO","SO","FR","FS","FS","RE","SO","SO","SO","FR","SO","SO","SO","SO","FR","SO","SO","SO","FR","SO","SO","SO","SO","FR","SO","SO","SO","SO","FR","SO","SO"],
+    "Dayvid": ["SO","SO","FR","FS","FS","RE","SO","SO","SO","FR","SO","SO","SO","FR","SO","SO","SO","SO","FR","SO","SO","SO","FR","SO","SO","SO","SO","FR","SO","SO","SO"],
+    "Leandro": ["SO","SO","FR","FS","FS","RE","SO","SO","SO","SO","FR","SO","SO","SO","SO","FR","SO","SO","SO","FR","SO","SO","SO","FR","SO","SO","SO","SO","FR","SO","SO"],
+    "Lindomar": ["SO","FR","SO","SO","SO","FR","SO","SO","SO","FR","FS","FS","RE","SO","SO","SO","SO","FR","SO","SO","SO","SO","FR","SO","SO","SO","FR","SO","SO","SO","SO"],
+    "Lucas": ["FR","SO","SO","SO","SO","SO","FR","SO","SO","SO","SO","SO","FR","SO","SO","SO","SO","SO","FR","SO","SO","SO","SO","FR","FS","FS","RE","SO","SO","SO","FR"],
+    "Luiz": ["SO","SO","FR","SO","SO","SO","SO","FR","SO","SO","SO","FR","SO","SO","SO","SO","SO","FR","SO","SO","SO","SO","SO","FR","FS","FS","RE","SO","SO","SO","FR"],
+    "Matias": ["SO","FR","SO","SO","SO","SO","FR","SO","SO","SO","SO","FR","SO","SO","SO","SO","SO","FR","SO","SO","SO","SO","SO","FR","FS","FS","FR","RE","SO","SO","SO"],
+    "Milton": ["SO","SO","SO","SO","FR","SO","SO","SO","SO","FR","SO","SO","SO","FR","SO","SO","FR","FS","FS","RE","SO","SO","SO","FR","SO","SO","SO","SO","FR","SO","SO"],
+    "Andrade": ["SO","SO","SO","FR","SO","SO","SO","FR","SO","SO","SO","FR","SO","SO","SO","SO","FR","FS","FS","RE","SO","SO","SO","SO","FR","SO","SO","SO","SO","FR","SO"],
+    "Pascoal": ["SO","SO","SO","FR","SO","SO","SO","FR","SO","SO","SO","SO","FR","SO","SO","SO","SO","FR","SO","SO","SO","SO","SO","FR","FS","FS","RE","SO","SO","FR","SO"],
+    "Paulo": ["FE","FE","FE","FE","FE","FE","FE","FE","FE","FE","FE","FE","FE","FE","FE","FE","FE","FE","FE","FE","FE","FE","FE","FE","FE","FE","FE","FE","FE","FE","RE"],
+    "Perisson": ["FE","FE","FE","FE","FE","FE","FE","FE","FE","FR","FS","FS","RE","SO","SO","SO","FR","SO","SO","SO","FR","SO","SO","FR","SO","SO","FR","SO","SO","SO","FR"],
+    "Renan": ["SO","SO","SO","FR","SO","SO","SO","SO","FR","SO","SO","SO","FR","SO","SO","SO","FR","FS","FS","RE","SO","SO","SO","SO","FR","SO","SO","SO","SO","FR","SO"],
+    "Roberto": ["SO","SO","SO","SO","FR","SO","SO","SO","SO","SO","FR","SO","SO","SO","SO","SO","FR","FS","FS","RE","SO","SO","FR","SO","SO","SO","SO","FR","SO","SO","FR"],
+    "Ronie": ["SO","FR","SO","SO","SO","SO","FR","SO","SO","SO","SO","SO","FR","SO","SO","SO","SO","SO","FR","SO","SO","SO","SO","FR","FS","FS","RE","SO","SO","FR","SO"],
+    "Rui": ["SO","SO","FR","FS","FS","RE","SO","SO","SO","SO","FR","SO","SO","SO","SO","SO","FR","SO","SO","SO","SO","FR","SO","SO","SO","FR","SO","SO","FR","SO","SO"],
+    "Sergio": ["SO","SO","FR","SO","SO","SO","SO","SO","SO","FR","FS","FS","FE","FE","FE","FE","FE","FE","FE","FE","FE","FE","FE","FE","FE","FE","FE","RE","SO","SO","SO"],
+    "Victor": ["SO","SO","SO","FR","SO","SO","SO","FR","SO","SO","SO","SO","FR","SO","SO","SO","FR","FS","FS","RE","SO","SO","SO","FR","SO","SO","SO","SO","FR","SO","SO"],
+    "Bento": ["SO","FR","SO","SO","SO","SO","FR","SO","SO","SO","SO","FR","SO","SO","SO","SO","FR","FS","FS","RE","SO","SO","SO","SO","FR","SO","SO","SO","SO","FR","SO"],
+    "Wellber": ["SO","SO","FR","SO","SO","FR","SO","SO","SO","FR","FS","FS","RE","SO","SO","FR","SO","SO","SO","SO","FR","SO","SO","SO","SO","FR","SO","SO","SO","SO","SO"],
+    "Yago": ["SO","SO","FR","FS","FS","FE","FE","FE","FE","FE","FE","FE","FE","FE","FE","FE","FE","FE","FE","FE","RE","SO","SO","SO","SO","SO","FR","SO","SO","SO","SO"],
+    "Cauê": ["SO","SO","FR","FS","FS","RE","SO","SO","SO","SO","FR","SO","SO","SO","FR","SO","SO","SO","SO","FR","SO","SO","SO","SO","FR","SO","SO","SO","FR","SO","SO"],
+    "Daniela": ["SO","SO","SO","SO","FR","SO","SO","SO","SO","FR","FS","FS","RE","SO","SO","SO","FR","SO","SO","SO","FR","SO","SO","FR","SO","SO","SO","FR","SO","SO","SO"],
+    "Ernesto": ["SO","SO","FR","SO","SO","SO","FR","SO","SO","FR","FS","FS","RE","SO","SO","SO","SO","FR","SO","SO","SO","SO","FR","SO","SO","SO","SO","SO","FR","SO","SO"],
+    "Ruben": ["FR","SO","SO","SO","FR","SO","SO","SO","SO","FR","FS","FS","RE","SO","SO","FR","SO","SO","SO","SO","FR","SO","SO","SO","SO","FR","SO","SO","SO","SO","SO"],
+    "Rodrigo": ["SO","SO","FR","SO","SO","SO","SO","FR","SO","SO","SO","SO","FR","SO","SO","SO","FR","FS","FS","RE","SO","SO","SO","SO","FR","SO","SO","SO","FR","SO","SO"],
+    "Ronalldo": ["SO","SO","FR","SO","SO","FR","SO","SO","SO","SO","SO","FR","SO","SO","SO","SO","SO","FR","SO","SO","SO","SO","SO","FR","FS","FS","RE","SO","SO","FR","SO"],
+    "Thales": ["SO","SO","SO","FR","SO","SO","SO","SO","SO","FR","SO","SO","SO","SO","FR","SO","SO","SO","SO","FR","SO","SO","SO","FR","FS","FS","RE","SO","SO","SO","FR"],
+    "Serafim": ["SO","FR","SO","SO","SO","SO","FR","SO","SO","SO","SO","FR","SO","SO","SO","SO","FR","FS","FS","RE","SO","SO","SO","SO","FR","SO","SO","SO","FR","SO","SO"]
 };
 
+// ===== ATUALIZADO: Andrade incluído no grupo CESSNA para a interface saber onde ele está =====
 const GRUPOS_PILOTO = {
     "CARAVAN": ["Cleiton","Joao","Pascoal","Lindomar","Perisson","Rui","Yago"],
     "COPILOTO": ["Cauê","Ruben","Ernesto","Daniela","Thales","Serafim","Ronalldo","Rodrigo"]
@@ -615,9 +418,6 @@ function getGrupo(nome) {
 
 const STATUS_BLOQUEADOS = ["DM","CM","EA","FR","FE","TR","TN","CQ"];
 const STATUS_EDITAVEL_LONGPRESS = ["FS","RE"];
-
-function isStatusBloqueado(status) { return STATUS_BLOQUEADOS.includes(status); }
-
 let DIAS = 31; 
 let isEditing = false;
 let diaEditandoIndex = null;
@@ -735,21 +535,12 @@ function ativarEdicaoDia(diaIndex) {
         if (!inp) return;
 
         if (status === "SO") {
-            const valorAtual = parseHora(inp.value);
             inp.disabled = false;
             inp.placeholder = "0,0";
             inp.removeAttribute('data-status');
             inp.classList.remove('has-value');
-            if (valorAtual === 0 && !getStatusFromValue(inp.value)) {
-                inp.value = "";
-            }
-        } else if (isStatusBloqueado(status)) {
-            inp.disabled = true;
-        } else if (STATUS_EDITAVEL_LONGPRESS.includes(status)) {
-            inp.disabled = true;
         } else {
-            inp.disabled = false;
-            inp.placeholder = "0,0";
+            inp.disabled = !STATUS_EDITAVEL_LONGPRESS.includes(status);
         }
     });
 
@@ -761,20 +552,10 @@ function ativarEdicaoDia(diaIndex) {
     document.getElementById('badgeDiaEdicao').classList.add('visivel');
     document.getElementById('btnSairDia').style.display = 'inline-block';
     document.querySelectorAll('.btn-dia').forEach((btn,i) => btn.classList.toggle('dia-editando', i===diaIndex));
-    showToast(`✏️ Dia ${diaNum} — SO liberados | Long press em FS/RE para editar`);
 }
 
 function sairEdicaoDia() {
     if (diaEditandoIndex !== null) {
-        document.querySelectorAll('#tabelaHoras tbody tr.membro-row').forEach(row => {
-            const nome = getNomeFromRow(row);
-            const status = ESCALA_MENSAL[nome]?.[diaEditandoIndex] || "";
-            const inp = row.cells[diaEditandoIndex+1]?.querySelector('.input-hora');
-            if (inp && status === "SO" && parseHora(inp.value) === 0 && !getStatusFromValue(inp.value)) {
-                inp.value = "";
-                inp.setAttribute('data-status', 'default');
-            }
-        });
         diaEditandoIndex = null;
         document.getElementById('badgeDiaEdicao').classList.remove('visivel');
         document.getElementById('btnSairDia').style.display = 'none';
@@ -793,9 +574,7 @@ function destacarColuna(diaIndex) {
         if (row.cells[ci]) row.cells[ci].classList.add('col-ativa');
     });
 }
-function limparDestaqueColuna() {
-    document.querySelectorAll('.col-ativa').forEach(el => el.classList.remove('col-ativa'));
-}
+function limparDestaqueColuna() { document.querySelectorAll('.col-ativa').forEach(el => el.classList.remove('col-ativa')); }
 
 function habilitarEdicaoStatus(inp, row, diaIndex) {
     const nome = getNomeFromRow(row);
@@ -805,7 +584,6 @@ function habilitarEdicaoStatus(inp, row, diaIndex) {
     inp.disabled = false;
     inp.classList.add('editando-longpress');
     inp.select();
-    showToast(`✏️ Editando ${statusAtual} — digite novo status e pressione Enter`);
 
     const onKeyDown = async (e) => {
         if (e.key === 'Enter') {
@@ -819,8 +597,6 @@ function habilitarEdicaoStatus(inp, row, diaIndex) {
                 await salvarStatusNoBackend(nome, diaIndex, novoValor);
                 showToast(`✅ Status → ${novoValor}`);
                 recalcularTudo();
-            } else {
-                showToast('❌ Status inválido. Use SO, FR, FS, FE, DM, RE, VO...');
             }
             inp.removeEventListener('keydown', onKeyDown);
             inp.removeEventListener('blur', onBlur);
@@ -849,96 +625,44 @@ async function salvarStatusNoBackend(nome, dia, novoStatus) {
 }
 
 function mostrarComparativoDia(diaIndex) {
-    const diaNumero = diaIndex + 1;
-    const mesAtual = document.getElementById('campoMes').value.trim() || "Julho";
-
     const pilotos = [];
     document.querySelectorAll('#tabelaHoras tbody tr.membro-row').forEach(row => {
         const nome = getNomeFromRow(row);
         let total = 0;
-        row.querySelectorAll('.input-hora').forEach(inp => {
-            total += parseHora(inp.value);
-        });
+        row.querySelectorAll('.input-hora').forEach(inp => total += parseHora(inp.value));
         pilotos.push({ nome, total });
     });
-
     pilotos.sort((a, b) => b.total - a.total);
     const maxTotal = Math.max(...pilotos.map(p => p.total), 0.1);
 
-    let html = `<div class="card-detalhe">
-        <h2 style="text-align:center;margin-bottom:4px;">📊 Horas Acumuladas — ${mesAtual}</h2>
-        <p style="text-align:center;font-size:0.8rem;color:#7a5000;margin-bottom:12px;">
-            Total de pilotos: <strong>${pilotos.length}</strong>
-        </p>
-        <div style="overflow-x: auto;">
-            <table class="tabela-detalhe" style="width: 100%;">
-                <thead>
-                    <tr>
-                        <th style="text-align: center; width: 40px;">#</th>
-                        <th style="text-align: left;">Piloto</th>
-                        <th style="text-align: center; width: 80px;">Horas</th>
-                        <th style="text-align: center;">Progresso</th>
-                    </tr>
-                </thead>
-                <tbody>`;
-
+    let html = `<div class="card-detalhe"><h2>📊 Ranking de Horas</h2><table class="tabela-detalhe"><tbody>`;
     pilotos.forEach((p, idx) => {
-        const perc = maxTotal > 0 ? (p.total / maxTotal) * 100 : 0;
-        const horasDisplay = p.total === 0 ? '—' : formatarHora(p.total);
-        let medalha = '';
-        if (idx === 0) medalha = '🥇 ';
-        else if (idx === 1) medalha = '🥈 ';
-        else if (idx === 2) medalha = '🥉 ';
-
-        html += `<tr>
-            <td style="text-align: center; font-weight: bold;">${idx + 1}</td>
-            <td style="text-align: left; font-weight: 500;">${medalha}${p.nome}</td>
-            <td style="text-align: center; font-weight: bold; color: ${p.total > 0 ? '#2a8a2a' : '#aaa'};">
-                ${horasDisplay}
-            </td>
-            <td style="min-width: 100px;">
-                <div class="progress-bar-wrap">
-                    <div class="barra-fill" style="width: ${perc}%;"></div>
-                </div>
-            </td>
-        </tr>`;
+        const perc = (p.total / maxTotal) * 100;
+        html += `<tr><td>${idx+1}</td><td>${p.nome}</td><td>${formatarHora(p.total)}h</td><td><div class="progress-bar-wrap"><div class="barra-fill" style="width:${perc}%"></div></div></td></tr>`;
     });
-
-    html += `</tbody></table></div>
-        <button class="btn-fechar" id="fecharDetalhe">Fechar</button>
-    </div>`;
-
+    html += `</tbody></table><button class="btn-fechar" id="fecharDetalhe">Fechar</button></div>`;
     const modal = document.createElement('div');
     modal.className = 'modal-detalhe';
     modal.innerHTML = html;
     document.body.appendChild(modal);
     modal.querySelector('#fecharDetalhe').onclick = () => modal.remove();
-    modal.onclick = e => { if (e.target === modal) modal.remove(); };
 }
 
 async function mostrarDisponiveis(diaRef) {
-    if (diaRef === null) { showToast("⚠️ Selecione um dia primeiro."); return; }
     const diaSeguinte = diaRef + 1;
-    if (diaSeguinte >= DIAS) { showToast("⚠️ Último dia do mês."); return; }
     try {
         const res = await fetch(`/api/available_commanders/${diaSeguinte}`);
         const data = await res.json();
-        let html = `<div class="card-detalhe"><h2 style="text-align:center;">👥 Disponíveis — Dia ${String(diaSeguinte+1).padStart(2,'00')}</h2>`;
+        let html = `<div class="card-detalhe"><h2>👥 Disponíveis — Dia ${String(diaSeguinte+1).padStart(2,'00')}</h2>`;
         for (let grupo in data) {
-            html += `<h3 style="margin-top:14px;color:#7a4a1e;">${grupo}</h3>`;
-            if (data[grupo].length > 0) {
-                html += `<ul style="margin:4px 0 12px 0;padding-left:0;list-style:none;">`;
-                data[grupo].forEach(c => {
-                    const nome = getDisplayName(c.name);
-                    html += `<li style="padding:5px 0;display:flex;justify-content:space-between;border-bottom:1px solid #e8d5b0;">
-                        <span>${nome} <span style="color:#888;font-size:0.8rem;">(${c.status})</span></span>
-                        <strong>${c.horas_totais.toFixed(1)}h</strong>
-                    </li>`;
-                });
-                html += `</ul>`;
-            } else {
-                html += `<p style="color:#aaa;font-size:0.85rem;">Nenhum disponível.</p>`;
-            }
+            html += `<h3>${grupo}</h3><ul style="padding:0;list-style:none;">`;
+            data[grupo].forEach(c => {
+                let nomeTratado = getDisplayName(c.name);
+                html += `<li style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #ddd;">
+                    <span>${nomeTratado} (${c.status})</span><strong>${c.horas_totais.toFixed(1)}h</strong>
+                </li>`;
+            });
+            html += `</ul>`;
         }
         html += `<button class="btn-fechar" id="fecharDisponiveis">Fechar</button></div>`;
         const modal = document.createElement('div');
@@ -946,186 +670,125 @@ async function mostrarDisponiveis(diaRef) {
         modal.innerHTML = html;
         document.body.appendChild(modal);
         modal.querySelector('#fecharDisponiveis').onclick = () => modal.remove();
-        modal.onclick = e => { if (e.target === modal) modal.remove(); };
-    } catch(e) { showToast("❌ Erro ao carregar disponíveis."); }
+    } catch(e) { showToast("❌ Erro ao buscar disponíveis."); }
 }
 
 function mostrarMenuDia(diaIndex, btn) {
     selecionarDia(diaIndex, btn);
     const diaNum = String(diaIndex+1).padStart(2,'0');
-
     const modal = document.createElement('div');
     modal.className = 'modal-menu-dia';
-    modal.innerHTML = `
-        <div class="card-menu-dia">
-            <h3>📅 Dia ${diaNum}</h3>
-            <div class="menu-dia-opcoes">
-                ${isEditing ? `<button class="btn-menu-opcao" id="menuEditar">✏️ Editar horas</button>` : ''}
-                <button class="btn-menu-opcao" id="menuComparativo">📊 Ranking de horas</button>
-                <button class="btn-menu-opcao" id="menuDisponiveis">👥 Disponíveis dia ${String(diaIndex+2).padStart(2,'0')}</button>
-                <button class="btn-menu-cancelar" id="menuCancelar">Cancelar</button>
-            </div>
-        </div>`;
+    modal.innerHTML = `<div class="card-menu-dia">
+        <h3>📅 Dia ${diaNum}</h3>
+        <div class="menu-dia-opcoes">
+            ${isEditing ? `<button class="btn-menu-opcao" id="menuEditar">✏️ Editar horas</button>` : ''}
+            <button class="btn-menu-opcao" id="menuComparativo">📊 Ranking de horas</button>
+            <button class="btn-menu-opcao" id="menuDisponiveis">👥 Disponíveis dia ${String(diaIndex+2).padStart(2,'0')}</button>
+            <button class="btn-menu-cancelar" id="menuCancelar">Cancelar</button>
+        </div>
+    </div>`;
     document.body.appendChild(modal);
-
     if (isEditing) modal.querySelector('#menuEditar').onclick = () => { modal.remove(); ativarEdicaoDia(diaIndex); };
     modal.querySelector('#menuComparativo').onclick = () => { modal.remove(); mostrarComparativoDia(diaIndex); };
     modal.querySelector('#menuDisponiveis').onclick = () => { modal.remove(); mostrarDisponiveis(diaIndex); };
     modal.querySelector('#menuCancelar').onclick = () => modal.remove();
-    modal.onclick = e => { if (e.target === modal) modal.remove(); };
 }
 
 function getMesNumero(nomeMes) {
-    const mapa = {
-        "janeiro": 1, "fevereiro": 2, "março": 3, "abril": 4,
-        "maio": 5, "junho": 6, "julho": 7, "agosto": 8,
-        "setembro": 9, "outubro": 10, "novembro": 11, "dezembro": 12
-    };
-    return mapa[nomeMes.toLowerCase()] || new Date().getMonth() + 1;
+    const mapa = { "janeiro":1,"fevereiro":2,"março":3,"abril":4,"maio":5,"junho":6,"julho":7,"agosto":8,"setembro":9,"outubro":10,"novembro":11,"dezembro":12 };
+    return mapa[nomeMes.toLowerCase()] || 7;
 }
 
 async function carregarDoBackend() {
-    const syncSpan = document.getElementById('syncStatus');
-    syncSpan.innerHTML = '⏳ Carregando...';
+    document.getElementById('syncStatus').innerHTML = '⏳ Carregando...';
     try {
-        const mesInput = document.getElementById('campoMes');
-        const mesNome = mesInput.value.trim() || "Julho";
-        const mesNum = getMesNumero(mesNome);
-        const ano = new Date().getFullYear();
-
-        const url = `/api/data?month=${mesNum}&year=${ano}`;
-        const res = await fetch(url);
-        if (!res.ok) throw new Error('Falha na requisição');
+        const mesNome = document.getElementById('campoMes').value.trim() || "Julho";
+        const res = await fetch(`/api/data?month=${getMesNumero(mesNome)}&year=2026`);
         const data = await res.json();
-        const pilots = data.pilots;
-        const logs = data.logs;
-
+        
         atualizarDias();
-
-        const thead = document.getElementById('tableHeader');
-        thead.innerHTML = `<tr><th>👤 PILOTO</th>${Array.from({length:DIAS},(_,i)=>`<th>${String(i+1).padStart(2,'00')}</th>`).join('')}<th>⭐ TOTAL</th></tr>`;
+        document.getElementById('tableHeader').innerHTML = `<tr><th>👤 PILOTO</th>${Array.from({length:DIAS},(_,i)=>`<th>${String(i+1).padStart(2,'00')}</th>`).join('')}<th>⭐ TOTAL</th></tr>`;
 
         const tbody = document.getElementById('planilhaBody');
         tbody.innerHTML = '';
-
         const grupos = { "CESSNA 206/210":[], "CARAVAN":[], "COPILOTO":[] };
-        pilots.forEach(p => {
-            const grp = getGrupo(p.name);
-            if (grupos[grp]) grupos[grp].push(p);
-            else grupos["CESSNA 206/210"].push(p);
+        
+        data.pilots.forEach(p => {
+            let nomeExibicao = getDisplayName(p.name);
+            const grp = getGrupo(nomeExibicao);
+            grupos[grp].push(p);
         });
 
         for (let grupo of ["CESSNA 206/210","CARAVAN","COPILOTO"]) {
             const titleRow = document.createElement('tr');
             titleRow.classList.add('group-title-row');
-            titleRow.innerHTML = `<td colspan="${DIAS+2}"><i class="fas fa-${grupo==="COPILOTO"?"headset":"plane"}"></i> ${grupo}</td>`;
+            titleRow.innerHTML = `<td colspan="${DIAS+2}">${grupo}</td>`;
             tbody.appendChild(titleRow);
 
             for (let p of grupos[grupo]) {
+                let nomeExibicao = getDisplayName(p.name);
                 const row = document.createElement('tr');
                 row.classList.add('membro-row');
-                const nomeCell = document.createElement('td');
-                nomeCell.textContent = p.name;
-                row.appendChild(nomeCell);
-                let total = 0;
-
+                row.innerHTML = `<td>${nomeExibicao}</td>`;
+                
                 for (let i = 0; i < DIAS; i++) {
                     const td = document.createElement('td');
                     const inp = document.createElement('input');
-                    inp.type = 'text';
-                    inp.inputMode = 'decimal';
-                    inp.classList.add('input-hora');
-                    inp.placeholder = '0,0';
-
-                    let valor = logs[p.name]?.[i+1] || 0;
+                    inp.type = 'text'; inp.inputMode = 'decimal'; inp.className = 'input-hora';
                     
-                    // CORREÇÃO CIRÚRGICA: Excluir/zerar automaticamente o dia 02 (índice 1) da Daniela
-                    if (p.name === "Daniela" && i === 1) {
-                        valor = 0; 
-                    }
+                    let valor = data.logs[p.name]?.[i+1] || 0;
+                    if (p.name === "Daniela" && i === 1) valor = 0;
 
-                    const statusOriginal = ESCALA_MENSAL[p.name]?.[i] || "";
-
-                    if (valor > 0) {
-                        inp.value = formatarHora(valor);
-                        total += valor;
-                    } else if (statusOriginal && statusOriginal !== "SO") {
-                        inp.value = statusOriginal;
-                    } else {
-                        inp.value = "";
-                    }
+                    const statusOriginal = ESCALA_MENSAL[nomeExibicao]?.[i] || "";
+                    if (valor > 0) inp.value = formatarHora(valor);
+                    else if (statusOriginal && statusOriginal !== "SO") inp.value = statusOriginal;
 
                     atualizarCorInput(inp);
                     inp.disabled = true;
 
-                    let lpTimer = null;
-                    inp.addEventListener('touchstart', () => {
-                        lpTimer = setTimeout(() => {
-                            if (isEditing && diaEditandoIndex === i) {
-                                habilitarEdicaoStatus(inp, row, i);
-                            }
-                        }, 600);
-                    });
-                    inp.addEventListener('touchend', () => clearTimeout(lpTimer));
-                    inp.addEventListener('touchcancel', () => clearTimeout(lpTimer));
+                    // Gatilho de Long Press
+                    let lp;
+                    inp.addEventListener('touchstart', () => { lp = setTimeout(() => { if (isEditing && diaEditandoIndex === i) habilitarEdicaoStatus(inp, row, i); }, 600); });
+                    inp.addEventListener('touchend', () => clearTimeout(lp));
 
-                    inp.addEventListener('input', function() {
-                        if (diaEditandoIndex === i && isEditing && !this.disabled) {
-                            atualizarTotalLinha(row);
-                            recalcularTudo();
-                            if (password) salvarNoBackend();
+                    inp.addEventListener('input', () => { if (isEditing) { atualizarTotalLinha(row); recalcularTudo(); } });
+                    
+                    // Tratamento de Enter no Input de Horas
+                    inp.addEventListener('keydown', (e) => {
+                        if (e.key === 'Enter') {
+                            e.preventDefault();
+                            inp.blur(); 
                         }
                     });
-                    inp.addEventListener('blur', function() {
-                        if (diaEditandoIndex === i && isEditing && !this.disabled) {
-                            const v = parseHora(this.value);
-                            if (v > 0) this.value = formatarHora(v);
-                            else this.value = "";
-                            atualizarCorInput(this);
+
+                    inp.addEventListener('blur', () => {
+                        if (isEditing) {
+                            const v = parseHora(inp.value);
+                            inp.value = v > 0 ? formatarHora(v) : "";
+                            atualizarCorInput(inp);
                             atualizarTotalLinha(row);
                             recalcularTudo();
-                            if (password) salvarNoBackend();
                         }
                     });
 
                     td.appendChild(inp);
                     row.appendChild(td);
                 }
-
-                const totalCell = document.createElement('td');
-                totalCell.classList.add('total-cell');
-                totalCell.textContent = formatarHora(total);
-                row.appendChild(totalCell);
+                row.innerHTML += `<td class="total-cell">0,0</td>`;
                 tbody.appendChild(row);
             }
         }
         recalcularTudo();
         criarBotoesDias();
-        sairEdicaoDia();
-        
-        // Se a Daniela foi limpa temporariamente em tela, força uma persistência em lote se estiver logado
-        if (isEditing && password) {
-            salvarNoBackend();
-        }
-
-        syncSpan.innerHTML = '✅ Carregado';
-        setTimeout(() => syncSpan.innerHTML = '💾 Sincronizado', 2000);
-    } catch(e) {
-        console.error(e);
-        document.getElementById('syncStatus').innerHTML = '❌ Erro ao carregar';
-    }
+        document.getElementById('syncStatus').innerHTML = '💾 Sincronizado';
+    } catch(e) { document.getElementById('syncStatus').innerHTML = '❌ Erro'; }
 }
 
 async function salvarNoBackend() {
     if (!isEditing || !password) return;
-    const syncSpan = document.getElementById('syncStatus');
-    syncSpan.innerHTML = '⏳ Salvando...';
+    document.getElementById('syncStatus').innerHTML = '⏳ Salvando...';
     const logs = {};
-
-    const mesInput = document.getElementById('campoMes');
-    const mesNome = mesInput.value.trim() || "Julho";
-    const month = getMesNumero(mesNome);
-    const year = new Date().getFullYear();
+    const mesNome = document.getElementById('campoMes').value.trim() || "Julho";
 
     document.querySelectorAll('#tabelaHoras tbody tr.membro-row').forEach(row => {
         const nome = getNomeFromRow(row);
@@ -1139,39 +802,18 @@ async function salvarNoBackend() {
         await fetch('/api/data', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ password, logs, month, year })
+            body: JSON.stringify({ password, logs, month: getMesNumero(mesNome), year: 2026 })
         });
-        syncSpan.innerHTML = '✅ Salvo';
-        setTimeout(() => syncSpan.innerHTML = '💾 Sincronizado', 2000);
-    } catch(e) {
-        syncSpan.innerHTML = '❌ Erro ao salvar';
-    }
+        showToast("✅ Alterações salvas com sucesso!");
+        document.getElementById('syncStatus').innerHTML = '💾 Sincronizado';
+    } catch(e) { document.getElementById('syncStatus').innerHTML = '❌ Erro'; }
 }
 
 function criarBotoesDias() {
-    const container = document.getElementById('botoesDias');
-    container.innerHTML = '';
+    const container = document.getElementById('botoesDias'); container.innerHTML = '';
     for (let i = 0; i < DIAS; i++) {
-        const btn = document.createElement('button');
-        btn.classList.add('btn-dia');
-        btn.setAttribute('data-dia', i);
+        const btn = document.createElement('button'); btn.className = 'btn-dia';
         btn.innerHTML = `<span class="dia-num">${String(i+1).padStart(2,'00')}</span><span class="dia-total"></span>`;
-
-        let touched = false;
-        btn.addEventListener('touchstart', (e) => {
-            e.preventDefault();
-            touched = true;
-        }, { passive: false });
-
-        btn.addEventListener('touchend', (e) => {
-            e.preventDefault();
-            if (touched) {
-                touched = false;
-                mostrarMenuDia(i, btn);
-            }
-        });
-
-        btn.addEventListener('touchcancel', () => { touched = false; });
         btn.onclick = () => mostrarMenuDia(i, btn);
         container.appendChild(btn);
     }
@@ -1186,126 +828,50 @@ function selecionarDia(i, btn) {
 
 function exibirModalSenha() {
     return new Promise((resolve) => {
-        const modalDiv = document.createElement('div');
-        modalDiv.className = 'modal-senha';
-        modalDiv.innerHTML = `
-            <div class="card-senha">
-                <h3>🔐 AUTENTICAÇÃO</h3>
-                <p>Digite a senha para editar:</p>
-                <input type="password" id="senhaInput" placeholder="Senha" autocomplete="off">
-                <div class="botoes-senha">
-                    <button class="btn-modal" id="confirmarSenha">Confirmar</button>
-                    <button class="btn-modal" id="cancelarSenha">Cancelar</button>
-                </div>
-            </div>`;
-        document.body.appendChild(modalDiv);
-        const inputSenha = modalDiv.querySelector('#senhaInput');
-        const confirmar = () => { const s=inputSenha.value; modalDiv.remove(); resolve(s); };
-        const cancelar = () => { modalDiv.remove(); resolve(null); };
-        modalDiv.querySelector('#confirmarSenha').onclick = confirmar;
-        modalDiv.querySelector('#cancelarSenha').onclick = cancelar;
-        inputSenha.focus();
-        inputSenha.addEventListener('keypress', e => { if(e.key==='Enter') confirmar(); });
-    });
-}
-
-function mostrarAjuda() {
-    const itens = [
-        { cor: '#ffb366', texto: 'DM / CM — Dispensa Médica / Revalidação' },
-        { cor: '#99ccff', texto: 'VO / CQ / TN — Em Voo / Voo Cheque / Trein. Voo' },
-        { cor: '#ffff99', texto: 'EA / TR — Exp. Administrativo / Trein. Solo' },
-        { cor: '#90ee90', texto: 'FR — Folga Regulamentar' },
-        { cor: '#ff9999', texto: 'FS — Folga Social (long press para editar)' },
-        { cor: '#ccffcc', texto: 'FE — Férias' },
-        { cor: '#ffccff', texto: 'RE — Reserva na Empresa' },
-        { cor: '#ffffff', texto: 'SO — Sobreaviso (editável ao selecionar dia)' },
-    ];
-    let html = `<div class="card-ajuda">
-        <h3 style="text-align:center;margin-bottom:12px;">📖 Legenda</h3>`;
-    itens.forEach(item => {
-        html += `<div class="ajuda-item">
-            <div class="ajuda-cor" style="background:${item.cor};border:1px solid #ccc;">${item.texto.split('—')[0].trim()}</div>
-            <span>${item.texto.split('—')[1]?.trim() || ''}</span>
+        const modalDiv = document.createElement('div'); modalDiv.className = 'modal-senha';
+        modalDiv.innerHTML = `<div class="card-senha">
+            <h3>🔐 AUTENTICAÇÃO</h3>
+            <input type="password" id="senhaInput" placeholder="Senha">
+            <div class="botoes-senha"><button class="btn-modal" id="confirmarSenha">Entrar</button></div>
         </div>`;
+        document.body.appendChild(modalDiv);
+        const input = modalDiv.querySelector('#senhaInput');
+        input.focus();
+        modalDiv.querySelector('#confirmarSenha').onclick = () => { const val=input.value; modalDiv.remove(); resolve(val); };
+        input.addEventListener('keypress', e => { if (e.key==='Enter') { const val=input.value; modalDiv.remove(); resolve(val); } });
     });
-    html += `<hr style="margin:12px 0;border-color:#e0cfa8;">
-        <p style="font-size:0.8rem;color:#7a5000;text-align:center;">
-            <strong>Toque no dia</strong> → menu de opções<br>
-            <strong>Long press em FS/RE</strong> → editar status<br>
-            <strong>Sobreaviso (SO)</strong> → campo fica vazio para digitar horas
-        </p>
-        <button class="btn-fechar" id="fecharAjuda">Fechar</button>
-    </div>`;
-    const modal = document.createElement('div');
-    modal.className = 'modal-ajuda';
-    modal.innerHTML = html;
-    document.body.appendChild(modal);
-    modal.querySelector('#fecharAjuda').onclick = () => modal.remove();
-    modal.onclick = e => { if (e.target === modal) modal.remove(); };
 }
 
 async function login() {
-    if (isEditing) { showToast("⚠️ Já está editando."); return; }
     const senha = await exibirModalSenha();
     if (senha === "Emerson" || senha === "Bispo") {
-        password = senha;
-        isEditing = true;
+        password = senha; isEditing = true;
         document.getElementById('statusBadge').innerHTML = '🔓 EDIÇÃO';
         document.getElementById('editModeChip').innerHTML = '✏️ EDIÇÃO ATIVO';
         document.getElementById('btnLimpar').disabled = false;
         document.getElementById('btnBloquear').disabled = false;
-        document.getElementById('campoMes').disabled = false;
-        showToast("✅ Edição ativada! Toque num dia → Editar horas.");
-        carregarDoBackend(); // Recarrega para poder limpar e salvar caso a alteração da Daniela precise subir
-    } else if (senha !== null) {
-        showToast("❌ Senha incorreta.");
-    }
+        document.getElementById('btnSalvarManual').disabled = false;
+        showToast("🔓 Modo edição ativo!");
+        carregarDoBackend();
+    } else if (senha !== null) showToast("❌ Senha incorreta.");
 }
 
 function bloquear() {
-    if (!isEditing) { showToast("ℹ️ Já está em leitura."); return; }
-    isEditing = false;
-    password = "";
-    sairEdicaoDia();
+    isEditing = false; password = ""; sairEdicaoDia();
     document.getElementById('statusBadge').innerHTML = '🔒 LEITURA';
     document.getElementById('editModeChip').innerHTML = '📖 VISUALIZAÇÃO';
     document.getElementById('btnLimpar').disabled = true;
     document.getElementById('btnBloquear').disabled = true;
-    document.getElementById('campoMes').disabled = true;
+    document.getElementById('btnSalvarManual').disabled = true;
     showToast("🔒 Modo leitura ativado.");
 }
 
-function limpar() {
-    if (!isEditing) return showToast("⚠️ Desbloqueie primeiro.");
-    if (confirm("Limpar todos os valores de horas?")) {
-        document.querySelectorAll('.input-hora').forEach(inp => {
-            const v = inp.getAttribute('data-status');
-            if (!v || v === 'default') inp.value = '';
-        });
-        recalcularTudo();
-        salvarNoBackend();
-        showToast("🧹 Valores limpos.");
-    }
-}
-
-document.getElementById('campoMes').addEventListener('change', function() {
-    if (isEditing) {
-        salvarMesNoStorage(this.value);
-        carregarDoBackend();
-        showToast(`📅 Mês alterado para ${this.value}`);
-    }
-});
-
 document.getElementById('btnDesbloquear').onclick = login;
 document.getElementById('btnBloquear').onclick = bloquear;
-document.getElementById('btnLimpar').onclick = limpar;
+document.getElementById('btnSalvarManual').onclick = salvarNoBackend;
 document.getElementById('btnSairDia').onclick = sairEdicaoDia;
-document.getElementById('btnAjuda').onclick = mostrarAjuda;
+document.getElementById('btnAjuda').onclick = () => showAjuda();
 
-const mesSalvo = obterMesDoStorage();
-if (mesSalvo) {
-    document.getElementById('campoMes').value = mesSalvo;
-}
 carregarDoBackend();
 </script>
 </body>
