@@ -13,6 +13,7 @@
     <link rel="apple-touch-icon" href="/icon-192.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
+        /* (mesmo CSS, sem alterações) */
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body {
             margin: 0; min-height: 100vh;
@@ -34,8 +35,6 @@
             box-shadow: inset 0 0 0 2px #fff9e8, inset 0 0 0 6px #d9c894, 0 12px 28px rgba(0,0,0,0.4);
             padding: 6px 0 10px;
         }
-
-        /* ===== CABEÇALHO ===== */
         .cabecalho-skeuo {
             padding: 8px 16px;
             border-bottom: 2px solid #b28b5e;
@@ -63,8 +62,6 @@
             font-size: 0.7rem; font-weight: bold; color: #3b2a00; display: none;
         }
         .badge-dia-edicao.visivel { display: inline-block; }
-
-        /* ===== BARRA DE AÇÕES ===== */
         .top-actions {
             padding: 0 10px; display: flex; justify-content: space-between;
             align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 8px;
@@ -78,7 +75,6 @@
         }
         .btn-skeuo:active { transform: translateY(3px); box-shadow: 0 1px 0 #7a4f2c; }
         .btn-skeuo:disabled { opacity: 0.45; cursor: default; transform: none; }
-
         .info-bar {
             display: flex; justify-content: flex-end; align-items: center;
             padding: 0 12px 6px; gap: 8px;
@@ -95,8 +91,6 @@
             box-shadow: 0 2px 4px rgba(0,0,0,0.3);
             touch-action: manipulation;
         }
-
-        /* ===== BOTÕES DOS DIAS ===== */
         .dias-botoes {
             display: grid; grid-template-columns: repeat(7, 1fr);
             gap: 4px; margin: 0 8px 8px; padding: 8px;
@@ -126,8 +120,6 @@
             background: radial-gradient(circle at 30% 20%, #a5d6a5, #6f9e6f);
             box-shadow: 0 3px 0 #3e6b3e;
         }
-
-        /* ===== TABELA ===== */
         .table-wrapper {
             overflow-x: auto; margin: 0 8px;
             background: #ddcdac; padding: 6px; border-radius: 18px;
@@ -148,7 +140,6 @@
         .planilha th:first-child { position: sticky; left: 0; z-index: 15; background: #9c7a50; }
         .planilha th.col-ativa { background: linear-gradient(to bottom, #e6a800, #a07000) !important; }
         .planilha td.col-ativa { background: #fffacc !important; }
-
         .input-hora {
             width: 58px; padding: 4px; text-align: center;
             font-family: monospace; font-size: 0.78rem;
@@ -164,7 +155,6 @@
             box-shadow: 0 0 0 4px rgba(255,170,0,0.3);
             background: #fff8e0 !important;
         }
-
         .input-hora[data-status="DM"], .input-hora[data-status="CM"] { background: #ffb366; border-color: #cc5200; color: #662200; font-weight: bold; }
         .input-hora[data-status="VO"], .input-hora[data-status="CQ"], .input-hora[data-status="TN"] { background: #99ccff; border-color: #0066cc; color: #003366; font-weight: bold; }
         .input-hora[data-status="EA"], .input-hora[data-status="TR"] { background: #ffff99; border-color: #cccc00; color: #666600; font-weight: bold; }
@@ -174,14 +164,12 @@
         .input-hora[data-status="RE"] { background: #ffccff; border-color: #cc66cc; color: #660066; font-weight: bold; }
         .input-hora[data-status="SO"] { background: #ffffff; border-color: #999999; color: #333333; font-weight: bold; }
         .input-hora[data-status="default"] { background: #f9f2e0; border-color: #c9aa77; }
-
         .total-cell { background: #e7dbbc; font-weight: bold; font-size: 0.8rem; }
         .group-title-row td {
             background: linear-gradient(135deg, #ccaa7a, #b1834d);
             font-weight: bold; font-size: 1rem; text-align: center;
             padding: 6px;
         }
-
         .info-footer {
             display: flex; justify-content: flex-end; align-items: center;
             margin: 6px 12px 0; gap: 8px;
@@ -191,8 +179,6 @@
             font-size: 0.65rem; font-weight: bold; color: #ffe1a0;
             box-shadow: inset 0 1px 3px #ffdf9a, 0 2px 4px black;
         }
-
-        /* ===== MODAIS ===== */
         .modal-senha, .modal-detalhe, .modal-ajuda, .modal-menu-dia {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.75); backdrop-filter: blur(4px);
@@ -414,8 +400,9 @@ function getGrupo(nome) {
     return "CESSNA 206/210";
 }
 
-const STATUS_BLOQUEADOS = ["DM","CM","EA","FR","FE","TR","TN","CQ"];
-const STATUS_EDITAVEL_LONGPRESS = ["FS","RE"];
+// ===== CORREÇÃO: adicionar "FR" aos editáveis por long press =====
+const STATUS_BLOQUEADOS = ["DM","CM","EA","FE","TR","TN","CQ"]; // FR removido daqui
+const STATUS_EDITAVEL_LONGPRESS = ["FS","RE","FR"]; // agora FR também é editável via long press
 
 function isStatusBloqueado(status) { return STATUS_BLOQUEADOS.includes(status); }
 
@@ -535,10 +522,9 @@ function ativarEdicaoDia(diaIndex) {
         const inp = row.cells[diaIndex+1]?.querySelector('.input-hora');
         if (!inp) return;
 
-        // Controla placeholder: só aparece se for SO e estiver editando
         if (status === "SO") {
             inp.disabled = false;
-            inp.placeholder = "0,0";  // <-- aparece apenas ao editar (campo SO)
+            inp.placeholder = "0,0";
             const valorAtual = parseHora(inp.value);
             if (valorAtual === 0 && !getStatusFromValue(inp.value)) {
                 inp.value = "";
@@ -549,6 +535,7 @@ function ativarEdicaoDia(diaIndex) {
             inp.disabled = true;
             inp.placeholder = "";
         } else if (STATUS_EDITAVEL_LONGPRESS.includes(status)) {
+            // FR, FS, RE ficam desabilitados, mas permitem long press (a função habilitarEdicaoStatus irá desabilitá-los temporariamente)
             inp.disabled = true;
             inp.placeholder = "";
         } else {
@@ -566,7 +553,7 @@ function ativarEdicaoDia(diaIndex) {
     document.getElementById('badgeDiaEdicao').classList.add('visivel');
     document.getElementById('btnSairDia').style.display = 'inline-block';
     document.querySelectorAll('.btn-dia').forEach((btn,i) => btn.classList.toggle('dia-editando', i===diaIndex));
-    showToast(`✏️ Dia ${diaNum} — SO liberados | Long press em FS/RE para editar`);
+    showToast(`✏️ Dia ${diaNum} — SO liberados | Long press em FR/FS/RE para editar`);
 }
 
 function sairEdicaoDia() {
@@ -576,7 +563,7 @@ function sairEdicaoDia() {
             const status = ESCALA_MENSAL[nome]?.[diaEditandoIndex] || "";
             const inp = row.cells[diaEditandoIndex+1]?.querySelector('.input-hora');
             if (inp) {
-                inp.placeholder = "";  // remove placeholder ao sair
+                inp.placeholder = "";
                 if (status === "SO" && parseHora(inp.value) === 0 && !getStatusFromValue(inp.value)) {
                     inp.value = "";
                     inp.setAttribute('data-status', 'default');
@@ -609,8 +596,13 @@ function limparDestaqueColuna() {
 function habilitarEdicaoStatus(inp, row, diaIndex) {
     const nome = getNomeFromRow(row);
     const statusAtual = ESCALA_MENSAL[nome]?.[diaIndex] || "";
-    if (!STATUS_EDITAVEL_LONGPRESS.includes(statusAtual)) return;
+    // Agora permite FR, FS, RE
+    if (!STATUS_EDITAVEL_LONGPRESS.includes(statusAtual)) {
+        showToast(`ℹ️ Status "${statusAtual}" não é editável por long press.`);
+        return;
+    }
 
+    // Desabilita o campo temporariamente para edição
     inp.disabled = false;
     inp.classList.add('editando-longpress');
     inp.select();
@@ -846,7 +838,7 @@ async function carregarDoBackend() {
                     inp.type = 'text';
                     inp.inputMode = 'decimal';
                     inp.classList.add('input-hora');
-                    inp.placeholder = '';  // inicialmente vazio (só aparece ao editar dia)
+                    inp.placeholder = '';
 
                     let valor = logs[p.name]?.[i+1] || 0;
                     
@@ -869,17 +861,53 @@ async function carregarDoBackend() {
                     atualizarCorInput(inp);
                     inp.disabled = true;
 
+                    // ===== LONG PRESS (TOUCH) =====
                     let lpTimer = null;
-                    inp.addEventListener('touchstart', () => {
+                    const startLongPress = (e) => {
+                        // Se não estiver em modo edição ou não for o dia corrente, não faz nada
+                        if (!isEditing || diaEditandoIndex !== i) {
+                            // Opcional: mostrar um toast avisando
+                            // showToast("Selecione o dia e ative a edição primeiro.", 1500);
+                            return;
+                        }
+                        // Verifica se o status é editável
+                        const nomePiloto = getNomeFromRow(row);
+                        const status = ESCALA_MENSAL[nomePiloto]?.[i] || "";
+                        if (!STATUS_EDITAVEL_LONGPRESS.includes(status)) {
+                            // showToast(`Status "${status}" não editável por long press.`, 1500);
+                            return;
+                        }
+                        // Inicia o timer
                         lpTimer = setTimeout(() => {
-                            if (isEditing && diaEditandoIndex === i) {
-                                habilitarEdicaoStatus(inp, row, i);
-                            }
+                            habilitarEdicaoStatus(inp, row, i);
+                        }, 600);
+                    };
+                    const clearLongPress = () => {
+                        if (lpTimer) {
+                            clearTimeout(lpTimer);
+                            lpTimer = null;
+                        }
+                    };
+
+                    inp.addEventListener('touchstart', startLongPress, { passive: true });
+                    inp.addEventListener('touchend', clearLongPress, { passive: true });
+                    inp.addEventListener('touchcancel', clearLongPress, { passive: true });
+
+                    // ===== SUPORTE PARA MOUSE (long press com clique sustentado) =====
+                    let mouseTimer = null;
+                    inp.addEventListener('mousedown', (e) => {
+                        if (!isEditing || diaEditandoIndex !== i) return;
+                        const nomePiloto = getNomeFromRow(row);
+                        const status = ESCALA_MENSAL[nomePiloto]?.[i] || "";
+                        if (!STATUS_EDITAVEL_LONGPRESS.includes(status)) return;
+                        mouseTimer = setTimeout(() => {
+                            habilitarEdicaoStatus(inp, row, i);
                         }, 600);
                     });
-                    inp.addEventListener('touchend', () => clearTimeout(lpTimer));
-                    inp.addEventListener('touchcancel', () => clearTimeout(lpTimer));
+                    inp.addEventListener('mouseup', () => { if (mouseTimer) { clearTimeout(mouseTimer); mouseTimer = null; } });
+                    inp.addEventListener('mouseleave', () => { if (mouseTimer) { clearTimeout(mouseTimer); mouseTimer = null; } });
 
+                    // ===== EVENTOS DE INPUT E BLUR =====
                     inp.addEventListener('input', function() {
                         if (diaEditandoIndex === i && isEditing && !this.disabled) {
                             atualizarTotalLinha(row);
@@ -912,9 +940,8 @@ async function carregarDoBackend() {
         }
         recalcularTudo();
         criarBotoesDias();
-        sairEdicaoDia();  // garante placeholders vazios e campos desabilitados
+        sairEdicaoDia();
 
-        // Se a Daniela foi limpa temporariamente em tela, e o usuário estiver logado, salva automaticamente
         if (isEditing && password) {
             salvarNoBackend();
         }
@@ -942,8 +969,7 @@ async function salvarNoBackend() {
         const nome = getNomeFromRow(row);
         logs[nome] = {};
         row.querySelectorAll('.input-hora').forEach((inp, i) => {
-            // Ignora o valor para Daniela dia 2 (índice 1) – garantia extra
-            if (nome === "Daniela" && i === 1) return;
+            if (nome === "Daniela" && i === 1) return; // ignora o dia 2 da Daniela
             const v = parseHora(inp.value);
             if (v > 0) logs[nome][i+1] = v;
         });
@@ -1027,10 +1053,10 @@ function mostrarAjuda() {
         { cor: '#ffb366', texto: 'DM / CM — Dispensa Médica / Revalidação' },
         { cor: '#99ccff', texto: 'VO / CQ / TN — Em Voo / Voo Cheque / Trein. Voo' },
         { cor: '#ffff99', texto: 'EA / TR — Exp. Administrativo / Trein. Solo' },
-        { cor: '#90ee90', texto: 'FR — Folga Regulamentar' },
+        { cor: '#90ee90', texto: 'FR — Folga Regulamentar (long press para editar)' },
         { cor: '#ff9999', texto: 'FS — Folga Social (long press para editar)' },
         { cor: '#ccffcc', texto: 'FE — Férias' },
-        { cor: '#ffccff', texto: 'RE — Reserva na Empresa' },
+        { cor: '#ffccff', texto: 'RE — Reserva na Empresa (long press para editar)' },
         { cor: '#ffffff', texto: 'SO — Sobreaviso (editável ao selecionar dia)' },
     ];
     let html = `<div class="card-ajuda">
@@ -1044,7 +1070,7 @@ function mostrarAjuda() {
     html += `<hr style="margin:12px 0;border-color:#e0cfa8;">
         <p style="font-size:0.8rem;color:#7a5000;text-align:center;">
             <strong>Toque no dia</strong> → menu de opções<br>
-            <strong>Long press em FS/RE</strong> → editar status<br>
+            <strong>Long press (toque sustentado) em FR/FS/RE</strong> → editar status<br>
             <strong>Sobreaviso (SO)</strong> → campo fica vazio para digitar horas
         </p>
         <button class="btn-fechar" id="fecharAjuda">Fechar</button>
@@ -1069,9 +1095,7 @@ async function login() {
         document.getElementById('btnBloquear').disabled = false;
         document.getElementById('campoMes').disabled = false;
         showToast("✅ Edição ativada! Toque num dia → Editar horas.");
-        // Recarrega para garantir que a correção da Daniela seja aplicada e depois salva
         await carregarDoBackend();
-        // Se já estiver logado, salva automaticamente para remover o 4,0 do backend
         if (isEditing && password) {
             salvarNoBackend();
         }
