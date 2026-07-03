@@ -31,7 +31,7 @@ ESCALA_MENSAL = {
         "SO","SO","FR","SO","SO","SO","SO","SO","FR","SO",
         "SO","SO","SO","FR","FS","FS","RE","SO","SO","FR","SO"
     ],
-    "Danielle Pereira": [
+    "Dany": [  # Corrigido aqui de Danielle Pereira para Dany
         "SO","SO","SO","FR","SO","SO","SO","FR","SO","SO",
         "SO","SO","FR","SO","SO","SO","FR","FS","FS","RE",
         "SO","SO","FR","SO","SO","SO","FR","SO","SO","SO","SO"
@@ -106,7 +106,7 @@ ESCALA_MENSAL = {
         "SO","FR","SO","SO","SO","SO","SO","FR","SO","SO",
         "SO","SO","SO","FR","FS","FS","RE","SO","SO","SO","FR"
     ],
-    "Mathias": [
+    "Matias": [
         "SO","FR","SO","SO","SO","SO","FR","SO","SO","SO",
         "SO","FR","SO","SO","SO","SO","SO","FR","SO","SO",
         "SO","SO","SO","FR","FS","FS","FR","RE","SO","SO","SO"
@@ -224,15 +224,5 @@ ESCALA_MENSAL = {
         "SO","FR","SO","SO","SO","SO","FR","SO","SO","SO",
         "SO","FR","SO","SO","SO","SO","FR","FS","FS","RE",
         "SO","SO","SO","SO","FR","SO","SO","SO","FR","SO","SO"
-    ],
-    "Tiago": [
-        "SO","SO","SO","SO","SO","SO","SO","SO","SO","SO",
-        "SO","SO","SO","SO","SO","SO","SO","SO","SO","SO",
-        "SO","SO","SO","SO","SO","SO","SO","SO","SO","SO","SO"
-    ],
-    "Felipe": [
-        "SO","SO","FR","FS","FS","RE","SO","SO","SO","SO",
-        "SO","SO","FR","FS","FS","RE","SO","SO","SO","SO",
-        "SO","SO","SO","SO","FR","FS","FS","RE","SO","SO","SO"
     ]
 }
