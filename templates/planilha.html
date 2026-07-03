@@ -13,7 +13,7 @@
     <link rel="apple-touch-icon" href="/icon-192.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        /* (mesmo CSS do código original, sem alterações) */
+        /* ===== CSS COMPLETO (IDÊNTICO AO ORIGINAL) ===== */
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body {
             margin: 0; min-height: 100vh;
@@ -334,12 +334,19 @@ function obterMesDoStorage() {
 }
 
 // ===== MAPEAMENTO DE NOMES (NORMALIZAÇÃO) =====
+// Mapeia nomes vindos do backend para as chaves usadas na ESCALA_MENSAL
 const NOME_MAP = {
-    // Mapeia nomes vindos do backend para os nomes usados na escala e grupos
     "Albert Otto Azevedo": "Otto",
     "Vitor da Costa Bento": "Bento",
     "Andrade": "Andrade",
-    "Ronaldo": "Ronalldo",      // Se o backend enviar "Ronaldo", normaliza para "Ronalldo"
+    "Ronaldo": "Ronalldo",
+    "Dany": "Danielle Pereira",         // backend usa "Dany", escala usa "Danielle Pereira"
+    "Victor": "Victor",                 // já está correto
+    "Vitor": "Victor",                  // normaliza "Vitor" para "Victor"
+    "Mathias": "Matias",                // normaliza "Mathias" para "Matias"
+    "Matias": "Matias",                 // já está correto
+    "Felipe": "Felipe",                 // já incluso
+    "Tiago": "Tiago",                   // já incluso
     "Cleiton": "Cleiton",
     "Joao": "Joao",
     "Pascoal": "Pascoal",
@@ -354,58 +361,240 @@ const NOME_MAP = {
     "Thales": "Thales",
     "Serafim": "Serafim",
     "Rodrigo": "Rodrigo",
-    // Adicione outros mapeamentos se necessário
+    "Ronalldo": "Ronalldo"
 };
-// Função para normalizar o nome (usar o mapa ou o próprio nome)
+
 function normalizarNome(nome) {
     return NOME_MAP[nome] || nome;
 }
 
-// ===== ESCALA MENSAL (JULHO 2026) =====
+// ===== ESCALA MENSAL – JULHO 2026 (FORNECIDA PELO USUÁRIO) =====
 const ESCALA_MENSAL = {
-    "Adelio": ["SO","SO","SO","SO","FR","SO","SO","SO","SO","FR","SO","SO","SO","FR","SO","SO","FR","FS","FS","RE","SO","SO","SO","SO","SO","FR","SO","SO","SO","FR","SO"],
-    "Otto": ["SO","SO","FR","FS","FS","FE","FE","FE","FE","FE","FE","FE","FE","FE","FE","FE","FE","FE","FE","FE","RE","SO","SO","SO","SO","SO","FR","SO","SO","SO","SO"],
-    "Andre": ["SO","FR","SO","FR","SO","SO","SO","SO","FR","SO","SO","SO","SO","FR","SO","SO","SO","SO","FR","SO","SO","SO","SO","FR","FS","FS","RE","SO","FR","SO","SO"],
-    "Cleiton": ["SO","SO","SO","FR","SO","SO","SO","FR","SO","FR","FS","FS","RE","SO","SO","SO","SO","FR","SO","SO","SO","FR","SO","SO","SO","FR","SO","SO","SO","SO","SO"],
-    "Cleverson": ["SO","SO","SO","SO","FR","SO","SO","SO","FR","SO","SO","SO","FR","SO","SO","SO","SO","SO","FR","SO","SO","SO","SO","FR","FS","FS","RE","SO","SO","FR","SO"],
-    "Dany": ["SO","SO","SO","FR","SO","SO","SO","FR","SO","SO","SO","SO","FR","SO","SO","SO","FR","FS","FS","RE","SO","SO","FR","SO","SO","SO","FR","SO","SO","SO","SO"],
-    "Edson": ["SO","SO","FR","FS","FS","RE","SO","SO","SO","SO","FR","SO","SO","SO","SO","FR","SO","SO","SO","SO","FR","SO","SO","SO","FR","SO","SO","SO","FR","SO","SO"],
-    "Fausto": ["SO","SO","FR","FS","FS","RE","SO","SO","SO","FR","SO","SO","SO","SO","FR","SO","SO","SO","SO","FR","SO","SO","SO","SO","FR","SO","SO","SO","FR","SO","SO"],
-    "Costa": ["SO","SO","FR","FS","FS","RE","SO","SO","SO","SO","FR","SO","SO","FR","SO","SO","SO","SO","FR","SO","SO","SO","FR","SO","SO","SO","SO","FR","SO","SO","SO"],
-    "Frank": ["SO","SO","FR","FS","FS","FE","FE","FE","FE","FE","FE","FE","FE","FE","FE","FE","FE","FE","FE","FE","RE","SO","SO","SO","SO","SO","FR","SO","SO","SO","SO"],
-    "Gabriel": ["SO","SO","SO","SO","FR","SO","SO","SO","SO","FR","FS","FS","RE","SO","SO","SO","FR","SO","SO","SO","FR","SO","SO","SO","FR","SO","SO","SO","FR","SO","SO"],
-    "Hazafe": ["FR","SO","SO","SO","FR","SO","SO","SO","SO","FR","FS","FS","RE","SO","SO","SO","SO","SO","FR","SO","SO","SO","SO","FR","SO","SO","SO","FR","SO","SO","SO"],
-    "Igorh": ["SO","SO","FR","SO","SO","SO","SO","SO","SO","FR","FS","FS","FE","FE","FE","FE","FE","FE","FE","FE","FE","FE","FE","FE","FE","FE","FE","RE","SO","SO","SO"],
-    "Amarildo": ["SO","FR","SO","FR","SO","SO","SO","FR","SO","FR","SO","SO","FR","SO","SO","SO","FR","FS","FS","RE","SO","SO","SO","SO","SO","FR","SO","SO","SO","SO","SO"],
-    "Joao": ["SO","SO","FR","FS","FS","RE","SO","SO","SO","FR","SO","SO","SO","SO","FR","SO","SO","SO","FR","SO","SO","SO","SO","FR","SO","SO","SO","SO","FR","SO","SO"],
-    "Dayvid": ["SO","SO","FR","FS","FS","RE","SO","SO","SO","FR","SO","SO","SO","FR","SO","SO","SO","SO","FR","SO","SO","SO","FR","SO","SO","SO","SO","FR","SO","SO","SO"],
-    "Leandro": ["SO","SO","FR","FS","FS","RE","SO","SO","SO","SO","FR","SO","SO","SO","SO","FR","SO","SO","SO","FR","SO","SO","SO","FR","SO","SO","SO","SO","FR","SO","SO"],
-    "Lindomar": ["SO","FR","SO","SO","SO","FR","SO","SO","SO","FR","FS","FS","RE","SO","SO","SO","SO","FR","SO","SO","SO","SO","FR","SO","SO","SO","FR","SO","SO","SO","SO"],
-    "Lucas": ["FR","SO","SO","SO","SO","SO","FR","SO","SO","SO","SO","SO","FR","SO","SO","SO","SO","SO","FR","SO","SO","SO","SO","FR","FS","FS","RE","SO","SO","SO","FR"],
-    "Luiz": ["SO","SO","FR","SO","SO","SO","SO","FR","SO","SO","SO","FR","SO","SO","SO","SO","SO","FR","SO","SO","SO","SO","SO","FR","FS","FS","RE","SO","SO","SO","FR"],
-    "Matias": ["SO","FR","SO","SO","SO","SO","FR","SO","SO","SO","SO","FR","SO","SO","SO","SO","SO","FR","SO","SO","SO","SO","SO","FR","FS","FS","FR","RE","SO","SO","SO"],
-    "Milton": ["SO","SO","SO","SO","FR","SO","SO","SO","SO","FR","SO","SO","SO","FR","SO","SO","FR","FS","FS","RE","SO","SO","SO","FR","SO","SO","SO","SO","FR","SO","SO"],
-    "Andrade": ["SO","SO","SO","FR","SO","SO","SO","FR","SO","SO","SO","FR","SO","SO","SO","SO","FR","FS","FS","RE","SO","SO","SO","SO","FR","SO","SO","SO","SO","FR","SO"],
-    "Pascoal": ["SO","SO","SO","FR","SO","SO","SO","FR","SO","SO","SO","SO","FR","SO","SO","SO","SO","FR","SO","SO","SO","SO","SO","FR","FS","FS","RE","SO","SO","FR","SO"],
-    "Paulo": ["FE","FE","FE","FE","FE","FE","FE","FE","FE","FE","FE","FE","FE","FE","FE","FE","FE","FE","FE","FE","FE","FE","FE","FE","FE","FE","FE","FE","FE","FE","RE"],
-    "Perisson": ["FE","FE","FE","FE","FE","FE","FE","FE","FE","FR","FS","FS","RE","SO","SO","SO","FR","SO","SO","SO","FR","SO","SO","FR","SO","SO","FR","SO","SO","SO","FR"],
-    "Renan": ["SO","SO","SO","FR","SO","SO","SO","SO","FR","SO","SO","SO","FR","SO","SO","SO","FR","FS","FS","RE","SO","SO","SO","SO","FR","SO","SO","SO","SO","FR","SO"],
-    "Roberto": ["SO","SO","SO","SO","FR","SO","SO","SO","SO","SO","FR","SO","SO","SO","SO","SO","FR","FS","FS","RE","SO","SO","FR","SO","SO","SO","SO","FR","SO","SO","FR"],
-    "Ronie": ["SO","FR","SO","SO","SO","SO","FR","SO","SO","SO","SO","SO","FR","SO","SO","SO","SO","SO","FR","SO","SO","SO","SO","FR","FS","FS","RE","SO","SO","FR","SO"],
-    "Rui": ["SO","SO","FR","FS","FS","RE","SO","SO","SO","SO","FR","SO","SO","SO","SO","SO","FR","SO","SO","SO","SO","FR","SO","SO","SO","FR","SO","SO","FR","SO","SO"],
-    "Sergio": ["SO","SO","FR","SO","SO","SO","SO","SO","SO","FR","FS","FS","FE","FE","FE","FE","FE","FE","FE","FE","FE","FE","FE","FE","FE","FE","FE","RE","SO","SO","SO"],
-    "Victor": ["SO","SO","SO","FR","SO","SO","SO","FR","SO","SO","SO","SO","FR","SO","SO","SO","FR","FS","FS","RE","SO","SO","SO","FR","SO","SO","SO","SO","FR","SO","SO"],
-    "Bento": ["SO","FR","SO","SO","SO","SO","FR","SO","SO","SO","SO","FR","SO","SO","SO","SO","FR","FS","FS","RE","SO","SO","SO","SO","FR","SO","SO","SO","SO","FR","SO"],
-    "Wellber": ["SO","SO","FR","SO","SO","FR","SO","SO","SO","FR","FS","FS","RE","SO","SO","FR","SO","SO","SO","SO","FR","SO","SO","SO","SO","FR","SO","SO","SO","SO","SO"],
-    "Yago": ["SO","SO","FR","FS","FS","FE","FE","FE","FE","FE","FE","FE","FE","FE","FE","FE","FE","FE","FE","FE","RE","SO","SO","SO","SO","SO","FR","SO","SO","SO","SO"],
-    "Cauê": ["SO","SO","FR","FS","FS","RE","SO","SO","SO","SO","FR","SO","SO","SO","FR","SO","SO","SO","SO","FR","SO","SO","SO","SO","FR","SO","SO","SO","FR","SO","SO"],
-    "Daniela": ["SO","SO","SO","SO","FR","SO","SO","SO","SO","FR","FS","FS","RE","SO","SO","SO","FR","SO","SO","SO","FR","SO","SO","FR","SO","SO","SO","FR","SO","SO","SO"],
-    "Ernesto": ["SO","SO","FR","SO","SO","SO","FR","SO","SO","FR","FS","FS","RE","SO","SO","SO","SO","FR","SO","SO","SO","SO","FR","SO","SO","SO","SO","SO","FR","SO","SO"],
-    "Ruben": ["FR","SO","SO","SO","FR","SO","SO","SO","SO","FR","FS","FS","RE","SO","SO","FR","SO","SO","SO","SO","FR","SO","SO","SO","SO","FR","SO","SO","SO","SO","SO"],
-    "Rodrigo": ["SO","SO","FR","SO","SO","SO","SO","FR","SO","SO","SO","SO","FR","SO","SO","SO","FR","FS","FS","RE","SO","SO","SO","SO","FR","SO","SO","SO","FR","SO","SO"],
-    "Ronalldo": ["SO","SO","FR","SO","SO","FR","SO","SO","SO","SO","SO","FR","SO","SO","SO","SO","SO","FR","SO","SO","SO","SO","SO","FR","FS","FS","RE","SO","SO","FR","SO"],
-    "Thales": ["SO","SO","SO","FR","SO","SO","SO","SO","SO","FR","SO","SO","SO","SO","FR","SO","SO","SO","SO","FR","SO","SO","SO","FR","FS","FS","RE","SO","SO","SO","FR"],
-    "Serafim": ["SO","FR","SO","SO","SO","SO","FR","SO","SO","SO","SO","FR","SO","SO","SO","SO","FR","FS","FS","RE","SO","SO","SO","SO","FR","SO","SO","SO","FR","SO","SO"]
+    "Adelio": [
+        "SO","SO","SO","SO","FR","SO","SO","SO","SO","FR",
+        "SO","SO","SO","FR","SO","SO","FR","FS","FS","RE",
+        "SO","SO","SO","SO","SO","FR","SO","SO","SO","FR","SO"
+    ],
+    "Otto": [
+        "SO","SO","FR","FS","FS","FE","FE","FE","FE","FE",
+        "FE","FE","FE","FE","FE","FE","FE","FE","FE","FE",
+        "RE","SO","SO","SO","SO","SO","FR","SO","SO","SO","SO"
+    ],
+    "Andre": [
+        "SO","FR","SO","FR","SO","SO","SO","SO","FR","SO",
+        "SO","SO","SO","FR","SO","SO","SO","SO","FR","SO",
+        "SO","SO","SO","FR","FS","FS","RE","SO","FR","SO","SO"
+    ],
+    "Cleiton": [
+        "SO","SO","SO","FR","SO","SO","SO","FR","SO","FR",
+        "FS","FS","RE","SO","SO","SO","SO","FR","SO","SO",
+        "SO","FR","SO","SO","SO","FR","SO","SO","SO","SO","SO"
+    ],
+    "Cleverson": [
+        "SO","SO","SO","SO","FR","SO","SO","SO","FR","SO",
+        "SO","SO","FR","SO","SO","SO","SO","SO","FR","SO",
+        "SO","SO","SO","FR","FS","FS","RE","SO","SO","FR","SO"
+    ],
+    "Danielle Pereira": [
+        "SO","SO","SO","FR","SO","SO","SO","FR","SO","SO",
+        "SO","SO","FR","SO","SO","SO","FR","FS","FS","RE",
+        "SO","SO","FR","SO","SO","SO","FR","SO","SO","SO","SO"
+    ],
+    "Edson": [
+        "SO","SO","FR","FS","FS","RE","SO","SO","SO","SO",
+        "FR","SO","SO","SO","SO","FR","SO","SO","SO","SO",
+        "FR","SO","SO","SO","FR","SO","SO","SO","FR","SO","SO"
+    ],
+    "Fausto": [
+        "SO","SO","FR","FS","FS","RE","SO","SO","SO","FR",
+        "SO","SO","SO","SO","FR","SO","SO","SO","SO","FR",
+        "SO","SO","SO","SO","FR","SO","SO","SO","FR","SO","SO"
+    ],
+    "Costa": [
+        "SO","SO","FR","FS","FS","RE","SO","SO","SO","SO",
+        "FR","SO","SO","FR","SO","SO","SO","SO","FR","SO",
+        "SO","SO","FR","SO","SO","SO","SO","FR","SO","SO","SO"
+    ],
+    "Frank": [
+        "SO","SO","FR","FS","FS","FE","FE","FE","FE","FE",
+        "FE","FE","FE","FE","FE","FE","FE","FE","FE","FE",
+        "RE","SO","SO","SO","SO","SO","FR","SO","SO","SO","SO"
+    ],
+    "Gabriel": [
+        "SO","SO","SO","SO","FR","SO","SO","SO","SO","FR",
+        "FS","FS","RE","SO","SO","SO","FR","SO","SO","SO",
+        "FR","SO","SO","SO","FR","SO","SO","SO","FR","SO","SO"
+    ],
+    "Hazafe": [
+        "FR","SO","SO","SO","FR","SO","SO","SO","SO","FR",
+        "FS","FS","RE","SO","SO","SO","SO","SO","FR","SO",
+        "SO","SO","SO","FR","SO","SO","SO","FR","SO","SO","SO"
+    ],
+    "Igorh": [
+        "SO","SO","FR","SO","SO","SO","SO","SO","SO","FR",
+        "FS","FS","FE","FE","FE","FE","FE","FE","FE","FE",
+        "FE","FE","FE","FE","FE","FE","FE","RE","SO","SO","SO"
+    ],
+    "Amarildo": [
+        "SO","FR","SO","FR","SO","SO","SO","FR","SO","FR",
+        "SO","SO","FR","SO","SO","SO","FR","FS","FS","RE",
+        "SO","SO","SO","SO","SO","FR","SO","SO","SO","SO","SO"
+    ],
+    "Joao": [
+        "SO","SO","FR","FS","FS","RE","SO","SO","SO","FR",
+        "SO","SO","SO","SO","FR","SO","SO","SO","FR","SO",
+        "SO","SO","SO","FR","SO","SO","SO","SO","FR","SO","SO"
+    ],
+    "Dayvid": [
+        "SO","SO","FR","FS","FS","RE","SO","SO","SO","FR",
+        "SO","SO","SO","FR","SO","SO","SO","SO","FR","SO",
+        "SO","SO","FR","SO","SO","SO","SO","FR","SO","SO","SO"
+    ],
+    "Leandro": [
+        "SO","SO","FR","FS","FS","RE","SO","SO","SO","SO",
+        "FR","SO","SO","SO","SO","FR","SO","SO","SO","FR",
+        "SO","SO","SO","FR","SO","SO","SO","SO","FR","SO","SO"
+    ],
+    "Lindomar": [
+        "SO","FR","SO","SO","SO","FR","SO","SO","SO","FR",
+        "FS","FS","RE","SO","SO","SO","SO","FR","SO","SO",
+        "SO","SO","FR","SO","SO","SO","FR","SO","SO","SO","SO"
+    ],
+    "Lucas": [
+        "FR","SO","SO","SO","SO","SO","FR","SO","SO","SO",
+        "SO","SO","FR","SO","SO","SO","SO","SO","FR","SO",
+        "SO","SO","SO","FR","FS","FS","RE","SO","SO","SO","FR"
+    ],
+    "Luiz": [
+        "SO","SO","FR","SO","SO","SO","SO","FR","SO","SO",
+        "SO","FR","SO","SO","SO","SO","SO","FR","SO","SO",
+        "SO","SO","SO","FR","FS","FS","RE","SO","SO","SO","FR"
+    ],
+    "Matias": [
+        "SO","FR","SO","SO","SO","SO","FR","SO","SO","SO",
+        "SO","FR","SO","SO","SO","SO","SO","FR","SO","SO",
+        "SO","SO","SO","FR","FS","FS","FR","RE","SO","SO","SO"
+    ],
+    "Milton": [
+        "SO","SO","SO","SO","FR","SO","SO","SO","SO","FR",
+        "SO","SO","SO","FR","SO","SO","FR","FS","FS","RE",
+        "SO","SO","SO","FR","SO","SO","SO","SO","FR","SO","SO"
+    ],
+    "Andrade": [
+        "SO","SO","SO","FR","SO","SO","SO","FR","SO","SO",
+        "SO","FR","SO","SO","SO","SO","FR","FS","FS","RE",
+        "SO","SO","SO","SO","FR","SO","SO","SO","SO","FR","SO"
+    ],
+    "Pascoal": [
+        "SO","SO","SO","FR","SO","SO","SO","FR","SO","SO",
+        "SO","SO","FR","SO","SO","SO","SO","FR","SO","SO",
+        "SO","SO","SO","FR","FS","FS","RE","SO","SO","FR","SO"
+    ],
+    "Paulo": [
+        "FE","FE","FE","FE","FE","FE","FE","FE","FE","FE",
+        "FE","FE","FE","FE","FE","FE","FE","FE","FE","FE",
+        "FE","FE","FE","FE","FE","FE","FE","FE","FE","FE","RE"
+    ],
+    "Perisson": [
+        "FE","FE","FE","FE","FE","FE","FE","FE","FE","FR",
+        "FS","FS","RE","SO","SO","SO","FR","SO","SO","SO",
+        "FR","SO","SO","FR","SO","SO","FR","SO","SO","SO","FR"
+    ],
+    "Renan": [
+        "SO","SO","SO","FR","SO","SO","SO","SO","FR","SO",
+        "SO","SO","FR","SO","SO","SO","FR","FS","FS","RE",
+        "SO","SO","SO","SO","FR","SO","SO","SO","SO","FR","SO"
+    ],
+    "Roberto": [
+        "SO","SO","SO","SO","FR","SO","SO","SO","SO","SO",
+        "FR","SO","SO","SO","SO","SO","FR","FS","FS","RE",
+        "SO","SO","FR","SO","SO","SO","SO","FR","SO","SO","FR"
+    ],
+    "Ronie": [
+        "SO","FR","SO","SO","SO","SO","FR","SO","SO","SO",
+        "SO","SO","FR","SO","SO","SO","SO","SO","FR","SO",
+        "SO","SO","SO","FR","FS","FS","RE","SO","SO","FR","SO"
+    ],
+    "Rui": [
+        "SO","SO","FR","FS","FS","RE","SO","SO","SO","SO",
+        "FR","SO","SO","SO","SO","SO","FR","SO","SO","SO",
+        "SO","FR","SO","SO","SO","FR","SO","SO","FR","SO","SO"
+    ],
+    "Sergio": [
+        "SO","SO","FR","SO","SO","SO","SO","SO","SO","FR",
+        "FS","FS","FE","FE","FE","FE","FE","FE","FE","FE",
+        "FE","FE","FE","FE","FE","FE","FE","RE","SO","SO","SO"
+    ],
+    "Victor": [
+        "SO","SO","SO","FR","SO","SO","SO","FR","SO","SO",
+        "SO","SO","FR","SO","SO","SO","FR","FS","FS","RE",
+        "SO","SO","SO","FR","SO","SO","SO","SO","FR","SO","SO"
+    ],
+    "Bento": [
+        "SO","FR","SO","SO","SO","SO","FR","SO","SO","SO",
+        "SO","FR","SO","SO","SO","SO","FR","FS","FS","RE",
+        "SO","SO","SO","SO","FR","SO","SO","SO","SO","FR","SO"
+    ],
+    "Wellber": [
+        "SO","SO","FR","SO","SO","FR","SO","SO","SO","FR",
+        "FS","FS","RE","SO","SO","FR","SO","SO","SO","SO",
+        "FR","SO","SO","SO","SO","FR","SO","SO","SO","SO","SO"
+    ],
+    "Yago": [
+        "SO","SO","FR","FS","FS","FE","FE","FE","FE","FE",
+        "FE","FE","FE","FE","FE","FE","FE","FE","FE","FE",
+        "RE","SO","SO","SO","SO","SO","FR","SO","SO","SO","SO"
+    ],
+    "Cauê": [
+        "SO","SO","FR","FS","FS","RE","SO","SO","SO","SO",
+        "FR","SO","SO","SO","FR","SO","SO","SO","SO","FR",
+        "SO","SO","SO","SO","FR","SO","SO","SO","FR","SO","SO"
+    ],
+    "Daniela": [
+        "SO","SO","SO","SO","FR","SO","SO","SO","SO","FR",
+        "FS","FS","RE","SO","SO","SO","FR","SO","SO","SO",
+        "FR","SO","SO","FR","SO","SO","SO","FR","SO","SO","SO"
+    ],
+    "Ernesto": [
+        "SO","SO","FR","SO","SO","SO","FR","SO","SO","FR",
+        "FS","FS","RE","SO","SO","SO","SO","FR","SO","SO",
+        "SO","SO","FR","SO","SO","SO","SO","SO","FR","SO","SO"
+    ],
+    "Ruben": [
+        "FR","SO","SO","SO","FR","SO","SO","SO","SO","FR",
+        "FS","FS","RE","SO","SO","FR","SO","SO","SO","SO",
+        "FR","SO","SO","SO","SO","FR","SO","SO","SO","SO","SO"
+    ],
+    "Rodrigo": [
+        "SO","SO","FR","SO","SO","SO","SO","FR","SO","SO",
+        "SO","SO","FR","SO","SO","SO","FR","FS","FS","RE",
+        "SO","SO","SO","SO","FR","SO","SO","SO","FR","SO","SO"
+    ],
+    "Ronalldo": [
+        "SO","SO","FR","SO","SO","FR","SO","SO","SO","SO",
+        "SO","FR","SO","SO","SO","SO","SO","FR","SO","SO",
+        "SO","SO","SO","FR","FS","FS","RE","SO","SO","FR","SO"
+    ],
+    "Thales": [
+        "SO","SO","SO","FR","SO","SO","SO","SO","SO","FR",
+        "SO","SO","SO","SO","FR","SO","SO","SO","SO","FR",
+        "SO","SO","SO","FR","FS","FS","RE","SO","SO","SO","FR"
+    ],
+    "Serafim": [
+        "SO","FR","SO","SO","SO","SO","FR","SO","SO","SO",
+        "SO","FR","SO","SO","SO","SO","FR","FS","FS","RE",
+        "SO","SO","SO","SO","FR","SO","SO","SO","FR","SO","SO"
+    ],
+    "Tiago": [
+        "SO","SO","SO","SO","SO","SO","SO","SO","SO","SO",
+        "SO","SO","SO","SO","SO","SO","SO","SO","SO","SO",
+        "SO","SO","SO","SO","SO","SO","SO","SO","SO","SO","SO"
+    ],
+    "Felipe": [
+        "SO","SO","FR","FS","FS","RE","SO","SO","SO","SO",
+        "SO","SO","FR","FS","FS","RE","SO","SO","SO","SO",
+        "SO","SO","SO","SO","FR","FS","FS","RE","SO","SO","SO"
+    ]
 };
 
 // ===== GRUPOS =====
@@ -422,7 +611,7 @@ function getGrupo(nome) {
 
 // ===== STATUS EDITÁVEIS =====
 const STATUS_BLOQUEADOS = ["DM","CM","EA","FE","TR","TN","CQ"];
-const STATUS_EDITAVEL_LONGPRESS = ["FS","RE","FR"]; // FR também entra
+const STATUS_EDITAVEL_LONGPRESS = ["FS","RE","FR"];
 
 function isStatusBloqueado(status) { return STATUS_BLOQUEADOS.includes(status); }
 
@@ -432,6 +621,7 @@ let diaEditandoIndex = null;
 let diaReferencia = null;
 let password = "";
 
+// ===== FUNÇÕES AUXILIARES =====
 function diasNoMes(mes) {
     const m = mes.toLowerCase();
     if (m === "fevereiro") return 28;
@@ -851,7 +1041,7 @@ async function carregarDoBackend() {
                 row.appendChild(nomeCell);
                 let total = 0;
 
-                const nomeNorm = normalizarNome(p.name); // normaliza para acessar a escala
+                const nomeNorm = normalizarNome(p.name);
 
                 for (let i = 0; i < DIAS; i++) {
                     const td = document.createElement('td');
@@ -978,7 +1168,7 @@ async function salvarNoBackend() {
         const nome = getNomeFromRow(row);
         logs[nome] = {};
         row.querySelectorAll('.input-hora').forEach((inp, i) => {
-            if (nome === "Daniela" && i === 1) return; // ignora dia 2 da Daniela
+            if (nome === "Daniela" && i === 1) return;
             const v = parseHora(inp.value);
             if (v > 0) logs[nome][i+1] = v;
         });
