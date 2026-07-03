@@ -94,17 +94,14 @@ def obtener_escala_dinamica(pilot_obj, month, year):
 # ROTAS
 # ============================
 
-# Landing page (estática)
 @app.route("/")
 def landing():
     return app.send_static_file('index.html')
 
-# Planilha
 @app.route("/planilha")
 def planilha():
     return render_template("planilha.html")
 
-# API de login
 @app.route("/api/login", methods=["POST"])
 def login():
     data = request.get_json()
@@ -112,7 +109,6 @@ def login():
         return jsonify({"success": True})
     return jsonify({"success": False}), 401
 
-# API de dados (GET com parâmetros month/year)
 @app.route("/api/data", methods=["GET"])
 def get_data():
     month = request.args.get("month", default=datetime.now().month, type=int)
@@ -129,14 +125,21 @@ def get_data():
         result["logs"][log.pilot.name][log.day] = log.hours
     return jsonify(result)
 
-# API de salvamento (POST com month/year no corpo)
 @app.route("/api/data", methods=["POST"])
 def save_data():
     data = request.get_json()
     if data.get("password") not in [EDIT_PASSWORD, EDIT_PASSWORD_2]:
         return jsonify({"success": False}), 401
-    month = data.get("month", datetime.now().month)
-    year = data.get("year", datetime.now().year)
+    
+    month = data.get("month")
+    year = data.get("year")
+    
+    if not month or not year:
+        return jsonify({"success": False, "erro": "Mês e ano são obrigatórios"}), 400
+        
+    month = int(month)
+    year = int(year)
+
     for pilot_name, days in data.get("logs", {}).items():
         pilot = Pilot.query.filter_by(name=pilot_name).first()
         if not pilot:
@@ -158,12 +161,14 @@ def save_data():
     db.session.commit()
     return jsonify({"success": True})
 
-# API de disponíveis
 @app.route("/api/available_commanders/<int:day_index>", methods=["GET"])
 def get_available_commanders(day_index):
     pilotos_com_horas = {"CESSNA 206/210": [], "CARAVAN": [], "COPILOTO": []}
     pilots = Pilot.query.all()
-    month, year = datetime.now().month, datetime.now().year
+    
+    month = request.args.get("month", default=datetime.now().month, type=int)
+    year = request.args.get("year", default=datetime.now().year, type=int)
+    
     dia_solicitado = day_index + 1
     for pilot in pilots:
         escala = obtener_escala_dinamica(pilot, month, year)
@@ -190,20 +195,25 @@ def get_available_commanders(day_index):
         available[grupo] = sorted(lista_pilotos, key=lambda x: x["horas_totais"], reverse=True)
     return jsonify(available)
 
-# API de atualização de status (toque longo)
 @app.route("/api/update_status", methods=["POST"])
 def update_status():
     data = request.get_json()
     pilot_name = data.get("pilot")
     day = data.get("day")
     new_status = data.get("status")
-    month = data.get("month", datetime.now().month)
-    year = data.get("year", datetime.now().year)
-    if not pilot_name or day is None or not new_status:
+    month = data.get("month")
+    year = data.get("year")
+    
+    if not month or not year or not pilot_name or day is None or not new_status:
         return jsonify({"success": False, "erro": "Dados incompletos"}), 400
+        
+    month = int(month)
+    year = int(year)
+    
     pilot = Pilot.query.filter_by(name=pilot_name).first()
     if not pilot:
         return jsonify({"success": False, "erro": "Piloto não encontrado"}), 404
+        
     override = StatusOverride.query.filter_by(pilot_id=pilot.id, day=day, month=month, year=year).first()
     if override:
         override.status = new_status
@@ -213,62 +223,109 @@ def update_status():
     db.session.commit()
     return jsonify({"success": True})
 
-# Debug: reset banco
 @app.route("/api/debug/reset-banco")
 def reset_banco():
     db.drop_all()
     db.create_all()
     povoar_dados_iniciais()
-    return "Banco reiniciado e dados da planilha carregados com sucesso!"
+    return "Banco reiniciado e dados da frota atualizados com sucesso!"
 
 def povoar_dados_iniciais():
     grupos = {
-        "Andre": "CESSNA 206/210", "Andrade": "CESSNA 206/210", "Adelio": "CESSNA 206/210",
-        "Amarildo": "CESSNA 206/210", "Cleverson": "CESSNA 206/210", "Hazafe": "CESSNA 206/210",
-        "Dayvid": "CESSNA 206/210", "Edson": "CESSNA 206/210", "Frank": "CESSNA 206/210",
-        "Gabriel": "CESSNA 206/210", "Igorh": "CESSNA 206/210", "Leandro": "CESSNA 206/210",
-        "Luiz": "CESSNA 206/210", "Milton": "CESSNA 206/210", "Paulo": "CESSNA 206/210",
-        "Ronie": "CESSNA 206/210", "Sergio": "CESSNA 206/210", "Tarso": "CESSNA 206/210",
-        "Otto": "CESSNA 206/210", "Dany": "CESSNA 206/210", "Lucas": "CESSNA 206/210",
-        "Roberto": "CESSNA 206/210", "Renan": "CESSNA 206/210", "Wellber": "CESSNA 206/210",
-        "Bento": "CESSNA 206/210", "Costa": "CESSNA 206/210", "Vitor": "CESSNA 206/210",
-        "Mathias": "CESSNA 206/210",
-        "Cleiton": "CARAVAN", "Joao": "CARAVAN", "Pascoal": "CARAVAN",
-        "Lindomar": "CARAVAN", "Perisson": "CARAVAN", "Rui": "CARAVAN", "Yago": "CARAVAN",
-        "Cauê": "COPILOTO", "Felipe": "COPILOTO", "Ruben": "COPILOTO",
-        "Ernesto": "COPILOTO", "Daniela": "COPILOTO", "Thales": "COPILOTO",
-        "Serafim": "COPILOTO", "Ronaldo": "COPILOTO", "Rodrigo": "COPILOTO", "Tiago": "COPILOTO"
+        "Andre": "CESSNA 206/210", 
+        "Andrade": "CESSNA 206/210", 
+        "Luiz": "CESSNA 206/210",
+        "Adelio": "CESSNA 206/210",
+        "Amarildo": "CESSNA 206/210",
+        "Cleverson": "CESSNA 206/210", 
+        "Hazafe": "CESSNA 206/210",
+        "Dayvid": "CESSNA 206/210", 
+        "Edson": "CESSNA 206/210", 
+        "Frank": "CESSNA 206/210",
+        "Gabriel": "CESSNA 206/210", 
+        "Igorh": "CESSNA 206/210", 
+        "Leandro": "CESSNA 206/210",
+        "Milton": "CESSNA 206/210", 
+        "Paulo": "CESSNA 206/210",
+        "Ronie": "CESSNA 206/210", 
+        "Sergio": "CESSNA 206/210", 
+        "Tarso": "CESSNA 206/210",
+        "Otto": "CESSNA 206/210", 
+        "Dany": "CESSNA 206/210", 
+        "Lucas": "CESSNA 206/210",
+        "Roberto": "CESSNA 206/210", 
+        "Renan": "CESSNA 206/210", 
+        "Wellber": "CESSNA 206/210",
+        "Bento": "CESSNA 206/210",
+        "Costa": "CESSNA 206/210",
+        "Victor": "CESSNA 206/210",
+        "Matias": "CESSNA 206/210",
+        "Cleiton": "CARAVAN", 
+        "Joao": "CARAVAN", 
+        "Pascoal": "CARAVAN",
+        "Lindomar": "CARAVAN", 
+        "Perisson": "CARAVAN", 
+        "Rui": "CARAVAN", 
+        "Yago": "CARAVAN",
+        "Cauê": "COPILOTO", 
+        "Ruben": "COPILOTO",
+        "Ernesto": "COPILOTO", 
+        "Daniela": "COPILOTO", 
+        "Thales": "COPILOTO",
+        "Serafim": "COPILOTO",
+        "Ronalldo": "COPILOTO",
+        "Rodrigo": "COPILOTO"
     }
+    
     nomes_completos = {
-        "Adelio": "Adelio Costa Felinto", "Otto": "Albert Otto Azevedo",
-        "Andre": "Andre Luis Fernandes", "Cleiton": "Cleiton Taumaturgo",
-        "Cleverson": "Cleverson dos Santos", "Edson": "Edson Fonteles Portela",
-        "Frank": "Franker Wendell Dias", "Gabriel": "Gabriel de Oliveira",
-        "Costa": "Costa", "Hazafe": "Hazafe Pacheco de Alencar",
-        "Amarildo": "Joao Amarildo Reis", "Igorh": "Igorh Coutinho Martins",
+        "Adelio": "Adelio Costa Felinto", 
+        "Otto": "Albert Otto Azevedo",
+        "Andre": "Andre Luis Fernandes", 
+        "Cleiton": "Cleiton Taumaturgo",
+        "Cleverson": "Cleverson dos Santos", 
+        "Edson": "Edson Fonteles Portela",
+        "Frank": "Franker Wendell Dias", 
+        "Gabriel": "Gabriel de Oliveira",
+        "Costa": "Felipe Pereira Costa de Lima",
+        "Hazafe": "Hazafe Pacheco de Alencar",
+        "Amarildo": "João Amarildo Reis dos Santos", 
+        "Igorh": "Igorh Coutinho Martins",
         "Joao": "Joao Marcus Oliveira",
         "Dayvid": "Jose Deyvid Monteiro",
-        "Leandro": "Leandro Magalhães", "Lindomar": "Lindomar Bras Mota",
-        "Lucas": "Lucas Alves Pereira", "Luiz": "Luiz Andrade",
-        "Mathias": "Mathias Pires de Campos",
+        "Leandro": "Leandro Magalhães", 
+        "Lindomar": "Lindomar Bras Mota",
+        "Lucas": "Lucas Alves Pereira", 
+        "Luiz": "Luiz Andrade de Souza",
+        "Matias": "Matias Pires de Campos Junior",
         "Milton": "Milton Braga de Souza",
-        "Pascoal": "Pascoal Brito de Araujo", "Paulo": "Paulo Andre Silva",
-        "Perisson": "Perisson Parmigiani", "Renan": "Renan da Silva Nascimento",
-        "Roberto": "Roberto Adolfo Boesing", "Ronie": "Ronie Welter",
-        "Rui": "Rui de Almeida Vasconcelos", "Sergio": "Sergio Carneiro Rodrigues",
-        "Tarso": "Tarso de Souza Cruz", "Vitor": "Vitor Augusto Fernandes",
-        "Bento": "Vitor da Costa Bento", "Wellber": "Wellber Nogueira Barros",
-        "Andrade": "Luiz Andrade de Souza", "Yago": "Yago Bezerra Correia",
-        "Cauê": "Caue Montanari", "Daniela": "Daniela Goncalves Fabricio",
-        "Ernesto": "Ernesto da Silva Kaster", "Ruben": "Francisco Rubenicio Souza",
-        "Rodrigo": "Rodrigo Silva Melo", "Ronaldo": "Ronaldo Rodrigues Parreao",
-        "Thales": "Thales Araujo Penna", "Serafim": "Tiago Carvalho Serafim",
-        "Tiago": "Tiago Pinto Quirino"
+        "Pascoal": "Pascoal Brito de Araujo", 
+        "Paulo": "Paulo Andre Silva",
+        "Perisson": "Perisson Parmigiani", 
+        "Renan": "Renan da Silva Nascimento",
+        "Roberto": "Roberto Adolfo Boesing", 
+        "Ronie": "Ronie Welter",
+        "Rui": "Rui de Almeida Vasconcelos", 
+        "Sergio": "Sergio Carneiro Rodrigues",
+        "Tarso": "Tarso de Souza Cruz", 
+        "Victor": "Victor Augusto Fernandes Monteiro da Silva",
+        "Bento": "Vitor da Costa Bento", 
+        "Wellber": "Wellber Nogueira Barros",
+        "Andrade": "Wilken Andrade de Paulo", 
+        "Yago": "Yago Bezerra Correia",
+        "Cauê": "Caue Montanari", 
+        "Daniela": "Daniela Goncalves Fabricio",
+        "Ernesto": "Ernesto da Silva Kaster", 
+        "Ruben": "Francisco Rubenicio Souza",
+        "Rodrigo": "Rodrigo Silva Melo", 
+        "Ronalldo": "Ronalldo Rodrigues Parreao Junior",
+        "Thales": "Thales Araujo Penna", 
+        "Serafim": "Tiago Carvalho Serafim"
     }
     for nome, group in grupos.items():
         piloto = Pilot(name=nome, full_name=nomes_completos.get(nome, nome), group=group)
         db.session.add(piloto)
     db.session.commit()
+    
     m_atual, y_atual = datetime.now().month, datetime.now().year
     dados_foto = {
         "Andrade": {1: 3.4, 2: 6.4, 3: 2.9, 5: 5.9, 6: 7.9, 7: 8.0, 9: 6.8},
@@ -293,8 +350,8 @@ def povoar_dados_iniciais():
         "Wellber": {1: 4.0, 3: 6.3, 4: 7.8, 5: 6.1, 7: 7.8},
         "Bento": {8: 6.2, 9: 6.8},
         "Costa": {1: 3.7, 2: 3.0, 5: 6.6, 6: 2.2, 8: 5.0},
-        "Vitor": {2: 7.2, 5: 6.6, 6: 6.2, 7: 8.0},
-        "Mathias": {3: 5.2, 4: 6.5, 8: 6.2},
+        "Victor": {2: 7.2, 5: 6.6, 6: 6.2, 7: 8.0},
+        "Matias": {3: 5.2, 4: 6.5, 8: 6.2},
         "Cleiton": {2: 4.6, 3: 6.2},
         "Joao": {2: 3.0, 5: 6.3, 7: 6.6},
         "Pascoal": {6: 2.8},
@@ -307,9 +364,8 @@ def povoar_dados_iniciais():
         "Daniela": {6: 2.9, 7: 7.9},
         "Thales": {5: 7.2, 6: 2.8},
         "Serafim": {6: 6.1, 7: 6.6, 8: 2.8},
-        "Ronaldo": {7: 7.3},
-        "Rodrigo": {3: 6.2, 5: 6.3},
-        "Tiago": {3: 7.7}
+        "Ronalldo": {7: 7.3},
+        "Rodrigo": {3: 6.2, 5: 6.3}
     }
     for p_name, dias_dados in dados_foto.items():
         p_obj = Pilot.query.filter_by(name=p_name).first()
@@ -318,11 +374,9 @@ def povoar_dados_iniciais():
                 db.session.add(FlightLog(pilot_id=p_obj.id, day=d_num, month=m_atual, year=y_atual, hours=float(h_val)))
     db.session.commit()
 
-# Integração com módulo de programação
 from programacao import register_routes
 register_routes(app, db)
 
-# Inicialização do banco
 with app.app_context():
     db.create_all()
     if Pilot.query.count() == 0:
