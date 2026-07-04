@@ -334,19 +334,17 @@ function obterMesDoStorage() {
 }
 
 // ===== MAPEAMENTO DE NOMES (NORMALIZAÇÃO) =====
-// Mapeia nomes vindos do backend para as chaves usadas na ESCALA_MENSAL
 const NOME_MAP = {
     "Albert Otto Azevedo": "Otto",
     "Vitor da Costa Bento": "Bento",
     "Andrade": "Andrade",
     "Ronaldo": "Ronalldo",
-    "Dany": "Danielle Pereira",         // backend usa "Dany", escala usa "Danielle Pereira"
-    "Victor": "Victor",                 // já está correto
-    "Vitor": "Victor",                  // normaliza "Vitor" para "Victor"
-    "Mathias": "Matias",                // normaliza "Mathias" para "Matias"
-    "Matias": "Matias",                 // já está correto
-    "Felipe": "Felipe",                 // já incluso
-    "Tiago": "Tiago",                   // já incluso
+    "Dany": "Danielle Pereira",
+    "Victor": "Victor",
+    "Vitor": "Victor",
+    "Mathias": "Matias",
+    "Matias": "Matias",
+    // REMOVIDOS: Felipe e Tiago (não estão mais na escala)
     "Cleiton": "Cleiton",
     "Joao": "Joao",
     "Pascoal": "Pascoal",
@@ -368,7 +366,7 @@ function normalizarNome(nome) {
     return NOME_MAP[nome] || nome;
 }
 
-// ===== ESCALA MENSAL – JULHO 2026 (FORNECIDA PELO USUÁRIO) =====
+// ===== ESCALA MENSAL – JULHO 2026 (REMOVIDOS FELIPE E TIAGO) =====
 const ESCALA_MENSAL = {
     "Adelio": [
         "SO","SO","SO","SO","FR","SO","SO","SO","SO","FR",
@@ -584,17 +582,8 @@ const ESCALA_MENSAL = {
         "SO","FR","SO","SO","SO","SO","FR","SO","SO","SO",
         "SO","FR","SO","SO","SO","SO","FR","FS","FS","RE",
         "SO","SO","SO","SO","FR","SO","SO","SO","FR","SO","SO"
-    ],
-    "Tiago": [
-        "SO","SO","SO","SO","SO","SO","SO","SO","SO","SO",
-        "SO","SO","SO","SO","SO","SO","SO","SO","SO","SO",
-        "SO","SO","SO","SO","SO","SO","SO","SO","SO","SO","SO"
-    ],
-    "Felipe": [
-        "SO","SO","FR","FS","FS","RE","SO","SO","SO","SO",
-        "SO","SO","FR","FS","FS","RE","SO","SO","SO","SO",
-        "SO","SO","SO","SO","FR","FS","FS","RE","SO","SO","SO"
     ]
+    // REMOVIDOS: Felipe e Tiago
 };
 
 // ===== GRUPOS =====
