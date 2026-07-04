@@ -37,6 +37,9 @@ CORES = {
     "CQ": "azul_medio"
 }
 
+# ===== PILOTOS A SEREM EXCLUÍDOS DA EXIBIÇÃO =====
+PILOTOS_EXCLUIDOS = ["Felipe", "Tiago"]
+
 class Pilot(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(80), unique=True, nullable=False)
@@ -113,7 +116,8 @@ def login():
 def get_data():
     month = request.args.get("month", default=datetime.now().month, type=int)
     year = request.args.get("year", default=datetime.now().year, type=int)
-    pilots = Pilot.query.all()
+    # Filtra os pilotos excluídos
+    pilots = Pilot.query.filter(Pilot.name.notin_(PILOTOS_EXCLUIDOS)).all()
     logs = FlightLog.query.filter_by(month=month, year=year).all()
     result = {
         "pilots": [{"name": p.name, "group": p.group, "full_name": p.full_name or p.name} for p in pilots],
@@ -164,7 +168,8 @@ def save_data():
 @app.route("/api/available_commanders/<int:day_index>", methods=["GET"])
 def get_available_commanders(day_index):
     pilotos_com_horas = {"CESSNA 206/210": [], "CARAVAN": [], "COPILOTO": []}
-    pilots = Pilot.query.all()
+    # Filtra os pilotos excluídos
+    pilots = Pilot.query.filter(Pilot.name.notin_(PILOTOS_EXCLUIDOS)).all()
     
     month = request.args.get("month", default=datetime.now().month, type=int)
     year = request.args.get("year", default=datetime.now().year, type=int)
@@ -185,7 +190,7 @@ def get_available_commanders(day_index):
             logs = FlightLog.query.filter_by(pilot_id=pilot.id, month=month, year=year).all()
             horas_acumuladas = sum(log.hours for log in logs if log.day <= dia_solicitado)
             pilotos_com_horas[pilot.group].append({
-                "name": pilot.full_name or pilot.name,
+                "name": pilot.name,  # <--- CORREÇÃO: agora envia o nome curto
                 "status": status,
                 "color": cor,
                 "horas_totais": horas_acumuladas
@@ -222,6 +227,22 @@ def update_status():
         db.session.add(override)
     db.session.commit()
     return jsonify({"success": True})
+
+# ===== ROTA PARA REMOVER DEFINITIVAMENTE OS PILOTOS EXCLUÍDOS =====
+@app.route("/api/remove_excluded_pilots", methods=["POST"])
+def remove_excluded_pilots():
+    data = request.get_json()
+    if data.get("password") not in [EDIT_PASSWORD, EDIT_PASSWORD_2]:
+        return jsonify({"success": False}), 401
+    
+    for nome in PILOTOS_EXCLUIDOS:
+        pilot = Pilot.query.filter_by(name=nome).first()
+        if pilot:
+            FlightLog.query.filter_by(pilot_id=pilot.id).delete()
+            StatusOverride.query.filter_by(pilot_id=pilot.id).delete()
+            db.session.delete(pilot)
+    db.session.commit()
+    return jsonify({"success": True, "removidos": PILOTOS_EXCLUIDOS})
 
 @app.route("/api/debug/reset-banco")
 def reset_banco():
@@ -274,7 +295,6 @@ def povoar_dados_iniciais():
         "Serafim": "COPILOTO",
         "Ronalldo": "COPILOTO",
         "Rodrigo": "COPILOTO"
-        # REMOVIDOS: Felipe e Tiago
     }
     
     nomes_completos = {
@@ -319,7 +339,6 @@ def povoar_dados_iniciais():
         "Ronalldo": "Ronalldo Rodrigues Parreao Junior",
         "Thales": "Thales Araujo Penna", 
         "Serafim": "Tiago Carvalho Serafim"
-        # REMOVIDOS: Felipe e Tiago
     }
     for nome, group in grupos.items():
         piloto = Pilot(name=nome, full_name=nomes_completos.get(nome, nome), group=group)
