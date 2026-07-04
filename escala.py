@@ -1,4 +1,4 @@
-k# escala.py - Dados da escala mensal (31 dias) - JULHO 2026
+# escala.py - Dados da escala mensal (31 dias) - JULHO 2026
 # Códigos: VO (vazio/disponível), CQ, RE, SO (disponíveis)
 # Indisponíveis: DM, CM, EA, FR, FS, FE, TR, TN
 # REMOVIDOS: Felipe e Tiago
