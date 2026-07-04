@@ -8,7 +8,7 @@ ESCALA_MENSAL = {
     # CESSNA 206/210 — PILOTOS EM COMANDO
     # =========================================================
     "Adelio": [
-        "SO","SO","SO","SO","FR","SO","SO","SO","SO","FR",
+        "FR","SO","SO","SO","FR","SO","SO","SO","SO","FR",
         "SO","SO","SO","FR","SO","SO","FR","FS","FS","RE",
         "SO","SO","SO","SO","SO","FR","SO","SO","SO","FR","SO"
     ],
@@ -28,7 +28,7 @@ ESCALA_MENSAL = {
         "SO","FR","SO","SO","SO","FR","SO","SO","SO","SO","SO"
     ],
     "Cleverson": [
-        "SO","SO","SO","SO","FR","SO","SO","SO","FR","SO",
+        "FR","SO","SO","SO","FR","SO","SO","SO","FR","SO",
         "SO","SO","FR","SO","SO","SO","SO","SO","FR","SO",
         "SO","SO","SO","FR","FS","FS","RE","SO","SO","FR","SO"
     ],
@@ -73,7 +73,7 @@ ESCALA_MENSAL = {
         "FE","FE","FE","FE","FE","FE","FE","RE","SO","SO","SO"
     ],
     "Amarildo": [
-        "SO","FR","SO","FR","SO","SO","SO","FR","SO","FR",
+        "SO","FR","SO","SO","SO","SO","SO","FR","SO","FR",
         "SO","SO","FR","SO","SO","SO","FR","FS","FS","RE",
         "SO","SO","SO","SO","SO","FR","SO","SO","SO","SO","SO"
     ],
