@@ -1,4 +1,4 @@
-# escala.py - Dados da escala mensal (31 dias) - JULHO 2026
+k# escala.py - Dados da escala mensal (31 dias) - JULHO 2026
 # Códigos: VO (vazio/disponível), CQ, RE, SO (disponíveis)
 # Indisponíveis: DM, CM, EA, FR, FS, FE, TR, TN
 # REMOVIDOS: Felipe e Tiago
@@ -18,7 +18,7 @@ ESCALA_MENSAL = {
         "RE","SO","SO","SO","SO","SO","FR","SO","SO","SO","SO"
     ],
     "Andre": [
-        "SO","FR","SO","FR","SO","SO","SO","SO","FR","SO",
+        "SO","FR","SO","SO","FR","SO","SO","SO","FR","SO",
         "SO","SO","SO","FR","SO","SO","SO","SO","FR","SO",
         "SO","SO","SO","FR","FS","FS","RE","SO","FR","SO","SO"
     ],
