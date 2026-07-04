@@ -118,7 +118,7 @@ ESCALA_MENSAL = {
         "SO","SO","SO","FR","SO","SO","SO","SO","FR","SO","SO"
     ],
     "Andrade": [
-        "SO","SO","SO","FR","SO","SO","SO","FR","SO","SO",
+        "SO","FR","SO","SO","SO","SO","SO","FR","SO","SO",
         "SO","FR","SO","SO","SO","SO","FR","FS","FS","RE",
         "SO","SO","SO","SO","FR","SO","SO","SO","SO","FR","SO"
     ],
