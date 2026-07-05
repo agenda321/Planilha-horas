@@ -13,7 +13,6 @@
     <link rel="apple-touch-icon" href="/icon-192.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        /* ===== CSS COMPLETO (IDÊNTICO AO ORIGINAL) ===== */
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body {
             margin: 0; min-height: 100vh;
@@ -344,7 +343,6 @@ const NOME_MAP = {
     "Vitor": "Victor",
     "Mathias": "Matias",
     "Matias": "Matias",
-    // REMOVIDOS: Felipe e Tiago (não estão mais na escala)
     "Cleiton": "Cleiton",
     "Joao": "Joao",
     "Pascoal": "Pascoal",
@@ -366,225 +364,12 @@ function normalizarNome(nome) {
     return NOME_MAP[nome] || nome;
 }
 
-// ===== ESCALA MENSAL – JULHO 2026 (REMOVIDOS FELIPE E TIAGO) =====
-const ESCALA_MENSAL = {
-    "Adelio": [
-        "FR","SO","SO","SO","FR","SO","SO","SO","SO","FR",
-        "SO","SO","SO","FR","SO","SO","FR","FS","FS","RE",
-        "SO","SO","SO","SO","SO","FR","SO","SO","SO","FR","SO"
-    ],
-    "Otto": [
-        "SO","SO","FR","FS","FS","FE","FE","FE","FE","FE",
-        "FE","FE","FE","FE","FE","FE","FE","FE","FE","FE",
-        "RE","SO","SO","SO","SO","SO","FR","SO","SO","SO","SO"
-    ],
-    "Andre": [
-        "SO","FR","SO","SO","FR","SO","SO","SO","FR","SO",
-        "SO","SO","SO","FR","SO","SO","SO","SO","FR","SO",
-        "SO","SO","SO","FR","FS","FS","RE","SO","FR","SO","SO"
-    ],
-    "Cleiton": [
-        "SO","SO","SO","FR","SO","SO","SO","FR","SO","FR",
-        "FS","FS","RE","SO","SO","SO","SO","FR","SO","SO",
-        "SO","FR","SO","SO","SO","FR","SO","SO","SO","SO","SO"
-    ],
-    "Cleverson": [
-        "FR","SO","SO","SO","FR","SO","SO","SO","FR","SO",
-        "SO","SO","FR","SO","SO","SO","SO","SO","FR","SO",
-        "SO","SO","SO","FR","FS","FS","RE","SO","SO","FR","SO"
-    ],
-    "Danielle Pereira": [
-        "SO","SO","SO","FR","SO","SO","SO","FR","SO","SO",
-        "SO","SO","FR","SO","SO","SO","FR","FS","FS","RE",
-        "SO","SO","FR","SO","SO","SO","FR","SO","SO","SO","SO"
-    ],
-    "Edson": [
-        "SO","SO","FR","FS","FS","RE","SO","SO","SO","SO",
-        "FR","SO","SO","SO","SO","FR","SO","SO","SO","SO",
-        "FR","SO","SO","SO","FR","SO","SO","SO","FR","SO","SO"
-    ],
-    "Fausto": [
-        "SO","SO","FR","FS","FS","RE","SO","SO","SO","FR",
-        "SO","SO","SO","SO","FR","SO","SO","SO","SO","FR",
-        "SO","SO","SO","SO","FR","SO","SO","SO","FR","SO","SO"
-    ],
-    "Costa": [
-        "SO","SO","FR","FS","FS","RE","SO","SO","SO","SO",
-        "FR","SO","SO","FR","SO","SO","SO","SO","FR","SO",
-        "SO","SO","FR","SO","SO","SO","SO","FR","SO","SO","SO"
-    ],
-    "Frank": [
-        "SO","SO","FR","FS","FS","FE","FE","FE","FE","FE",
-        "FE","FE","FE","FE","FE","FE","FE","FE","FE","FE",
-        "RE","SO","SO","SO","SO","SO","FR","SO","SO","SO","SO"
-    ],
-    "Gabriel": [
-        "SO","SO","SO","SO","FR","SO","SO","SO","SO","FR",
-        "FS","FS","RE","SO","SO","SO","FR","SO","SO","SO",
-        "FR","SO","SO","SO","FR","SO","SO","SO","FR","SO","SO"
-    ],
-    "Hazafe": [
-        "FR","SO","SO","SO","FR","SO","SO","SO","SO","FR",
-        "FS","FS","RE","SO","SO","SO","SO","SO","FR","SO",
-        "SO","SO","SO","FR","SO","SO","SO","FR","SO","SO","SO"
-    ],
-    "Igorh": [
-        "SO","SO","FR","SO","SO","SO","SO","SO","SO","FR",
-        "FS","FS","FE","FE","FE","FE","FE","FE","FE","FE",
-        "FE","FE","FE","FE","FE","FE","FE","RE","SO","SO","SO"
-    ],
-    "Amarildo": [
-        "SO","FR","SO","SO","SO","SO","SO","FR","SO","FR",
-        "SO","SO","FR","SO","SO","SO","FR","FS","FS","RE",
-        "SO","SO","SO","SO","SO","FR","SO","SO","SO","SO","SO"
-    ],
-    "Joao": [
-        "SO","SO","FR","FS","FS","RE","SO","SO","SO","FR",
-        "SO","SO","SO","SO","FR","SO","SO","SO","FR","SO",
-        "SO","SO","SO","FR","SO","SO","SO","SO","FR","SO","SO"
-    ],
-    "Dayvid": [
-        "SO","SO","FR","FS","FS","RE","SO","SO","SO","FR",
-        "SO","SO","SO","FR","SO","SO","SO","SO","FR","SO",
-        "SO","SO","FR","SO","SO","SO","SO","FR","SO","SO","SO"
-    ],
-    "Leandro": [
-        "SO","SO","FR","FS","FS","RE","SO","SO","SO","SO",
-        "FR","SO","SO","SO","SO","FR","SO","SO","SO","FR",
-        "SO","SO","SO","FR","SO","SO","SO","SO","FR","SO","SO"
-    ],
-    "Lindomar": [
-        "SO","FR","SO","SO","SO","FR","SO","SO","SO","FR",
-        "FS","FS","RE","SO","SO","SO","SO","FR","SO","SO",
-        "SO","SO","FR","SO","SO","SO","FR","SO","SO","SO","SO"
-    ],
-    "Lucas": [
-        "FR","SO","SO","SO","SO","SO","FR","SO","SO","SO",
-        "SO","SO","FR","SO","SO","SO","SO","SO","FR","SO",
-        "SO","SO","SO","FR","FS","FS","RE","SO","SO","SO","FR"
-    ],
-    "Luiz": [
-        "SO","SO","FR","SO","SO","SO","SO","FR","SO","SO",
-        "SO","FR","SO","SO","SO","SO","SO","FR","SO","SO",
-        "SO","SO","SO","FR","FS","FS","RE","SO","SO","SO","FR"
-    ],
-    "Matias": [
-        "SO","FR","SO","SO","SO","SO","FR","SO","SO","SO",
-        "SO","FR","SO","SO","SO","SO","SO","FR","SO","SO",
-        "SO","SO","SO","FR","FS","FS","FR","RE","SO","SO","SO"
-    ],
-    "Milton": [
-        "SO","SO","SO","SO","FR","SO","SO","SO","SO","FR",
-        "SO","SO","SO","FR","SO","SO","FR","FS","FS","RE",
-        "SO","SO","SO","FR","SO","SO","SO","SO","FR","SO","SO"
-    ],
-    "Andrade": [
-        "SO","FR","SO","SO","SO","SO","SO","FR","SO","SO",
-        "SO","FR","SO","SO","SO","SO","FR","FS","FS","RE",
-        "SO","SO","SO","SO","FR","SO","SO","SO","SO","FR","SO"
-    ],
-    "Pascoal": [
-        "SO","SO","SO","FR","SO","SO","SO","FR","SO","SO",
-        "SO","SO","FR","SO","SO","SO","SO","FR","SO","SO",
-        "SO","SO","SO","FR","FS","FS","RE","SO","SO","FR","SO"
-    ],
-    "Paulo": [
-        "FE","FE","FE","FE","FE","FE","FE","FE","FE","FE",
-        "FE","FE","FE","FE","FE","FE","FE","FE","FE","FE",
-        "FE","FE","FE","FE","FE","FE","FE","FE","FE","FE","RE"
-    ],
-    "Perisson": [
-        "FE","FE","FE","FE","FE","FE","FE","FE","FE","FR",
-        "FS","FS","RE","SO","SO","SO","FR","SO","SO","SO",
-        "FR","SO","SO","FR","SO","SO","FR","SO","SO","SO","FR"
-    ],
-    "Renan": [
-        "SO","SO","SO","FR","SO","SO","SO","SO","FR","SO",
-        "SO","SO","FR","SO","SO","SO","FR","FS","FS","RE",
-        "SO","SO","SO","SO","FR","SO","SO","SO","SO","FR","SO"
-    ],
-    "Roberto": [
-        "SO","SO","SO","SO","FR","SO","SO","SO","SO","SO",
-        "FR","SO","SO","SO","SO","SO","FR","FS","FS","RE",
-        "SO","SO","FR","SO","SO","SO","SO","FR","SO","SO","FR"
-    ],
-    "Ronie": [
-        "SO","FR","SO","SO","SO","SO","FR","SO","SO","SO",
-        "SO","SO","FR","SO","SO","SO","SO","SO","FR","SO",
-        "SO","SO","SO","FR","FS","FS","RE","SO","SO","FR","SO"
-    ],
-    "Rui": [
-        "SO","SO","FR","FS","FS","RE","SO","SO","SO","SO",
-        "FR","SO","SO","SO","SO","SO","FR","SO","SO","SO",
-        "SO","FR","SO","SO","SO","FR","SO","SO","FR","SO","SO"
-    ],
-    "Sergio": [
-        "SO","SO","FR","SO","FR","SO","SO","SO","SO","FR",
-        "FS","FS","FE","FE","FE","FE","FE","FE","FE","FE",
-        "FE","FE","FE","FE","FE","FE","FE","RE","SO","SO","SO"
-    ],
-    "Victor": [
-        "SO","SO","SO","FR","SO","SO","SO","FR","SO","SO",
-        "SO","SO","FR","SO","SO","SO","FR","FS","FS","RE",
-        "SO","SO","SO","FR","SO","SO","SO","SO","FR","SO","SO"
-    ],
-    "Bento": [
-        "SO","FR","SO","SO","SO","SO","FR","SO","SO","SO",
-        "SO","FR","SO","SO","SO","SO","FR","FS","FS","RE",
-        "SO","SO","SO","SO","FR","SO","SO","SO","SO","FR","SO"
-    ],
-    "Wellber": [
-        "SO","SO","FR","SO","SO","FR","SO","SO","SO","FR",
-        "FS","FS","RE","SO","SO","FR","SO","SO","SO","SO",
-        "FR","SO","SO","SO","SO","FR","SO","SO","SO","SO","SO"
-    ],
-    "Yago": [
-        "SO","SO","FR","FS","FS","FE","FE","FE","FE","FE",
-        "FE","FE","FE","FE","FE","FE","FE","FE","FE","FE",
-        "RE","SO","SO","SO","SO","SO","FR","SO","SO","SO","SO"
-    ],
-    "Cauê": [
-        "SO","SO","FR","FS","FS","RE","SO","SO","SO","SO",
-        "FR","SO","SO","SO","FR","SO","SO","SO","SO","FR",
-        "SO","SO","SO","SO","FR","SO","SO","SO","FR","SO","SO"
-    ],
-    "Daniela": [
-        "SO","SO","SO","SO","FR","SO","SO","SO","SO","FR",
-        "FS","FS","RE","SO","SO","SO","FR","SO","SO","SO",
-        "FR","SO","SO","FR","SO","SO","SO","FR","SO","SO","SO"
-    ],
-    "Ernesto": [
-        "SO","SO","FR","SO","SO","SO","FR","SO","SO","FR",
-        "FS","FS","RE","SO","SO","SO","SO","FR","SO","SO",
-        "SO","SO","FR","SO","SO","SO","SO","SO","FR","SO","SO"
-    ],
-    "Ruben": [
-        "FR","SO","SO","SO","FR","SO","SO","SO","SO","FR",
-        "FS","FS","RE","SO","SO","FR","SO","SO","SO","SO",
-        "FR","SO","SO","SO","SO","FR","SO","SO","SO","SO","SO"
-    ],
-    "Rodrigo": [
-        "SO","SO","FR","SO","SO","SO","SO","FR","SO","SO",
-        "SO","SO","FR","SO","SO","SO","FR","FS","FS","RE",
-        "SO","SO","SO","SO","FR","SO","SO","SO","FR","SO","SO"
-    ],
-    "Ronalldo": [
-        "SO","SO","FR","SO","SO","FR","SO","SO","SO","SO",
-        "SO","FR","SO","SO","SO","SO","SO","FR","SO","SO",
-        "SO","SO","SO","FR","FS","FS","RE","SO","SO","FR","SO"
-    ],
-    "Thales": [
-        "SO","SO","SO","FR","SO","SO","SO","SO","SO","FR",
-        "SO","SO","SO","SO","FR","SO","SO","SO","SO","FR",
-        "SO","SO","SO","FR","FS","FS","RE","SO","SO","SO","FR"
-    ],
-    "Serafim": [
-        "SO","FR","SO","SO","SO","SO","FR","SO","SO","SO",
-        "SO","FR","SO","SO","SO","SO","FR","FS","FS","RE",
-        "SO","SO","SO","SO","FR","SO","SO","SO","FR","SO","SO"
-    ]
-    // REMOVIDOS: Felipe e Tiago
-};
+// ===== ESCALA MENSAL =====
+// FONTE ÚNICA DA VERDADE: escala.py (backend).
+// Este objeto começa vazio e é preenchido a cada carregamento em
+// carregarDoBackend(), a partir do campo "escala" retornado por /api/data.
+// NÃO adicionar dados de escala aqui — editar sempre em escala.py.
+let ESCALA_MENSAL = {};
 
 // ===== GRUPOS =====
 const GRUPOS_PILOTO = {
@@ -842,10 +627,14 @@ function habilitarEdicaoStatus(inp, row, diaIndex) {
 
 async function salvarStatusNoBackend(nome, dia, novoStatus) {
     try {
+        const mesInput = document.getElementById('campoMes');
+        const mesNome = mesInput.value.trim() || "Julho";
+        const month = getMesNumero(mesNome);
+        const year = new Date().getFullYear();
         await fetch('/api/update_status', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ pilot: nome, day: dia, status: novoStatus })
+            body: JSON.stringify({ pilot: nome, day: dia, status: novoStatus, month, year })
         });
     } catch(e) { showToast('❌ Erro ao salvar status'); }
 }
@@ -922,7 +711,11 @@ async function mostrarDisponiveis(diaRef) {
     const diaSeguinte = diaRef + 1;
     if (diaSeguinte >= DIAS) { showToast("⚠️ Último dia do mês."); return; }
     try {
-        const res = await fetch(`/api/available_commanders/${diaSeguinte}`);
+        const mesInput = document.getElementById('campoMes');
+        const mesNome = mesInput.value.trim() || "Julho";
+        const month = getMesNumero(mesNome);
+        const year = new Date().getFullYear();
+        const res = await fetch(`/api/available_commanders/${diaSeguinte}?month=${month}&year=${year}`);
         const data = await res.json();
         let html = `<div class="card-detalhe"><h2 style="text-align:center;">👥 Disponíveis — Dia ${String(diaSeguinte+1).padStart(2,'00')}</h2>`;
         for (let grupo in data) {
@@ -963,7 +756,7 @@ function mostrarMenuDia(diaIndex, btn) {
             <div class="menu-dia-opcoes">
                 ${isEditing ? `<button class="btn-menu-opcao" id="menuEditar">✏️ Editar horas</button>` : ''}
                 <button class="btn-menu-opcao" id="menuComparativo">📊 Ranking de horas</button>
-                <button class="btn-menu-opcao" id="menuDisponiveis">👥 Disponíveis dia ${String(diaIndex+2).padStart(2,'0')}</button>
+                <button class="btn-menu-opcao" id="menuDisponiveis">👥 Disponíveis dia ${String(diaIndex+2).padStart(2,'00')}</button>
                 <button class="btn-menu-cancelar" id="menuCancelar">Cancelar</button>
             </div>
         </div>`;
@@ -1000,6 +793,8 @@ async function carregarDoBackend() {
         const data = await res.json();
         const pilots = data.pilots;
         const logs = data.logs;
+
+        ESCALA_MENSAL = data.escala || {};
 
         atualizarDias();
 
@@ -1041,8 +836,7 @@ async function carregarDoBackend() {
                     inp.placeholder = '';
 
                     let valor = logs[p.name]?.[i+1] || 0;
-                    
-                    // CORREÇÃO CIRÚRGICA: excluir dia 2 da Daniela
+
                     if (p.name === "Daniela" && i === 1) {
                         valor = 0; 
                     }
@@ -1061,7 +855,6 @@ async function carregarDoBackend() {
                     atualizarCorInput(inp);
                     inp.disabled = true;
 
-                    // ===== LONG PRESS (TOUCH) =====
                     let lpTimer = null;
                     const startLongPress = (e) => {
                         if (!isEditing || diaEditandoIndex !== i) return;
@@ -1081,7 +874,6 @@ async function carregarDoBackend() {
                     inp.addEventListener('touchend', clearLongPress, { passive: true });
                     inp.addEventListener('touchcancel', clearLongPress, { passive: true });
 
-                    // Mouse long press
                     let mouseTimer = null;
                     inp.addEventListener('mousedown', (e) => {
                         if (!isEditing || diaEditandoIndex !== i) return;
