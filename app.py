@@ -121,12 +121,22 @@ def get_data():
     logs = FlightLog.query.filter_by(month=month, year=year).all()
     result = {
         "pilots": [{"name": p.name, "group": p.group, "full_name": p.full_name or p.name} for p in pilots],
-        "logs": {}
+        "logs": {},
+        # ===== FONTE ÚNICA DA ESCALA: calculada a partir de escala.py =====
+        # Já inclui overrides manuais (StatusOverride) e trocas dinâmicas de FR/SO.
+        # O front-end (planilha.html) não deve mais ter ESCALA_MENSAL hardcoded.
+        "escala": {}
     }
     for log in logs:
         if log.pilot.name not in result["logs"]:
             result["logs"][log.pilot.name] = {}
         result["logs"][log.pilot.name][log.day] = log.hours
+
+    for p in pilots:
+        escala_pilot = obtener_escala_dinamica(p, month, year)
+        if escala_pilot:
+            result["escala"][p.name] = escala_pilot
+
     return jsonify(result)
 
 @app.route("/api/data", methods=["POST"])
