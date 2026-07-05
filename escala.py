@@ -18,7 +18,7 @@ ESCALA_MENSAL = {
         "RE","SO","SO","SO","SO","SO","FR","SO","SO","SO","SO"
     ],
     "Andre": [
-        "SO","FR","SO","SO","FR","SO","SO","SO","FR","SO",
+        "SO","FR","SO","SO","SO","FR","SO","SO","FR","SO",
         "SO","SO","SO","FR","SO","SO","SO","SO","FR","SO",
         "SO","SO","SO","FR","FS","FS","RE","SO","FR","SO","SO"
     ],
@@ -28,7 +28,7 @@ ESCALA_MENSAL = {
         "SO","FR","SO","SO","SO","FR","SO","SO","SO","SO","SO"
     ],
     "Cleverson": [
-        "FR","SO","SO","SO","FR","SO","SO","SO","FR","SO",
+        "FR","SO","SO","SO","SO","FR","SO","SO","FR","SO",
         "SO","SO","FR","SO","SO","SO","SO","SO","FR","SO",
         "SO","SO","SO","FR","FS","FS","RE","SO","SO","FR","SO"
     ],
@@ -58,7 +58,7 @@ ESCALA_MENSAL = {
         "RE","SO","SO","SO","SO","SO","FR","SO","SO","SO","SO"
     ],
     "Gabriel": [
-        "SO","SO","SO","SO","FR","SO","SO","SO","SO","FR",
+        "SO","SO","SO","SO","SO","FR","SO","SO","SO","FR",
         "FS","FS","RE","SO","SO","SO","FR","SO","SO","SO",
         "FR","SO","SO","SO","FR","SO","SO","SO","FR","SO","SO"
     ],
