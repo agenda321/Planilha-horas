@@ -578,6 +578,7 @@ function limparDestaqueColuna() {
     document.querySelectorAll('.col-ativa').forEach(el => el.classList.remove('col-ativa'));
 }
 
+// ===== CORREÇÃO: habilitarEdicaoStatus agora reativa o dia para liberar campos SO =====
 function habilitarEdicaoStatus(inp, row, diaIndex) {
     const nome = getNomeFromRow(row);
     const norm = normalizarNome(nome);
@@ -605,6 +606,9 @@ function habilitarEdicaoStatus(inp, row, diaIndex) {
                 await salvarStatusNoBackend(norm, diaIndex, novoValor);
                 showToast(`✅ Status → ${novoValor}`);
                 recalcularTudo();
+                // ===== CORREÇÃO: reaplica as regras de edição do dia =====
+                ativarEdicaoDia(diaIndex);
+                // ======================================================
             } else {
                 showToast('❌ Status inválido. Use SO, FR, FS, FE, DM, RE, VO...');
             }
