@@ -338,7 +338,7 @@ const NOME_MAP = {
     "Vitor da Costa Bento": "Bento",
     "Andrade": "Andrade",
     "Ronaldo": "Ronalldo",
-    "Danielle Pereira": "Dany",
+    "Dany": "Danielle Pereira",
     "Victor": "Victor",
     "Vitor": "Victor",
     "Mathias": "Matias",
@@ -639,7 +639,7 @@ async function salvarStatusNoBackend(nome, dia, novoStatus) {
     } catch(e) { showToast('❌ Erro ao salvar status'); }
 }
 
-// ===== RANKING COM BADGES FR/FS =====
+// ===== RANKING COM FUNDO COLORIDO (FR = verde, FS = vermelho, FE = verde claro) =====
 function mostrarComparativoDia(diaIndex) {
     const mesAtual = document.getElementById('campoMes').value.trim() || "Julho";
 
@@ -683,17 +683,24 @@ function mostrarComparativoDia(diaIndex) {
         else if (idx === 1) medalha = '🥈 ';
         else if (idx === 2) medalha = '🥉 ';
 
-        let badgeHtml = '';
+        let bgColor = '';
+        let textColor = '';
         if (p.status === 'FR') {
-            badgeHtml = `<span style="background:#90ee90;color:#004d00;padding:1px 8px;border-radius:12px;font-size:0.65rem;font-weight:bold;margin-left:6px;border:1px solid #008000;">FR</span>`;
+            bgColor = '#90ee90';
+            textColor = '#004d00';
         } else if (p.status === 'FS') {
-            badgeHtml = `<span style="background:#ff9999;color:#660000;padding:1px 8px;border-radius:12px;font-size:0.65rem;font-weight:bold;margin-left:6px;border:1px solid #cc0000;">FS</span>`;
+            bgColor = '#ff9999';
+            textColor = '#660000';
+        } else if (p.status === 'FE') {
+            bgColor = '#ccffcc';
+            textColor = '#006600';
         }
+        const rowStyle = bgColor ? `style="background-color:${bgColor};"` : '';
 
-        html += `<tr>
-            <td style="text-align: center; font-weight: bold;">${idx + 1}</td>
-            <td style="text-align: left; font-weight: 500;">${medalha}${p.nome} ${badgeHtml}</td>
-            <td style="text-align: center; font-weight: bold; color: ${p.total > 0 ? '#2a8a2a' : '#aaa'};">
+        html += `<tr ${rowStyle}>
+            <td style="text-align: center; font-weight: bold; color: ${textColor || 'inherit'};">${idx + 1}</td>
+            <td style="text-align: left; font-weight: 500; color: ${textColor || 'inherit'};">${medalha}${p.nome}</td>
+            <td style="text-align: center; font-weight: bold; color: ${textColor || (p.total > 0 ? '#2a8a2a' : '#aaa')};">
                 ${horasDisplay}
             </td>
             <td style="min-width: 100px;">
@@ -716,7 +723,7 @@ function mostrarComparativoDia(diaIndex) {
     modal.onclick = e => { if (e.target === modal) modal.remove(); };
 }
 
-// ===== DISPONÍVEIS COM BADGES FR/FS =====
+// ===== DISPONÍVEIS COM BADGES (FR/FS/FE) =====
 async function mostrarDisponiveis(diaRef) {
     if (diaRef === null) { showToast("⚠️ Selecione um dia primeiro."); return; }
     const diaSeguinte = diaRef + 1;
@@ -729,7 +736,6 @@ async function mostrarDisponiveis(diaRef) {
         const res = await fetch(`/api/available_commanders/${diaSeguinte}?month=${month}&year=${year}`);
         const data = await res.json();
         let html = `<div class="card-detalhe"><h2 style="text-align:center;">👥 Disponíveis — Dia ${String(diaSeguinte+1).padStart(2,'00')}</h2>`;
-        // Grupos na ordem: CESSNA 206/210 (em cima), CARAVAN (meio), COPILOTO (embaixo)
         for (let grupo of ["CESSNA 206/210", "CARAVAN", "COPILOTO"]) {
             if (!data[grupo]) continue;
             html += `<h3 style="margin-top:14px;color:#7a4a1e;">${grupo}</h3>`;
@@ -742,6 +748,8 @@ async function mostrarDisponiveis(diaRef) {
                         badgeHtml = `<span style="background:#90ee90;color:#004d00;padding:1px 8px;border-radius:12px;font-size:0.65rem;font-weight:bold;margin-left:6px;border:1px solid #008000;">FR</span>`;
                     } else if (c.status === 'FS') {
                         badgeHtml = `<span style="background:#ff9999;color:#660000;padding:1px 8px;border-radius:12px;font-size:0.65rem;font-weight:bold;margin-left:6px;border:1px solid #cc0000;">FS</span>`;
+                    } else if (c.status === 'FE') {
+                        badgeHtml = `<span style="background:#ccffcc;color:#006600;padding:1px 8px;border-radius:12px;font-size:0.65rem;font-weight:bold;margin-left:6px;border:1px solid #00cc00;">FE</span>`;
                     }
                     html += `<li style="padding:5px 0;display:flex;justify-content:space-between;border-bottom:1px solid #e8d5b0;">
                         <span>${nome} ${badgeHtml} <span style="color:#888;font-size:0.8rem;">(${c.status})</span></span>
