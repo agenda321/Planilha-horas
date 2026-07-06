@@ -13,6 +13,7 @@
     <link rel="apple-touch-icon" href="/icon-192.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
+        /* ===== CSS (mesmo do original, sem alterações) ===== */
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body {
             margin: 0; min-height: 100vh;
@@ -578,7 +579,7 @@ function limparDestaqueColuna() {
     document.querySelectorAll('.col-ativa').forEach(el => el.classList.remove('col-ativa'));
 }
 
-// ===== CORREÇÃO: habilitarEdicaoStatus agora reativa o dia para liberar campos SO =====
+// ===== CORREÇÃO PRINCIPAL: habilitarEdicaoStatus com foco automático =====
 function habilitarEdicaoStatus(inp, row, diaIndex) {
     const nome = getNomeFromRow(row);
     const norm = normalizarNome(nome);
@@ -603,12 +604,26 @@ function habilitarEdicaoStatus(inp, row, diaIndex) {
                 inp.placeholder = "";
                 ESCALA_MENSAL[norm][diaIndex] = novoValor;
                 atualizarCorInput(inp);
-                await salvarStatusNoBackend(norm, diaIndex, novoValor);
-                showToast(`✅ Status → ${novoValor}`);
-                recalcularTudo();
-                // ===== CORREÇÃO: reaplica as regras de edição do dia =====
-                ativarEdicaoDia(diaIndex);
-                // ======================================================
+                try {
+                    await salvarStatusNoBackend(norm, diaIndex, novoValor);
+                    showToast(`✅ Status → ${novoValor}`);
+                    recalcularTudo();
+                    // ===== REAPLICA AS REGRAS DO DIA E FOCA NO CAMPO SE FOR SO =====
+                    ativarEdicaoDia(diaIndex);
+                    // Após reativar, se o status agora é SO, foca no campo
+                    if (novoValor === "SO") {
+                        // O campo foi re-criado? Não, ele é o mesmo, mas pode ter sido reconfigurado.
+                        // Vamos localizar novamente e focar.
+                        const novoInp = row.cells[diaIndex+1]?.querySelector('.input-hora');
+                        if (novoInp && !novoInp.disabled) {
+                            setTimeout(() => novoInp.focus(), 100);
+                            showToast("✅ Agora você pode digitar as horas.");
+                        }
+                    }
+                } catch (error) {
+                    console.error("Erro ao salvar status:", error);
+                    showToast(`❌ Erro ao salvar: ${error.message}`);
+                }
             } else {
                 showToast('❌ Status inválido. Use SO, FR, FS, FE, DM, RE, VO...');
             }
@@ -635,12 +650,23 @@ async function salvarStatusNoBackend(nome, dia, novoStatus) {
         const mesNome = mesInput.value.trim() || "Julho";
         const month = getMesNumero(mesNome);
         const year = new Date().getFullYear();
-        await fetch('/api/update_status', {
+        const response = await fetch('/api/update_status', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ pilot: nome, day: dia, status: novoStatus, month, year })
         });
-    } catch(e) { showToast('❌ Erro ao salvar status'); }
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}`);
+        }
+        const data = await response.json();
+        if (!data.success) {
+            throw new Error(data.erro || 'Erro desconhecido');
+        }
+        console.log(`Status salvo: ${nome}, dia ${dia+1} -> ${novoStatus}`);
+    } catch(e) {
+        console.error('Falha ao salvar status:', e);
+        throw e; // repassa para o caller
+    }
 }
 
 // ===== RANKING COM FUNDO COLORIDO (FR = verde, FS = vermelho, FE = verde claro) =====
