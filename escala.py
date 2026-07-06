@@ -68,7 +68,7 @@ ESCALA_MENSAL = {
         "SO","SO","SO","FR","SO","SO","SO","FR","SO","SO","SO"
     ],
     "Igorh": [
-        "SO","SO","FR","SO","SO","SO","SO","SO","SO","FR",
+        "SO","SO","FR","SO","FR","SO","SO","SO","SO","FR",
         "FS","FS","FE","FE","FE","FE","FE","FE","FE","FE",
         "FE","FE","FE","FE","FE","FE","FE","RE","SO","SO","SO"
     ],
