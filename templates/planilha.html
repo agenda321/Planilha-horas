@@ -497,6 +497,7 @@ function atualizarTotaisBotoesDias() {
     });
 }
 
+// ===== CORREÇÃO: ativar edição habilitando todas as células (exceto bloqueadas) =====
 function ativarEdicaoDia(diaIndex) {
     if (diaEditandoIndex !== null && diaEditandoIndex !== diaIndex) sairEdicaoDia();
     diaEditandoIndex = diaIndex;
@@ -508,24 +509,20 @@ function ativarEdicaoDia(diaIndex) {
         const inp = row.cells[diaIndex+1]?.querySelector('.input-hora');
         if (!inp) return;
 
-        if (status === "SO") {
+        // Habilita todas as células, exceto as bloqueadas (DM, CM, EA, FE, TR, TN, CQ)
+        if (isStatusBloqueado(status)) {
+            inp.disabled = true;
+            inp.placeholder = "";
+        } else {
             inp.disabled = false;
             inp.placeholder = "0,0";
+            // Se o campo estiver vazio e não for um status, limpa o conteúdo
             const valorAtual = parseHora(inp.value);
             if (valorAtual === 0 && !getStatusFromValue(inp.value)) {
                 inp.value = "";
             }
             inp.removeAttribute('data-status');
             inp.classList.remove('has-value');
-        } else if (isStatusBloqueado(status)) {
-            inp.disabled = true;
-            inp.placeholder = "";
-        } else if (STATUS_EDITAVEL_LONGPRESS.includes(status)) {
-            inp.disabled = true;
-            inp.placeholder = "";
-        } else {
-            inp.disabled = false;
-            inp.placeholder = "";
         }
         atualizarCorInput(inp);
     });
@@ -538,7 +535,7 @@ function ativarEdicaoDia(diaIndex) {
     document.getElementById('badgeDiaEdicao').classList.add('visivel');
     document.getElementById('btnSairDia').style.display = 'inline-block';
     document.querySelectorAll('.btn-dia').forEach((btn,i) => btn.classList.toggle('dia-editando', i===diaIndex));
-    showToast(`✏️ Dia ${diaNum} — SO liberados | Long press em FR/FS/RE para editar`);
+    showToast(`✏️ Dia ${diaNum} — Todas as células liberadas (exceto bloqueadas) | Long press em FR/FS/RE para editar status`);
 }
 
 function sairEdicaoDia() {
@@ -550,11 +547,13 @@ function sairEdicaoDia() {
             const inp = row.cells[diaEditandoIndex+1]?.querySelector('.input-hora');
             if (inp) {
                 inp.placeholder = "";
+                // Se for SO e não tiver valor, limpa o campo
                 if (status === "SO" && parseHora(inp.value) === 0 && !getStatusFromValue(inp.value)) {
                     inp.value = "";
                     inp.setAttribute('data-status', 'default');
                 }
                 atualizarCorInput(inp);
+                inp.disabled = true;
             }
         });
         diaEditandoIndex = null;
@@ -562,7 +561,6 @@ function sairEdicaoDia() {
         document.getElementById('btnSairDia').style.display = 'none';
         document.querySelectorAll('.btn-dia').forEach(btn => btn.classList.remove('dia-editando'));
         limparDestaqueColuna();
-        document.querySelectorAll('.input-hora').forEach(inp => inp.disabled = true);
         recalcularTudo();
     }
 }
@@ -608,12 +606,10 @@ function habilitarEdicaoStatus(inp, row, diaIndex) {
                     await salvarStatusNoBackend(norm, diaIndex, novoValor);
                     showToast(`✅ Status → ${novoValor}`);
                     recalcularTudo();
-                    // ===== REAPLICA AS REGRAS DO DIA E FOCA NO CAMPO SE FOR SO =====
+                    // REAPLICA AS REGRAS DO DIA (para habilitar se for SO, etc.)
                     ativarEdicaoDia(diaIndex);
-                    // Após reativar, se o status agora é SO, foca no campo
+                    // Se for SO, foca no campo
                     if (novoValor === "SO") {
-                        // O campo foi re-criado? Não, ele é o mesmo, mas pode ter sido reconfigurado.
-                        // Vamos localizar novamente e focar.
                         const novoInp = row.cells[diaIndex+1]?.querySelector('.input-hora');
                         if (novoInp && !novoInp.disabled) {
                             setTimeout(() => novoInp.focus(), 100);
@@ -665,7 +661,7 @@ async function salvarStatusNoBackend(nome, dia, novoStatus) {
         console.log(`Status salvo: ${nome}, dia ${dia+1} -> ${novoStatus}`);
     } catch(e) {
         console.error('Falha ao salvar status:', e);
-        throw e; // repassa para o caller
+        throw e;
     }
 }
 
