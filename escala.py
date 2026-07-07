@@ -1,9 +1,5 @@
-# ============================================================
-# 1. escala.py
-# ============================================================
 # -*- coding: utf-8 -*-
 # Escala Mensal de Folgas - Julho de 2026 - Voare Táxi Aéreo
-# CHAVES CORRIGIDAS PARA COINCIDIR COM OS NOMES DO BANCO
 
 ESCALA_MENSAL = {
     # =========================================================================
@@ -44,7 +40,7 @@ ESCALA_MENSAL = {
         "SO","SO","FR","FS","FS","RE","SO","SO","SO","SO",
         "SO","RE","SO","SO","SO","SO","SO","SO","FR","SO","SO"
     ],
-    "Felipe": [
+    "Costa": [
         "SO","SO","FR","FS","FS","RE","SO","SO","SO","SO",
         "SO","SO","FR","FS","FS","RE","SO","SO","SO","SO",
         "SO","SO","SO","SO","FR","FS","FS","RE","SO","SO","SO"
@@ -109,7 +105,7 @@ ESCALA_MENSAL = {
         "SO","SO","SO","SO","SO","SO","SO","SO","SO","SO",
         "SO","SO","SO","SO","SO","SO","SO","SO","SO","SO","SO"
     ],
-    "Mathias": [
+    "Matias": [
         "SO","FR","SO","SO","SO","SO","SO","SO","SO","FR",
         "SO","SO","SO","SO","SO","SO","FR","SO","SO","SO",
         "SO","SO","SO","SO","SO","SO","SO","SO","SO","SO","SO"
