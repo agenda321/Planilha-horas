@@ -1,4 +1,5 @@
 import os
+import time
 from flask import Flask, request, jsonify, render_template
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
@@ -37,7 +38,6 @@ CORES = {
     "CQ": "azul_medio"
 }
 
-# ===== PILOTOS A SEREM EXCLUÍDOS =====
 PILOTOS_EXCLUIDOS = []  # Deixe vazio para incluir todos
 
 class Pilot(db.Model):
@@ -70,16 +70,13 @@ def normalizar_status(status):
     return status
 
 def obtener_escala_dinamica(pilot_obj, month, year):
-    # Usa o nome do piloto diretamente (a escala já tem as chaves corretas)
     escala = list(ESCALA_MENSAL.get(pilot_obj.name, []))
     if not escala:
         return escala
-    # Aplica overrides manuais (StatusOverride)
     overrides = StatusOverride.query.filter_by(pilot_id=pilot_obj.id, month=month, year=year).all()
     for ov in overrides:
         if ov.day < len(escala):
             escala[ov.day] = ov.status
-    # ===== LÓGICA DE TROCA FR ↔ SO REMOVIDA =====
     return escala
 
 # ============================
@@ -374,10 +371,23 @@ def povoar_dados_iniciais():
 # from programacao import register_routes
 # register_routes(app, db)
 
+# ===== INICIALIZAÇÃO COM RETRY =====
 with app.app_context():
-    db.create_all()
-    if Pilot.query.count() == 0:
-        povoar_dados_iniciais()
+    max_retries = 5
+    for attempt in range(max_retries):
+        try:
+            db.create_all()
+            if Pilot.query.count() == 0:
+                povoar_dados_iniciais()
+            print("✅ Banco de dados conectado e inicializado com sucesso.")
+            break
+        except Exception as e:
+            print(f"⚠️ Tentativa {attempt+1}/{max_retries} falhou: {e}")
+            if attempt < max_retries - 1:
+                time.sleep(5)
+            else:
+                print("❌ Não foi possível conectar ao banco após várias tentativas.")
+                raise
 
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port=os.environ.get("PORT", 5000))
