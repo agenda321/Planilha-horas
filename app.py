@@ -1,19 +1,30 @@
-# ============================================================
-# 2. app.py
-# ============================================================
 import os
+import time
+import sys
 from flask import Flask, request, jsonify, render_template
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
-from escala import ESCALA_MENSAL
 from flask_cors import CORS
+
+# ===== Importação da escala =====
+try:
+    from escala import ESCALA_MENSAL
+except ImportError:
+    print("❌ ERRO: arquivo escala.py não encontrado.")
+    ESCALA_MENSAL = {}
 
 app = Flask(__name__)
 
-# Configuração do banco de dados
-database_url = os.environ.get("DATABASE_URL", "postgresql://user:password@localhost/mydatabase")
+# ===== CONFIGURAÇÃO DO BANCO DE DADOS =====
+database_url = os.environ.get("DATABASE_URL")
+if not database_url:
+    print("❌ ERRO: variável DATABASE_URL não definida.")
+    # Fallback para desenvolvimento
+    database_url = "postgresql://user:password@localhost/mydatabase"
+
 if database_url.startswith("postgres://"):
     database_url = database_url.replace("postgres://", "postgresql://", 1)
+
 app.config["SQLALCHEMY_DATABASE_URI"] = database_url
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db = SQLAlchemy(app)
@@ -42,6 +53,7 @@ CORES = {
 
 PILOTOS_EXCLUIDOS = []
 
+# ===== MODELOS =====
 class Pilot(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(80), unique=True, nullable=False)
@@ -84,7 +96,6 @@ def obtener_escala_dinamica(pilot_obj, month, year):
 # ============================
 # ROTAS
 # ============================
-
 @app.route("/")
 def landing():
     return app.send_static_file('index.html')
@@ -102,131 +113,143 @@ def login():
 
 @app.route("/api/data", methods=["GET"])
 def get_data():
-    month = request.args.get("month", default=datetime.now().month, type=int)
-    year = request.args.get("year", default=datetime.now().year, type=int)
-    pilots = Pilot.query.filter(Pilot.name.notin_(PILOTOS_EXCLUIDOS)).all()
-    logs = FlightLog.query.filter_by(month=month, year=year).all()
-    result = {
-        "pilots": [{"name": p.name, "group": p.group, "full_name": p.full_name or p.name} for p in pilots],
-        "logs": {},
-        "escala": {}
-    }
-    for log in logs:
-        if log.pilot.name not in result["logs"]:
-            result["logs"][log.pilot.name] = {}
-        result["logs"][log.pilot.name][log.day] = log.hours
+    try:
+        month = request.args.get("month", default=datetime.now().month, type=int)
+        year = request.args.get("year", default=datetime.now().year, type=int)
+        pilots = Pilot.query.filter(Pilot.name.notin_(PILOTOS_EXCLUIDOS)).all()
+        logs = FlightLog.query.filter_by(month=month, year=year).all()
+        result = {
+            "pilots": [{"name": p.name, "group": p.group, "full_name": p.full_name or p.name} for p in pilots],
+            "logs": {},
+            "escala": {}
+        }
+        for log in logs:
+            if log.pilot.name not in result["logs"]:
+                result["logs"][log.pilot.name] = {}
+            result["logs"][log.pilot.name][log.day] = log.hours
 
-    for p in pilots:
-        escala_pilot = obtener_escala_dinamica(p, month, year)
-        if escala_pilot:
-            result["escala"][p.name] = escala_pilot
+        for p in pilots:
+            escala_pilot = obtener_escala_dinamica(p, month, year)
+            if escala_pilot:
+                result["escala"][p.name] = escala_pilot
 
-    return jsonify(result)
+        return jsonify(result)
+    except Exception as e:
+        print(f"❌ Erro em /api/data: {e}")
+        return jsonify({"error": str(e)}), 500
 
 @app.route("/api/data", methods=["POST"])
 def save_data():
-    data = request.get_json()
-    if data.get("password") not in [EDIT_PASSWORD, EDIT_PASSWORD_2]:
-        return jsonify({"success": False}), 401
-    
-    month = data.get("month")
-    year = data.get("year")
-    
-    if not month or not year:
-        return jsonify({"success": False, "erro": "Mês e ano são obrigatórios"}), 400
+    try:
+        data = request.get_json()
+        if data.get("password") not in [EDIT_PASSWORD, EDIT_PASSWORD_2]:
+            return jsonify({"success": False}), 401
         
-    month = int(month)
-    year = int(year)
+        month = data.get("month")
+        year = data.get("year")
+        if not month or not year:
+            return jsonify({"success": False, "erro": "Mês e ano são obrigatórios"}), 400
+            
+        month = int(month)
+        year = int(year)
 
-    for pilot_name, days in data.get("logs", {}).items():
-        pilot = Pilot.query.filter_by(name=pilot_name).first()
-        if not pilot:
-            continue
-        for day_str, hours in days.items():
-            day = int(day_str)
-            if hours is None or str(hours).strip() == "":
-                valor_horas = 0.0
-            else:
-                try:
-                    valor_horas = float(hours)
-                except ValueError:
-                    valor_horas = 0.0
-            log = FlightLog.query.filter_by(pilot_id=pilot.id, day=day, month=month, year=year).first()
-            if log:
-                log.hours = valor_horas
-            else:
-                db.session.add(FlightLog(pilot_id=pilot.id, day=day, month=month, year=year, hours=valor_horas))
-    db.session.commit()
-    return jsonify({"success": True})
+        for pilot_name, days in data.get("logs", {}).items():
+            pilot = Pilot.query.filter_by(name=pilot_name).first()
+            if not pilot:
+                continue
+            for day_str, hours in days.items():
+                day = int(day_str)
+                valor_horas = float(hours) if hours and str(hours).strip() else 0.0
+                log = FlightLog.query.filter_by(pilot_id=pilot.id, day=day, month=month, year=year).first()
+                if log:
+                    log.hours = valor_horas
+                else:
+                    db.session.add(FlightLog(pilot_id=pilot.id, day=day, month=month, year=year, hours=valor_horas))
+        db.session.commit()
+        return jsonify({"success": True})
+    except Exception as e:
+        print(f"❌ Erro em /api/data (POST): {e}")
+        return jsonify({"success": False, "erro": str(e)}), 500
 
 @app.route("/api/available_commanders/<int:day_index>", methods=["GET"])
 def get_available_commanders(day_index):
-    pilotos_com_horas = {"CESSNA 206/210": [], "CARAVAN": [], "COPILOTO": []}
-    pilots = Pilot.query.filter(Pilot.name.notin_(PILOTOS_EXCLUIDOS)).all()
-    
-    month = request.args.get("month", default=datetime.now().month, type=int)
-    year = request.args.get("year", default=datetime.now().year, type=int)
-    
-    dia_solicitado = day_index + 1
-    for pilot in pilots:
-        escala = obtener_escala_dinamica(pilot, month, year)
-        if not escala:
-            escala = ESCALA_MENSAL.get(pilot.name, [])
-        if day_index < len(escala):
-            raw_status = escala[day_index]
-            status = normalizar_status(raw_status)
-            cor = CORES.get(status, "cinza")
-        else:
-            status = "VO"
-            cor = "azul"
-        if status in CODIGOS_DISPONIVEIS:
-            logs = FlightLog.query.filter_by(pilot_id=pilot.id, month=month, year=year).all()
-            horas_acumuladas = sum(log.hours for log in logs if log.day <= dia_solicitado)
-            pilotos_com_horas[pilot.group].append({
-                "name": pilot.name,
-                "status": status,
-                "color": cor,
-                "horas_totais": horas_acumuladas
-            })
-    available = {}
-    for grupo, lista_pilotos in pilotos_com_horas.items():
-        available[grupo] = sorted(lista_pilotos, key=lambda x: x["horas_totais"], reverse=True)
-    return jsonify(available)
+    try:
+        pilotos_com_horas = {"CESSNA 206/210": [], "CARAVAN": [], "COPILOTO": []}
+        pilots = Pilot.query.filter(Pilot.name.notin_(PILOTOS_EXCLUIDOS)).all()
+        
+        month = request.args.get("month", default=datetime.now().month, type=int)
+        year = request.args.get("year", default=datetime.now().year, type=int)
+        
+        dia_solicitado = day_index + 1
+        for pilot in pilots:
+            escala = obtener_escala_dinamica(pilot, month, year)
+            if not escala:
+                escala = ESCALA_MENSAL.get(pilot.name, [])
+            if day_index < len(escala):
+                raw_status = escala[day_index]
+                status = normalizar_status(raw_status)
+                cor = CORES.get(status, "cinza")
+            else:
+                status = "VO"
+                cor = "azul"
+            if status in CODIGOS_DISPONIVEIS:
+                logs = FlightLog.query.filter_by(pilot_id=pilot.id, month=month, year=year).all()
+                horas_acumuladas = sum(log.hours for log in logs if log.day <= dia_solicitado)
+                pilotos_com_horas[pilot.group].append({
+                    "name": pilot.name,
+                    "status": status,
+                    "color": cor,
+                    "horas_totais": horas_acumuladas
+                })
+        available = {}
+        for grupo, lista_pilotos in pilotos_com_horas.items():
+            available[grupo] = sorted(lista_pilotos, key=lambda x: x["horas_totais"], reverse=True)
+        return jsonify(available)
+    except Exception as e:
+        print(f"❌ Erro em /api/available_commanders: {e}")
+        return jsonify({"error": str(e)}), 500
 
 @app.route("/api/update_status", methods=["POST"])
 def update_status():
-    data = request.get_json()
-    pilot_name = data.get("pilot")
-    day = data.get("day")
-    new_status = data.get("status")
-    month = data.get("month")
-    year = data.get("year")
-    
-    if not month or not year or not pilot_name or day is None or not new_status:
-        return jsonify({"success": False, "erro": "Dados incompletos"}), 400
+    try:
+        data = request.get_json()
+        pilot_name = data.get("pilot")
+        day = data.get("day")
+        new_status = data.get("status")
+        month = data.get("month")
+        year = data.get("year")
         
-    month = int(month)
-    year = int(year)
-    
-    pilot = Pilot.query.filter_by(name=pilot_name).first()
-    if not pilot:
-        return jsonify({"success": False, "erro": "Piloto não encontrado"}), 404
+        if not month or not year or not pilot_name or day is None or not new_status:
+            return jsonify({"success": False, "erro": "Dados incompletos"}), 400
+            
+        month = int(month)
+        year = int(year)
         
-    override = StatusOverride.query.filter_by(pilot_id=pilot.id, day=day, month=month, year=year).first()
-    if override:
-        override.status = new_status
-    else:
-        override = StatusOverride(pilot_id=pilot.id, day=day, month=month, year=year, status=new_status)
-        db.session.add(override)
-    db.session.commit()
-    return jsonify({"success": True})
+        pilot = Pilot.query.filter_by(name=pilot_name).first()
+        if not pilot:
+            return jsonify({"success": False, "erro": "Piloto não encontrado"}), 404
+            
+        override = StatusOverride.query.filter_by(pilot_id=pilot.id, day=day, month=month, year=year).first()
+        if override:
+            override.status = new_status
+        else:
+            override = StatusOverride(pilot_id=pilot.id, day=day, month=month, year=year, status=new_status)
+            db.session.add(override)
+        db.session.commit()
+        return jsonify({"success": True})
+    except Exception as e:
+        print(f"❌ Erro em /api/update_status: {e}")
+        return jsonify({"success": False, "erro": str(e)}), 500
 
 @app.route("/api/debug/reset-banco")
 def reset_banco():
-    db.drop_all()
-    db.create_all()
-    povoar_dados_iniciais()
-    return "Banco reiniciado e dados da frota atualizados com sucesso!"
+    try:
+        db.drop_all()
+        db.create_all()
+        povoar_dados_iniciais()
+        return "Banco reiniciado e dados da frota atualizados com sucesso!"
+    except Exception as e:
+        return f"Erro: {e}", 500
 
 def povoar_dados_iniciais():
     grupos = {
@@ -369,6 +392,27 @@ def povoar_dados_iniciais():
                 db.session.add(FlightLog(pilot_id=p_obj.id, day=d_num, month=m_atual, year=y_atual, hours=float(h_val)))
     db.session.commit()
 
-# ===== REMOVIDA A DEPENDÊNCIA DE programacao.py =====
-# from programacao import register_routes
-# register_routes(app, db)
+# ===== INICIALIZAÇÃO DO BANCO COM RETRY =====
+def init_db():
+    max_retries = 5
+    for attempt in range(max_retries):
+        try:
+            with app.app_context():
+                db.create_all()
+                if Pilot.query.count() == 0:
+                    povoar_dados_iniciais()
+                print("✅ Banco de dados conectado e inicializado com sucesso.")
+                return
+        except Exception as e:
+            print(f"⚠️ Tentativa {attempt+1}/{max_retries} falhou: {e}")
+            if attempt < max_retries - 1:
+                time.sleep(5)
+            else:
+                print("❌ Não foi possível conectar ao banco após várias tentativas.")
+                # Não levanta exceção para não quebrar o app
+                # O app continuará rodando, mas as rotas podem falhar
+
+init_db()
+
+if __name__ == "__main__":
+    app.run(debug=False, host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
