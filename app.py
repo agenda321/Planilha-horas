@@ -1,10 +1,14 @@
+# ============================================================
+# 2. app.py
+# ============================================================
 import os
+import time
 from flask import Flask, request, jsonify, render_template
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 from flask_cors import CORS
 
-# ===== TENTA IMPORTAR A ESCALA, MAS NÃO QUEBRA SE FALTAR =====
+# ===== TENTA IMPORTAR A ESCALA =====
 try:
     from escala import ESCALA_MENSAL
 except ImportError:
@@ -16,12 +20,16 @@ app = Flask(__name__)
 # ===== CONFIGURAÇÃO DO BANCO =====
 database_url = os.environ.get("DATABASE_URL")
 if not database_url:
-    # Fallback para desenvolvimento local
+    print("❌ ERRO: variável DATABASE_URL não definida.")
     database_url = "postgresql://user:password@localhost/mydatabase"
-    print("⚠️ DATABASE_URL não definida, usando fallback.")
-
-if database_url.startswith("postgres://"):
-    database_url = database_url.replace("postgres://", "postgresql://", 1)
+else:
+    # CORREÇÃO: força SSL mode para evitar "SSL connection closed unexpectedly"
+    if "?" not in database_url:
+        database_url += "?sslmode=require"
+    elif "sslmode" not in database_url:
+        database_url += "&sslmode=require"
+    if database_url.startswith("postgres://"):
+        database_url = database_url.replace("postgres://", "postgresql://", 1)
 
 app.config["SQLALCHEMY_DATABASE_URI"] = database_url
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
@@ -29,11 +37,11 @@ db = SQLAlchemy(app)
 
 CORS(app)
 
-# ===== SENHAS =====
 EDIT_PASSWORD = os.environ.get("EDIT_PASSWORD", "Emerson")
 EDIT_PASSWORD_2 = os.environ.get("EDIT_PASSWORD_2", "Bispo")
 
 CODIGOS_DISPONIVEIS = ["VO", "CQ", "RE", "SO", "EA", "TR", "TN"]
+
 CORES = {
     "DM": "laranja",
     "CM": "laranja_claro",
@@ -48,6 +56,8 @@ CORES = {
     "TN": "azul_claro",
     "CQ": "azul_medio"
 }
+
+PILOTOS_EXCLUIDOS = []
 
 # ===== MODELOS =====
 class Pilot(db.Model):
@@ -74,7 +84,6 @@ class StatusOverride(db.Model):
     status = db.Column(db.String(10), nullable=False)
     pilot = db.relationship("Pilot", backref=db.backref("status_overrides", lazy=True))
 
-# ===== FUNÇÕES AUXILIARES =====
 def normalizar_status(status):
     if status is None or status == "" or status == " ":
         return "VO"
@@ -113,7 +122,7 @@ def get_data():
     try:
         month = request.args.get("month", default=datetime.now().month, type=int)
         year = request.args.get("year", default=datetime.now().year, type=int)
-        pilots = Pilot.query.all()
+        pilots = Pilot.query.filter(Pilot.name.notin_(PILOTOS_EXCLUIDOS)).all()
         logs = FlightLog.query.filter_by(month=month, year=year).all()
         result = {
             "pilots": [{"name": p.name, "group": p.group, "full_name": p.full_name or p.name} for p in pilots],
@@ -124,10 +133,12 @@ def get_data():
             if log.pilot.name not in result["logs"]:
                 result["logs"][log.pilot.name] = {}
             result["logs"][log.pilot.name][log.day] = log.hours
+
         for p in pilots:
             escala_pilot = obtener_escala_dinamica(p, month, year)
             if escala_pilot:
                 result["escala"][p.name] = escala_pilot
+
         return jsonify(result)
     except Exception as e:
         print(f"❌ Erro em /api/data: {e}")
@@ -139,11 +150,15 @@ def save_data():
         data = request.get_json()
         if data.get("password") not in [EDIT_PASSWORD, EDIT_PASSWORD_2]:
             return jsonify({"success": False}), 401
+        
         month = data.get("month")
         year = data.get("year")
         if not month or not year:
             return jsonify({"success": False, "erro": "Mês e ano são obrigatórios"}), 400
-        month = int(month); year = int(year)
+            
+        month = int(month)
+        year = int(year)
+
         for pilot_name, days in data.get("logs", {}).items():
             pilot = Pilot.query.filter_by(name=pilot_name).first()
             if not pilot:
@@ -166,9 +181,11 @@ def save_data():
 def get_available_commanders(day_index):
     try:
         pilotos_com_horas = {"CESSNA 206/210": [], "CARAVAN": [], "COPILOTO": []}
-        pilots = Pilot.query.all()
+        pilots = Pilot.query.filter(Pilot.name.notin_(PILOTOS_EXCLUIDOS)).all()
+        
         month = request.args.get("month", default=datetime.now().month, type=int)
         year = request.args.get("year", default=datetime.now().year, type=int)
+        
         dia_solicitado = day_index + 1
         for pilot in pilots:
             escala = obtener_escala_dinamica(pilot, month, year)
@@ -207,12 +224,17 @@ def update_status():
         new_status = data.get("status")
         month = data.get("month")
         year = data.get("year")
+        
         if not month or not year or not pilot_name or day is None or not new_status:
             return jsonify({"success": False, "erro": "Dados incompletos"}), 400
-        month = int(month); year = int(year)
+            
+        month = int(month)
+        year = int(year)
+        
         pilot = Pilot.query.filter_by(name=pilot_name).first()
         if not pilot:
             return jsonify({"success": False, "erro": "Piloto não encontrado"}), 404
+            
         override = StatusOverride.query.filter_by(pilot_id=pilot.id, day=day, month=month, year=year).first()
         if override:
             override.status = new_status
@@ -376,25 +398,29 @@ def povoar_dados_iniciais():
                 db.session.add(FlightLog(pilot_id=p_obj.id, day=d_num, month=m_atual, year=y_atual, hours=float(h_val)))
     db.session.commit()
 
-# ===== INICIALIZAÇÃO DO BANCO (COM RETRY) =====
+# ===== INICIALIZAÇÃO DO BANCO COM RETRY E SSL =====
 def init_db():
-    import time
-    for attempt in range(5):
+    max_retries = 5
+    for attempt in range(max_retries):
         try:
             with app.app_context():
                 db.create_all()
                 if Pilot.query.count() == 0:
                     povoar_dados_iniciais()
-                print("✅ Banco conectado e inicializado.")
+                    print("✅ Banco populado com dados iniciais.")
+                else:
+                    print(f"✅ Banco já possui {Pilot.query.count()} pilotos.")
+                print("✅ Banco conectado e inicializado com sucesso.")
                 return
         except Exception as e:
-            print(f"⚠️ Tentativa {attempt+1}/5 falhou: {e}")
-            time.sleep(3)
-    print("❌ Não foi possível conectar ao banco. O app pode ficar limitado.")
+            print(f"⚠️ Tentativa {attempt+1}/{max_retries} falhou: {e}")
+            if attempt < max_retries - 1:
+                time.sleep(5)
+            else:
+                print("❌ Não foi possível conectar ao banco após várias tentativas.")
+                # Não levanta exceção para não quebrar o app
 
 init_db()
 
-# ===== PONTO DE ENTRADA PARA O GUNICORN =====
-# A variável 'app' já está definida acima.
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
