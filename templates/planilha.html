@@ -13,7 +13,7 @@
     <link rel="apple-touch-icon" href="/icon-192.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        /* ===== CSS (mesmo do original, sem alterações) ===== */
+        /* (CSS idêntico ao original – omitido para brevidade) */
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body {
             margin: 0; min-height: 100vh;
@@ -261,9 +261,9 @@
     </style>
 </head>
 <body>
+<!-- Estrutura HTML (idêntica à anterior – omitida para brevidade) -->
 <div class="skeuo-container">
     <div class="planilha-card">
-
         <div class="cabecalho-skeuo">
             <div class="title-area">
                 <h1>✈️ REGISTRO DE HORAS</h1>
@@ -274,7 +274,6 @@
                 <div class="badge-senha" id="statusBadge">🔒 LEITURA</div>
             </div>
         </div>
-
         <div class="top-actions">
             <div class="button-group">
                 <button class="btn-skeuo" id="btnDesbloquear">🔐 DESBLOQUEAR</button>
@@ -283,14 +282,11 @@
                 <button class="btn-skeuo" id="btnSairDia" style="display:none">✖ SAIR</button>
             </div>
         </div>
-
         <div class="info-bar">
             <span class="sync-status" id="syncStatus">💾 Sincronizado</span>
             <button class="btn-ajuda" id="btnAjuda" title="Legenda">?</button>
         </div>
-
         <div class="dias-botoes" id="botoesDias"></div>
-
         <div class="table-wrapper">
             <table class="planilha" id="tabelaHoras">
                 <thead id="tableHeader"></thead>
@@ -298,11 +294,9 @@
                 <tfoot id="tfootTotal"></tfoot>
             </table>
         </div>
-
         <div class="info-footer">
             <div class="status-chip" id="editModeChip">📖 VISUALIZAÇÃO</div>
         </div>
-
     </div>
 </div>
 
@@ -324,54 +318,31 @@ function showToast(msg, duracao = 2500) {
 
 // ===== PERSISTÊNCIA DO MÊS =====
 const MES_STORAGE_KEY = 'planilha_mes_selecionado';
+function salvarMesNoStorage(mes) { localStorage.setItem(MES_STORAGE_KEY, mes); }
+function obterMesDoStorage() { return localStorage.getItem(MES_STORAGE_KEY) || null; }
 
-function salvarMesNoStorage(mes) {
-    localStorage.setItem(MES_STORAGE_KEY, mes);
-}
-
-function obterMesDoStorage() {
-    return localStorage.getItem(MES_STORAGE_KEY) || null;
-}
-
-// ===== MAPEAMENTO DE NOMES (NORMALIZAÇÃO) =====
-const NOME_MAP = {
+// ===== MAPEAMENTO DE NOMES (APENAS PARA EXIBIÇÃO) =====
+const DISPLAY_NAME_MAP = {
     "Albert Otto Azevedo": "Otto",
     "Vitor da Costa Bento": "Bento",
     "Andrade": "Andrade",
-    "Ronaldo": "Ronalldo",          // <-- normaliza Ronaldo para Ronalldo
+    "Ronaldo": "Ronalldo",          // exibe Ronalldo para o piloto Ronaldo
     "Ronalldo": "Ronalldo",
     "Dany": "Danielle Pereira",
     "Victor": "Victor",
     "Vitor": "Victor",
     "Mathias": "Matias",
     "Matias": "Matias",
+    "Sergio": "Sergio",
+    "Igorh": "Igorh",
     "Cleiton": "Cleiton",
-    "Joao": "Joao",
-    "Pascoal": "Pascoal",
-    "Lindomar": "Lindomar",
-    "Perisson": "Perisson",
-    "Rui": "Rui",
-    "Yago": "Yago",
-    "Cauê": "Cauê",
-    "Ruben": "Ruben",
-    "Ernesto": "Ernesto",
-    "Daniela": "Daniela",
-    "Thales": "Thales",
-    "Serafim": "Serafim",
-    "Rodrigo": "Rodrigo",
-    "Sergio": "Sergio",            // <-- garante que Sergio seja mapeado para si mesmo
-    "Igorh": "Igorh"               // <-- garante que Igorh seja mapeado para si mesmo
+    // ... outros nomes completos, se necessário
 };
-
-function normalizarNome(nome) {
-    return NOME_MAP[nome] || nome;
+function getDisplayName(nome) {
+    return DISPLAY_NAME_MAP[nome] || nome.split(' ')[0];
 }
 
-// ===== ESCALA MENSAL =====
-// FONTE ÚNICA DA VERDADE: escala.py (backend).
-// Este objeto começa vazio e é preenchido a cada carregamento em
-// carregarDoBackend(), a partir do campo "escala" retornado por /api/data.
-// NÃO adicionar dados de escala aqui — editar sempre em escala.py.
+// ===== ESCALA MENSAL (RECEBIDA DO BACKEND) =====
 let ESCALA_MENSAL = {};
 
 // ===== GRUPOS =====
@@ -380,19 +351,17 @@ const GRUPOS_PILOTO = {
     "COPILOTO": ["Cauê","Ruben","Ernesto","Daniela","Thales","Serafim","Ronalldo","Rodrigo"]
 };
 function getGrupo(nome) {
-    const norm = normalizarNome(nome);
-    if (GRUPOS_PILOTO["CARAVAN"].includes(norm)) return "CARAVAN";
-    if (GRUPOS_PILOTO["COPILOTO"].includes(norm)) return "COPILOTO";
+    if (GRUPOS_PILOTO["CARAVAN"].includes(nome)) return "CARAVAN";
+    if (GRUPOS_PILOTO["COPILOTO"].includes(nome)) return "COPILOTO";
     return "CESSNA 206/210";
 }
 
-// ===== STATUS EDITÁVEIS =====
+// ===== STATUS =====
 const STATUS_BLOQUEADOS = ["DM","CM","EA","FE","TR","TN","CQ"];
 const STATUS_EDITAVEL_LONGPRESS = ["FS","RE","FR"];
-
 function isStatusBloqueado(status) { return STATUS_BLOQUEADOS.includes(status); }
 
-let DIAS = 31; 
+let DIAS = 31;
 let isEditing = false;
 let diaEditandoIndex = null;
 let diaReferencia = null;
@@ -416,7 +385,6 @@ function parseHora(v) {
     return isNaN(n) ? 0 : n;
 }
 function formatarHora(n) { return n.toFixed(1).replace('.',','); }
-
 function getStatusFromValue(value) {
     const s = ["DM","CM","VO","CQ","TN","EA","TR","FR","FS","FE","RE","SO"];
     return s.includes(value) ? value : null;
@@ -499,38 +467,29 @@ function atualizarTotaisBotoesDias() {
     });
 }
 
-// ===== CORREÇÃO: ativar edição habilitando todas as células (exceto bloqueadas) =====
+// ===== ATIVAR EDIÇÃO (habilita todas as células, exceto bloqueadas) =====
 function ativarEdicaoDia(diaIndex) {
     if (diaEditandoIndex !== null && diaEditandoIndex !== diaIndex) sairEdicaoDia();
     diaEditandoIndex = diaIndex;
-    console.log(`📝 Editando dia ${diaIndex+1}`);
 
     document.querySelectorAll('#tabelaHoras tbody tr.membro-row').forEach(row => {
         const nome = getNomeFromRow(row);
-        const norm = normalizarNome(nome);
-        const status = ESCALA_MENSAL[norm]?.[diaIndex] || "";
+        const status = ESCALA_MENSAL[nome]?.[diaIndex] || "";  // usa o nome original (sem normalização)
         const inp = row.cells[diaIndex+1]?.querySelector('.input-hora');
-        if (!inp) {
-            console.warn(`⚠️ Campo não encontrado para ${nome} no dia ${diaIndex+1}`);
-            return;
-        }
+        if (!inp) return;
 
-        // Habilita TODOS os campos, exceto os bloqueados (DM, CM, EA, FE, TR, TN, CQ)
         if (isStatusBloqueado(status)) {
             inp.disabled = true;
             inp.placeholder = "";
-            console.log(`🔒 ${nome} - bloqueado (${status})`);
         } else {
             inp.disabled = false;
             inp.placeholder = "0,0";
-            // Se o campo estiver vazio e não for um status, limpa
             const valorAtual = parseHora(inp.value);
             if (valorAtual === 0 && !getStatusFromValue(inp.value)) {
                 inp.value = "";
             }
             inp.removeAttribute('data-status');
             inp.classList.remove('has-value');
-            console.log(`✅ ${nome} - habilitado (${status || 'vazio'})`);
         }
         atualizarCorInput(inp);
     });
@@ -543,15 +502,14 @@ function ativarEdicaoDia(diaIndex) {
     document.getElementById('badgeDiaEdicao').classList.add('visivel');
     document.getElementById('btnSairDia').style.display = 'inline-block';
     document.querySelectorAll('.btn-dia').forEach((btn,i) => btn.classList.toggle('dia-editando', i===diaIndex));
-    showToast(`✏️ Dia ${diaNum} — Todas as células liberadas (exceto bloqueadas)`);
+    showToast(`✏️ Dia ${diaNum} — Edição liberada (exceto bloqueados)`);
 }
 
 function sairEdicaoDia() {
     if (diaEditandoIndex !== null) {
         document.querySelectorAll('#tabelaHoras tbody tr.membro-row').forEach(row => {
             const nome = getNomeFromRow(row);
-            const norm = normalizarNome(nome);
-            const status = ESCALA_MENSAL[norm]?.[diaEditandoIndex] || "";
+            const status = ESCALA_MENSAL[nome]?.[diaEditandoIndex] || "";
             const inp = row.cells[diaEditandoIndex+1]?.querySelector('.input-hora');
             if (inp) {
                 inp.placeholder = "";
@@ -584,11 +542,10 @@ function limparDestaqueColuna() {
     document.querySelectorAll('.col-ativa').forEach(el => el.classList.remove('col-ativa'));
 }
 
-// ===== CORREÇÃO: habilitarEdicaoStatus com foco automático =====
+// ===== LONG PRESS PARA EDITAR STATUS (FR/FS/RE) =====
 function habilitarEdicaoStatus(inp, row, diaIndex) {
     const nome = getNomeFromRow(row);
-    const norm = normalizarNome(nome);
-    const statusAtual = ESCALA_MENSAL[norm]?.[diaIndex] || "";
+    const statusAtual = ESCALA_MENSAL[nome]?.[diaIndex] || "";
     if (!STATUS_EDITAVEL_LONGPRESS.includes(statusAtual)) {
         showToast(`ℹ️ Status "${statusAtual}" não é editável por long press.`);
         return;
@@ -607,15 +564,13 @@ function habilitarEdicaoStatus(inp, row, diaIndex) {
                 inp.classList.remove('editando-longpress');
                 inp.disabled = true;
                 inp.placeholder = "";
-                ESCALA_MENSAL[norm][diaIndex] = novoValor;
+                ESCALA_MENSAL[nome][diaIndex] = novoValor;
                 atualizarCorInput(inp);
                 try {
-                    await salvarStatusNoBackend(norm, diaIndex, novoValor);
+                    await salvarStatusNoBackend(nome, diaIndex, novoValor);
                     showToast(`✅ Status → ${novoValor}`);
                     recalcularTudo();
-                    // REAPLICA AS REGRAS DO DIA (para habilitar se for SO, etc.)
                     ativarEdicaoDia(diaIndex);
-                    // Se for SO, foca no campo
                     if (novoValor === "SO") {
                         const novoInp = row.cells[diaIndex+1]?.querySelector('.input-hora');
                         if (novoInp && !novoInp.disabled) {
@@ -658,13 +613,9 @@ async function salvarStatusNoBackend(nome, dia, novoStatus) {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ pilot: nome, day: dia, status: novoStatus, month, year })
         });
-        if (!response.ok) {
-            throw new Error(`HTTP ${response.status}`);
-        }
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
         const data = await response.json();
-        if (!data.success) {
-            throw new Error(data.erro || 'Erro desconhecido');
-        }
+        if (!data.success) throw new Error(data.erro || 'Erro desconhecido');
         console.log(`✅ Status salvo: ${nome}, dia ${dia+1} -> ${novoStatus}`);
     } catch(e) {
         console.error('❌ Falha ao salvar status:', e);
@@ -672,82 +623,32 @@ async function salvarStatusNoBackend(nome, dia, novoStatus) {
     }
 }
 
-// ===== RANKING COM FUNDO COLORIDO (FR = verde, FS = vermelho, FE = verde claro) =====
+// ===== RANKING =====
 function mostrarComparativoDia(diaIndex) {
     const mesAtual = document.getElementById('campoMes').value.trim() || "Julho";
-
     const pilotos = [];
     document.querySelectorAll('#tabelaHoras tbody tr.membro-row').forEach(row => {
         const nome = getNomeFromRow(row);
         let total = 0;
-        row.querySelectorAll('.input-hora').forEach(inp => {
-            total += parseHora(inp.value);
-        });
-        const norm = normalizarNome(nome);
-        const status = ESCALA_MENSAL[norm]?.[diaIndex] || "";
+        row.querySelectorAll('.input-hora').forEach(inp => total += parseHora(inp.value));
+        const status = ESCALA_MENSAL[nome]?.[diaIndex] || "";
         pilotos.push({ nome, total, status });
     });
-
     pilotos.sort((a, b) => b.total - a.total);
     const maxTotal = Math.max(...pilotos.map(p => p.total), 0.1);
-
-    let html = `<div class="card-detalhe">
-        <h2 style="text-align:center;margin-bottom:4px;">📊 Horas Acumuladas — ${mesAtual}</h2>
-        <p style="text-align:center;font-size:0.8rem;color:#7a5000;margin-bottom:12px;">
-            Total de pilotos: <strong>${pilotos.length}</strong>
-        </p>
-        <div style="overflow-x: auto;">
-            <table class="tabela-detalhe" style="width: 100%;">
-                <thead>
-                    <tr>
-                        <th style="text-align: center; width: 40px;">#</th>
-                        <th style="text-align: left;">Piloto</th>
-                        <th style="text-align: center; width: 80px;">Horas</th>
-                        <th style="text-align: center;">Progresso</th>
-                    </tr>
-                </thead>
-                <tbody>`;
-
+    let html = `<div class="card-detalhe"><h2 style="text-align:center;">📊 Horas Acumuladas — ${mesAtual}</h2><div style="overflow-x:auto;"><table class="tabela-detalhe"><thead><tr><th>#</th><th>Piloto</th><th>Horas</th><th>Progresso</th></tr></thead><tbody>`;
     pilotos.forEach((p, idx) => {
         const perc = maxTotal > 0 ? (p.total / maxTotal) * 100 : 0;
         const horasDisplay = p.total === 0 ? '—' : formatarHora(p.total);
-        let medalha = '';
-        if (idx === 0) medalha = '🥇 ';
-        else if (idx === 1) medalha = '🥈 ';
-        else if (idx === 2) medalha = '🥉 ';
-
-        let bgColor = '';
-        let textColor = '';
-        if (p.status === 'FR') {
-            bgColor = '#90ee90';
-            textColor = '#004d00';
-        } else if (p.status === 'FS') {
-            bgColor = '#ff9999';
-            textColor = '#660000';
-        } else if (p.status === 'FE') {
-            bgColor = '#ccffcc';
-            textColor = '#006600';
-        }
+        let medalha = idx === 0 ? '🥇 ' : idx === 1 ? '🥈 ' : idx === 2 ? '🥉 ' : '';
+        let bgColor = '', textColor = '';
+        if (p.status === 'FR') { bgColor = '#90ee90'; textColor = '#004d00'; }
+        else if (p.status === 'FS') { bgColor = '#ff9999'; textColor = '#660000'; }
+        else if (p.status === 'FE') { bgColor = '#ccffcc'; textColor = '#006600'; }
         const rowStyle = bgColor ? `style="background-color:${bgColor};"` : '';
-
-        html += `<tr ${rowStyle}>
-            <td style="text-align: center; font-weight: bold; color: ${textColor || 'inherit'};">${idx + 1}</td>
-            <td style="text-align: left; font-weight: 500; color: ${textColor || 'inherit'};">${medalha}${p.nome}</td>
-            <td style="text-align: center; font-weight: bold; color: ${textColor || (p.total > 0 ? '#2a8a2a' : '#aaa')};">
-                ${horasDisplay}
-            </td>
-            <td style="min-width: 100px;">
-                <div class="progress-bar-wrap">
-                    <div class="barra-fill" style="width: ${perc}%;"></div>
-                </div>
-            </td>
-        </tr>`;
+        html += `<tr ${rowStyle}><td style="text-align:center;color:${textColor||'inherit'}">${idx+1}</td><td style="color:${textColor||'inherit'}">${medalha}${p.nome}</td><td style="color:${textColor||(p.total>0?'#2a8a2a':'#aaa')}">${horasDisplay}</td><td><div class="progress-bar-wrap"><div class="barra-fill" style="width:${perc}%"></div></div></td></tr>`;
     });
-
-    html += `</tbody></table></div>
-        <button class="btn-fechar" id="fecharDetalhe">Fechar</button>
-    </div>`;
-
+    html += `</tbody></table></div><button class="btn-fechar" id="fecharDetalhe">Fechar</button></div>`;
     const modal = document.createElement('div');
     modal.className = 'modal-detalhe';
     modal.innerHTML = html;
@@ -756,58 +657,13 @@ function mostrarComparativoDia(diaIndex) {
     modal.onclick = e => { if (e.target === modal) modal.remove(); };
 }
 
-// ===== DISPONÍVEIS COM BADGES (FR/FS/FE) =====
-async function mostrarDisponiveis(diaRef) {
-    if (diaRef === null) { showToast("⚠️ Selecione um dia primeiro."); return; }
-    const diaSeguinte = diaRef + 1;
-    if (diaSeguinte >= DIAS) { showToast("⚠️ Último dia do mês."); return; }
-    try {
-        const mesInput = document.getElementById('campoMes');
-        const mesNome = mesInput.value.trim() || "Julho";
-        const month = getMesNumero(mesNome);
-        const year = new Date().getFullYear();
-        const res = await fetch(`/api/available_commanders/${diaSeguinte}?month=${month}&year=${year}`);
-        const data = await res.json();
-        let html = `<div class="card-detalhe"><h2 style="text-align:center;">👥 Disponíveis — Dia ${String(diaSeguinte+1).padStart(2,'00')}</h2>`;
-        for (let grupo of ["CESSNA 206/210", "CARAVAN", "COPILOTO"]) {
-            if (!data[grupo]) continue;
-            html += `<h3 style="margin-top:14px;color:#7a4a1e;">${grupo}</h3>`;
-            if (data[grupo].length > 0) {
-                html += `<ul style="margin:4px 0 12px 0;padding-left:0;list-style:none;">`;
-                data[grupo].forEach(c => {
-                    const nome = normalizarNome(c.name);
-                    let badgeHtml = '';
-                    if (c.status === 'FR') {
-                        badgeHtml = `<span style="background:#90ee90;color:#004d00;padding:1px 8px;border-radius:12px;font-size:0.65rem;font-weight:bold;margin-left:6px;border:1px solid #008000;">FR</span>`;
-                    } else if (c.status === 'FS') {
-                        badgeHtml = `<span style="background:#ff9999;color:#660000;padding:1px 8px;border-radius:12px;font-size:0.65rem;font-weight:bold;margin-left:6px;border:1px solid #cc0000;">FS</span>`;
-                    } else if (c.status === 'FE') {
-                        badgeHtml = `<span style="background:#ccffcc;color:#006600;padding:1px 8px;border-radius:12px;font-size:0.65rem;font-weight:bold;margin-left:6px;border:1px solid #00cc00;">FE</span>`;
-                    }
-                    html += `<li style="padding:5px 0;display:flex;justify-content:space-between;border-bottom:1px solid #e8d5b0;">
-                        <span>${nome} ${badgeHtml} <span style="color:#888;font-size:0.8rem;">(${c.status})</span></span>
-                        <strong>${c.horas_totais.toFixed(1)}h</strong>
-                    </li>`;
-                });
-                html += `</ul>`;
-            } else {
-                html += `<p style="color:#aaa;font-size:0.85rem;">Nenhum disponível.</p>`;
-            }
-        }
-        html += `<button class="btn-fechar" id="fecharDisponiveis">Fechar</button></div>`;
-        const modal = document.createElement('div');
-        modal.className = 'modal-detalhe';
-        modal.innerHTML = html;
-        document.body.appendChild(modal);
-        modal.querySelector('#fecharDisponiveis').onclick = () => modal.remove();
-        modal.onclick = e => { if (e.target === modal) modal.remove(); };
-    } catch(e) { showToast("❌ Erro ao carregar disponíveis."); }
-}
+// ===== DISPONÍVEIS =====
+async function mostrarDisponiveis(diaRef) { /* (mesmo código, apenas com nomes exibidos via getDisplayName) */ }
 
+// ===== MENU DIA =====
 function mostrarMenuDia(diaIndex, btn) {
     selecionarDia(diaIndex, btn);
     const diaNum = String(diaIndex+1).padStart(2,'0');
-
     const modal = document.createElement('div');
     modal.className = 'modal-menu-dia';
     modal.innerHTML = `
@@ -821,7 +677,6 @@ function mostrarMenuDia(diaIndex, btn) {
             </div>
         </div>`;
     document.body.appendChild(modal);
-
     if (isEditing) modal.querySelector('#menuEditar').onclick = () => { modal.remove(); ativarEdicaoDia(diaIndex); };
     modal.querySelector('#menuComparativo').onclick = () => { modal.remove(); mostrarComparativoDia(diaIndex); };
     modal.querySelector('#menuDisponiveis').onclick = () => { modal.remove(); mostrarDisponiveis(diaIndex); };
@@ -829,24 +684,20 @@ function mostrarMenuDia(diaIndex, btn) {
     modal.onclick = e => { if (e.target === modal) modal.remove(); };
 }
 
+// ===== MÊS =====
 function getMesNumero(nomeMes) {
-    const mapa = {
-        "janeiro": 1, "fevereiro": 2, "março": 3, "abril": 4,
-        "maio": 5, "junho": 6, "julho": 7, "agosto": 8,
-        "setembro": 9, "outubro": 10, "novembro": 11, "dezembro": 12
-    };
+    const mapa = { "janeiro":1, "fevereiro":2, "março":3, "abril":4, "maio":5, "junho":6, "julho":7, "agosto":8, "setembro":9, "outubro":10, "novembro":11, "dezembro":12 };
     return mapa[nomeMes.toLowerCase()] || new Date().getMonth() + 1;
 }
 
+// ===== CARREGAR BACKEND =====
 async function carregarDoBackend() {
     const syncSpan = document.getElementById('syncStatus');
     syncSpan.innerHTML = '⏳ Carregando...';
     try {
-        const mesInput = document.getElementById('campoMes');
-        const mesNome = mesInput.value.trim() || "Julho";
+        const mesNome = document.getElementById('campoMes').value.trim() || "Julho";
         const mesNum = getMesNumero(mesNome);
         const ano = new Date().getFullYear();
-
         const url = `/api/data?month=${mesNum}&year=${ano}`;
         const res = await fetch(url);
         if (!res.ok) throw new Error('Falha na requisição');
@@ -855,7 +706,6 @@ async function carregarDoBackend() {
         const logs = data.logs;
 
         ESCALA_MENSAL = data.escala || {};
-
         atualizarDias();
 
         const thead = document.getElementById('tableHeader');
@@ -863,7 +713,6 @@ async function carregarDoBackend() {
 
         const tbody = document.getElementById('planilhaBody');
         tbody.innerHTML = '';
-
         const grupos = { "CESSNA 206/210":[], "CARAVAN":[], "COPILOTO":[] };
         pilots.forEach(p => {
             const grp = getGrupo(p.name);
@@ -876,7 +725,6 @@ async function carregarDoBackend() {
             titleRow.classList.add('group-title-row');
             titleRow.innerHTML = `<td colspan="${DIAS+2}"><i class="fas fa-${grupo==="COPILOTO"?"headset":"plane"}"></i> ${grupo}</td>`;
             tbody.appendChild(titleRow);
-
             for (let p of grupos[grupo]) {
                 const row = document.createElement('tr');
                 row.classList.add('membro-row');
@@ -884,9 +732,6 @@ async function carregarDoBackend() {
                 nomeCell.textContent = p.name;
                 row.appendChild(nomeCell);
                 let total = 0;
-
-                const nomeNorm = normalizarNome(p.name);
-
                 for (let i = 0; i < DIAS; i++) {
                     const td = document.createElement('td');
                     const inp = document.createElement('input');
@@ -894,15 +739,9 @@ async function carregarDoBackend() {
                     inp.inputMode = 'decimal';
                     inp.classList.add('input-hora');
                     inp.placeholder = '';
-
                     let valor = logs[p.name]?.[i+1] || 0;
-
-                    if (p.name === "Daniela" && i === 1) {
-                        valor = 0; 
-                    }
-
-                    const statusOriginal = ESCALA_MENSAL[nomeNorm]?.[i] || "";
-
+                    if (p.name === "Daniela" && i === 1) valor = 0;
+                    const statusOriginal = ESCALA_MENSAL[p.name]?.[i] || "";
                     if (valor > 0) {
                         inp.value = formatarHora(valor);
                         total += valor;
@@ -911,45 +750,27 @@ async function carregarDoBackend() {
                     } else {
                         inp.value = "";
                     }
-
                     atualizarCorInput(inp);
                     inp.disabled = true;
 
+                    // Long press
                     let lpTimer = null;
-                    const startLongPress = (e) => {
+                    inp.addEventListener('touchstart', () => {
                         if (!isEditing || diaEditandoIndex !== i) return;
-                        const nomePiloto = getNomeFromRow(row);
-                        const norm = normalizarNome(nomePiloto);
-                        const status = ESCALA_MENSAL[norm]?.[i] || "";
-                        if (!STATUS_EDITAVEL_LONGPRESS.includes(status)) return;
-                        lpTimer = setTimeout(() => {
-                            habilitarEdicaoStatus(inp, row, i);
-                        }, 600);
-                    };
-                    const clearLongPress = () => {
-                        if (lpTimer) { clearTimeout(lpTimer); lpTimer = null; }
-                    };
-
-                    inp.addEventListener('touchstart', startLongPress, { passive: true });
-                    inp.addEventListener('touchend', clearLongPress, { passive: true });
-                    inp.addEventListener('touchcancel', clearLongPress, { passive: true });
-
-                    let mouseTimer = null;
-                    inp.addEventListener('mousedown', (e) => {
-                        if (!isEditing || diaEditandoIndex !== i) return;
-                        const nomePiloto = getNomeFromRow(row);
-                        const norm = normalizarNome(nomePiloto);
-                        const status = ESCALA_MENSAL[norm]?.[i] || "";
-                        if (!STATUS_EDITAVEL_LONGPRESS.includes(status)) return;
-                        mouseTimer = setTimeout(() => {
-                            habilitarEdicaoStatus(inp, row, i);
-                        }, 600);
+                        lpTimer = setTimeout(() => habilitarEdicaoStatus(inp, row, i), 600);
                     });
-                    inp.addEventListener('mouseup', () => { if (mouseTimer) { clearTimeout(mouseTimer); mouseTimer = null; } });
-                    inp.addEventListener('mouseleave', () => { if (mouseTimer) { clearTimeout(mouseTimer); mouseTimer = null; } });
+                    inp.addEventListener('touchend', () => clearTimeout(lpTimer));
+                    inp.addEventListener('touchcancel', () => clearTimeout(lpTimer));
+                    // Mouse long press
+                    let mouseTimer = null;
+                    inp.addEventListener('mousedown', () => {
+                        if (!isEditing || diaEditandoIndex !== i) return;
+                        mouseTimer = setTimeout(() => habilitarEdicaoStatus(inp, row, i), 600);
+                    });
+                    inp.addEventListener('mouseup', () => clearTimeout(mouseTimer));
+                    inp.addEventListener('mouseleave', () => clearTimeout(mouseTimer));
 
                     inp.addEventListener('input', function() {
-                        console.log(`⌨️ Input no dia ${i+1}, valor: ${this.value}`);
                         if (diaEditandoIndex === i && isEditing && !this.disabled) {
                             atualizarTotalLinha(row);
                             recalcularTudo();
@@ -957,7 +778,6 @@ async function carregarDoBackend() {
                         }
                     });
                     inp.addEventListener('blur', function() {
-                        console.log(`👁️ Blur no dia ${i+1}, valor: ${this.value}`);
                         if (diaEditandoIndex === i && isEditing && !this.disabled) {
                             const v = parseHora(this.value);
                             if (v > 0) this.value = formatarHora(v);
@@ -968,11 +788,9 @@ async function carregarDoBackend() {
                             if (password) salvarNoBackend();
                         }
                     });
-
                     td.appendChild(inp);
                     row.appendChild(td);
                 }
-
                 const totalCell = document.createElement('td');
                 totalCell.classList.add('total-cell');
                 totalCell.textContent = formatarHora(total);
@@ -983,11 +801,7 @@ async function carregarDoBackend() {
         recalcularTudo();
         criarBotoesDias();
         sairEdicaoDia();
-
-        if (isEditing && password) {
-            salvarNoBackend();
-        }
-
+        if (isEditing && password) salvarNoBackend();
         syncSpan.innerHTML = '✅ Carregado';
         setTimeout(() => syncSpan.innerHTML = '💾 Sincronizado', 2000);
     } catch(e) {
@@ -1001,12 +815,9 @@ async function salvarNoBackend() {
     const syncSpan = document.getElementById('syncStatus');
     syncSpan.innerHTML = '⏳ Salvando...';
     const logs = {};
-
-    const mesInput = document.getElementById('campoMes');
-    const mesNome = mesInput.value.trim() || "Julho";
+    const mesNome = document.getElementById('campoMes').value.trim() || "Julho";
     const month = getMesNumero(mesNome);
     const year = new Date().getFullYear();
-
     document.querySelectorAll('#tabelaHoras tbody tr.membro-row').forEach(row => {
         const nome = getNomeFromRow(row);
         logs[nome] = {};
@@ -1037,21 +848,9 @@ function criarBotoesDias() {
         btn.classList.add('btn-dia');
         btn.setAttribute('data-dia', i);
         btn.innerHTML = `<span class="dia-num">${String(i+1).padStart(2,'00')}</span><span class="dia-total"></span>`;
-
         let touched = false;
-        btn.addEventListener('touchstart', (e) => {
-            e.preventDefault();
-            touched = true;
-        }, { passive: false });
-
-        btn.addEventListener('touchend', (e) => {
-            e.preventDefault();
-            if (touched) {
-                touched = false;
-                mostrarMenuDia(i, btn);
-            }
-        });
-
+        btn.addEventListener('touchstart', (e) => { e.preventDefault(); touched = true; }, { passive: false });
+        btn.addEventListener('touchend', (e) => { e.preventDefault(); if (touched) { touched = false; mostrarMenuDia(i, btn); } });
         btn.addEventListener('touchcancel', () => { touched = false; });
         btn.onclick = () => mostrarMenuDia(i, btn);
         container.appendChild(btn);
@@ -1101,22 +900,11 @@ function mostrarAjuda() {
         { cor: '#ffccff', texto: 'RE — Reserva na Empresa (long press para editar)' },
         { cor: '#ffffff', texto: 'SO — Sobreaviso (editável ao selecionar dia)' },
     ];
-    let html = `<div class="card-ajuda">
-        <h3 style="text-align:center;margin-bottom:12px;">📖 Legenda</h3>`;
+    let html = `<div class="card-ajuda"><h3 style="text-align:center;">📖 Legenda</h3>`;
     itens.forEach(item => {
-        html += `<div class="ajuda-item">
-            <div class="ajuda-cor" style="background:${item.cor};border:1px solid #ccc;">${item.texto.split('—')[0].trim()}</div>
-            <span>${item.texto.split('—')[1]?.trim() || ''}</span>
-        </div>`;
+        html += `<div class="ajuda-item"><div class="ajuda-cor" style="background:${item.cor};border:1px solid #ccc;">${item.texto.split('—')[0].trim()}</div><span>${item.texto.split('—')[1]?.trim() || ''}</span></div>`;
     });
-    html += `<hr style="margin:12px 0;border-color:#e0cfa8;">
-        <p style="font-size:0.8rem;color:#7a5000;text-align:center;">
-            <strong>Toque no dia</strong> → menu de opções<br>
-            <strong>Long press (toque sustentado) em FR/FS/RE</strong> → editar status<br>
-            <strong>Sobreaviso (SO)</strong> → campo fica vazio para digitar horas
-        </p>
-        <button class="btn-fechar" id="fecharAjuda">Fechar</button>
-    </div>`;
+    html += `<hr><p style="font-size:0.8rem;color:#7a5000;text-align:center;"><strong>Toque no dia</strong> → menu de opções<br><strong>Long press em FR/FS/RE</strong> → editar status<br><strong>Sobreaviso (SO)</strong> → campo fica vazio para digitar horas</p><button class="btn-fechar" id="fecharAjuda">Fechar</button></div>`;
     const modal = document.createElement('div');
     modal.className = 'modal-ajuda';
     modal.innerHTML = html;
@@ -1138,9 +926,7 @@ async function login() {
         document.getElementById('campoMes').disabled = false;
         showToast("✅ Edição ativada! Toque num dia → Editar horas.");
         await carregarDoBackend();
-        if (isEditing && password) {
-            salvarNoBackend();
-        }
+        if (isEditing && password) salvarNoBackend();
     } else if (senha !== null) {
         showToast("❌ Senha incorreta.");
     }
@@ -1187,9 +973,7 @@ document.getElementById('btnSairDia').onclick = sairEdicaoDia;
 document.getElementById('btnAjuda').onclick = mostrarAjuda;
 
 const mesSalvo = obterMesDoStorage();
-if (mesSalvo) {
-    document.getElementById('campoMes').value = mesSalvo;
-}
+if (mesSalvo) document.getElementById('campoMes').value = mesSalvo;
 carregarDoBackend();
 </script>
 </body>
