@@ -13,7 +13,7 @@
     <link rel="apple-touch-icon" href="/icon-192.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        /* ===== CSS COMPLETO (mesmo do original) ===== */
+        /* ===== CSS COMPLETO ===== */
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body {
             margin: 0; min-height: 100vh;
@@ -328,7 +328,6 @@ function salvarMesNoStorage(mes) { localStorage.setItem(MES_STORAGE_KEY, mes); }
 function obterMesDoStorage() { return localStorage.getItem(MES_STORAGE_KEY) || null; }
 
 // ===== ESCALA MENSAL (RECEBIDA DO BACKEND) =====
-// Chaves são exatamente os nomes dos pilotos (sem normalização)
 let ESCALA_MENSAL = {};
 
 // ===== GRUPOS =====
@@ -342,7 +341,6 @@ function getGrupo(nome) {
     return "CESSNA 206/210";
 }
 
-// ===== STATUS =====
 const STATUS_BLOQUEADOS = ["DM","CM","EA","FE","TR","TN","CQ"];
 const STATUS_EDITAVEL_LONGPRESS = ["FS","RE","FR"];
 function isStatusBloqueado(status) { return STATUS_BLOQUEADOS.includes(status); }
@@ -353,7 +351,6 @@ let diaEditandoIndex = null;
 let diaReferencia = null;
 let password = "";
 
-// ===== FUNÇÕES AUXILIARES =====
 function diasNoMes(mes) {
     const m = mes.toLowerCase();
     if (m === "fevereiro") return 28;
@@ -453,7 +450,6 @@ function atualizarTotaisBotoesDias() {
     });
 }
 
-// ===== ATIVAR EDIÇÃO (habilita todas as células, exceto bloqueadas) =====
 function ativarEdicaoDia(diaIndex) {
     if (diaEditandoIndex !== null && diaEditandoIndex !== diaIndex) sairEdicaoDia();
     diaEditandoIndex = diaIndex;
@@ -528,7 +524,6 @@ function limparDestaqueColuna() {
     document.querySelectorAll('.col-ativa').forEach(el => el.classList.remove('col-ativa'));
 }
 
-// ===== LONG PRESS PARA EDITAR STATUS (FR/FS/RE) =====
 function habilitarEdicaoStatus(inp, row, diaIndex) {
     const nome = getNomeFromRow(row);
     const statusAtual = ESCALA_MENSAL[nome]?.[diaIndex] || "";
@@ -609,7 +604,6 @@ async function salvarStatusNoBackend(nome, dia, novoStatus) {
     }
 }
 
-// ===== RANKING =====
 function mostrarComparativoDia(diaIndex) {
     const mesAtual = document.getElementById('campoMes').value.trim() || "Julho";
     const pilotos = [];
@@ -643,7 +637,6 @@ function mostrarComparativoDia(diaIndex) {
     modal.onclick = e => { if (e.target === modal) modal.remove(); };
 }
 
-// ===== DISPONÍVEIS (com badges) =====
 async function mostrarDisponiveis(diaRef) {
     if (diaRef === null) { showToast("⚠️ Selecione um dia primeiro."); return; }
     const diaSeguinte = diaRef + 1;
@@ -691,7 +684,6 @@ async function mostrarDisponiveis(diaRef) {
     } catch(e) { showToast("❌ Erro ao carregar disponíveis."); }
 }
 
-// ===== MENU DIA =====
 function mostrarMenuDia(diaIndex, btn) {
     selecionarDia(diaIndex, btn);
     const diaNum = String(diaIndex+1).padStart(2,'0');
@@ -715,13 +707,11 @@ function mostrarMenuDia(diaIndex, btn) {
     modal.onclick = e => { if (e.target === modal) modal.remove(); };
 }
 
-// ===== MÊS =====
 function getMesNumero(nomeMes) {
     const mapa = { "janeiro":1, "fevereiro":2, "março":3, "abril":4, "maio":5, "junho":6, "julho":7, "agosto":8, "setembro":9, "outubro":10, "novembro":11, "dezembro":12 };
     return mapa[nomeMes.toLowerCase()] || new Date().getMonth() + 1;
 }
 
-// ===== CARREGAR BACKEND =====
 async function carregarDoBackend() {
     const syncSpan = document.getElementById('syncStatus');
     syncSpan.innerHTML = '⏳ Carregando...';
@@ -784,7 +774,6 @@ async function carregarDoBackend() {
                     atualizarCorInput(inp);
                     inp.disabled = true;
 
-                    // Long press
                     let lpTimer = null;
                     inp.addEventListener('touchstart', () => {
                         if (!isEditing || diaEditandoIndex !== i) return;
