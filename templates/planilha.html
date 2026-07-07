@@ -338,7 +338,8 @@ const NOME_MAP = {
     "Albert Otto Azevedo": "Otto",
     "Vitor da Costa Bento": "Bento",
     "Andrade": "Andrade",
-    "Ronaldo": "Ronalldo",
+    "Ronaldo": "Ronalldo",          // <-- normaliza Ronaldo para Ronalldo
+    "Ronalldo": "Ronalldo",
     "Dany": "Danielle Pereira",
     "Victor": "Victor",
     "Vitor": "Victor",
@@ -358,7 +359,8 @@ const NOME_MAP = {
     "Thales": "Thales",
     "Serafim": "Serafim",
     "Rodrigo": "Rodrigo",
-    "Ronalldo": "Ronalldo"
+    "Sergio": "Sergio",            // <-- garante que Sergio seja mapeado para si mesmo
+    "Igorh": "Igorh"               // <-- garante que Igorh seja mapeado para si mesmo
 };
 
 function normalizarNome(nome) {
@@ -501,28 +503,34 @@ function atualizarTotaisBotoesDias() {
 function ativarEdicaoDia(diaIndex) {
     if (diaEditandoIndex !== null && diaEditandoIndex !== diaIndex) sairEdicaoDia();
     diaEditandoIndex = diaIndex;
+    console.log(`📝 Editando dia ${diaIndex+1}`);
 
     document.querySelectorAll('#tabelaHoras tbody tr.membro-row').forEach(row => {
         const nome = getNomeFromRow(row);
         const norm = normalizarNome(nome);
         const status = ESCALA_MENSAL[norm]?.[diaIndex] || "";
         const inp = row.cells[diaIndex+1]?.querySelector('.input-hora');
-        if (!inp) return;
+        if (!inp) {
+            console.warn(`⚠️ Campo não encontrado para ${nome} no dia ${diaIndex+1}`);
+            return;
+        }
 
-        // Habilita todas as células, exceto as bloqueadas (DM, CM, EA, FE, TR, TN, CQ)
+        // Habilita TODOS os campos, exceto os bloqueados (DM, CM, EA, FE, TR, TN, CQ)
         if (isStatusBloqueado(status)) {
             inp.disabled = true;
             inp.placeholder = "";
+            console.log(`🔒 ${nome} - bloqueado (${status})`);
         } else {
             inp.disabled = false;
             inp.placeholder = "0,0";
-            // Se o campo estiver vazio e não for um status, limpa o conteúdo
+            // Se o campo estiver vazio e não for um status, limpa
             const valorAtual = parseHora(inp.value);
             if (valorAtual === 0 && !getStatusFromValue(inp.value)) {
                 inp.value = "";
             }
             inp.removeAttribute('data-status');
             inp.classList.remove('has-value');
+            console.log(`✅ ${nome} - habilitado (${status || 'vazio'})`);
         }
         atualizarCorInput(inp);
     });
@@ -535,7 +543,7 @@ function ativarEdicaoDia(diaIndex) {
     document.getElementById('badgeDiaEdicao').classList.add('visivel');
     document.getElementById('btnSairDia').style.display = 'inline-block';
     document.querySelectorAll('.btn-dia').forEach((btn,i) => btn.classList.toggle('dia-editando', i===diaIndex));
-    showToast(`✏️ Dia ${diaNum} — Todas as células liberadas (exceto bloqueadas) | Long press em FR/FS/RE para editar status`);
+    showToast(`✏️ Dia ${diaNum} — Todas as células liberadas (exceto bloqueadas)`);
 }
 
 function sairEdicaoDia() {
@@ -547,7 +555,6 @@ function sairEdicaoDia() {
             const inp = row.cells[diaEditandoIndex+1]?.querySelector('.input-hora');
             if (inp) {
                 inp.placeholder = "";
-                // Se for SO e não tiver valor, limpa o campo
                 if (status === "SO" && parseHora(inp.value) === 0 && !getStatusFromValue(inp.value)) {
                     inp.value = "";
                     inp.setAttribute('data-status', 'default');
@@ -577,7 +584,7 @@ function limparDestaqueColuna() {
     document.querySelectorAll('.col-ativa').forEach(el => el.classList.remove('col-ativa'));
 }
 
-// ===== CORREÇÃO PRINCIPAL: habilitarEdicaoStatus com foco automático =====
+// ===== CORREÇÃO: habilitarEdicaoStatus com foco automático =====
 function habilitarEdicaoStatus(inp, row, diaIndex) {
     const nome = getNomeFromRow(row);
     const norm = normalizarNome(nome);
@@ -617,7 +624,7 @@ function habilitarEdicaoStatus(inp, row, diaIndex) {
                         }
                     }
                 } catch (error) {
-                    console.error("Erro ao salvar status:", error);
+                    console.error("❌ Erro ao salvar status:", error);
                     showToast(`❌ Erro ao salvar: ${error.message}`);
                 }
             } else {
@@ -658,9 +665,9 @@ async function salvarStatusNoBackend(nome, dia, novoStatus) {
         if (!data.success) {
             throw new Error(data.erro || 'Erro desconhecido');
         }
-        console.log(`Status salvo: ${nome}, dia ${dia+1} -> ${novoStatus}`);
+        console.log(`✅ Status salvo: ${nome}, dia ${dia+1} -> ${novoStatus}`);
     } catch(e) {
-        console.error('Falha ao salvar status:', e);
+        console.error('❌ Falha ao salvar status:', e);
         throw e;
     }
 }
@@ -942,6 +949,7 @@ async function carregarDoBackend() {
                     inp.addEventListener('mouseleave', () => { if (mouseTimer) { clearTimeout(mouseTimer); mouseTimer = null; } });
 
                     inp.addEventListener('input', function() {
+                        console.log(`⌨️ Input no dia ${i+1}, valor: ${this.value}`);
                         if (diaEditandoIndex === i && isEditing && !this.disabled) {
                             atualizarTotalLinha(row);
                             recalcularTudo();
@@ -949,6 +957,7 @@ async function carregarDoBackend() {
                         }
                     });
                     inp.addEventListener('blur', function() {
+                        console.log(`👁️ Blur no dia ${i+1}, valor: ${this.value}`);
                         if (diaEditandoIndex === i && isEditing && !this.disabled) {
                             const v = parseHora(this.value);
                             if (v > 0) this.value = formatarHora(v);
