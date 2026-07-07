@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # Escala Mensal de Folgas - Julho de 2026 - Voare Táxi Aéreo
-# Chaves: nomes curtos usados no banco (ex: "Ronaldo" para Ronalldo)
+# CHAVES CORRIGIDAS PARA COINCIDIR COM OS NOMES DO BANCO:
+# Ronalldo (e não Ronaldo), Dany (e não Daniela Pereira), etc.
 
 ESCALA_MENSAL = {
     # =========================================================================
@@ -31,7 +32,7 @@ ESCALA_MENSAL = {
         "SO","SO","FR","SO","SO","SO","SO","SO","SO","SO",
         "SO","SO","SO","SO","SO","SO","FR","SO","SO","SO","SO"
     ],
-    "Daniela Pereira": [
+    "Dany": [  # antes era "Daniela Pereira"
         "SO","SO","SO","SO","FR","SO","SO","SO","SO","SO",
         "SO","SO","SO","SO","FR","SO","SO","SO","SO","SO",
         "SO","SO","SO","SO","SO","SO","SO","SO","SO","SO","SO"
@@ -66,12 +67,12 @@ ESCALA_MENSAL = {
         "SO","SO","SO","SO","SO","SO","FR","SO","SO","SO",
         "SO","SO","SO","SO","SO","SO","SO","SO","FR","SO","SO"
     ],
-    "Joao Amarildo": [
+    "Amarildo": [  # antes era "Joao Amarildo"
         "FR","SO","SO","FR","SO","SO","SO","SO","SO","FR",
         "SO","SO","SO","FR","SO","SO","SO","SO","SO","SO",
         "SO","SO","SO","SO","SO","SO","FR","SO","SO","SO","SO"
     ],
-    "Joao Marcus": [
+    "Joao": [  # antes era "Joao Marcus"
         "SO","SO","FR","FS","FS","RE","SO","SO","SO","SO",
         "SO","SO","FR","FS","FS","RE","SO","SO","SO","SO",
         "SO","SO","SO","SO","SO","SO","SO","SO","SO","SO","SO"
@@ -141,7 +142,7 @@ ESCALA_MENSAL = {
         "SO","SO","SO","SO","SO","SO","SO","SO","SO","SO",
         "SO","SO","SO","SO","SO","SO","SO","SO","SO","SO","SO"
     ],
-    "Ronaldo": [  # <--- CHAVE CORRESPONDE A RONALLDO NO BANCO
+    "Ronalldo": [  # CORRIGIDO: agora com dois "ll" para bater com o banco
         "FR","SO","SO","SO","SO","FR","SO","SO","SO","SO",
         "SO","SO","SO","SO","SO","SO","SO","SO","SO","SO",
         "SO","SO","SO","SO","SO","SO","SO","SO","SO","SO","SO"
@@ -156,12 +157,12 @@ ESCALA_MENSAL = {
         "SO","SO","SO","SO","SO","SO","FR","SO","SO","SO",
         "SO","SO","SO","SO","SO","SO","SO","SO","FR","SO","SO"
     ],
-    "Victor Augusto": [
+    "Victor": [  # antes era "Victor Augusto"
         "SO","SO","SO","FR","SO","SO","SO","SO","SO","SO",
         "FR","SO","SO","SO","SO","SO","FR","SO","SO","SO",
         "SO","SO","SO","SO","SO","SO","SO","SO","FR","SO","SO"
     ],
-    "Vitor Bento": [
+    "Bento": [  # antes era "Vitor Bento"
         "SO","FR","SO","SO","SO","FR","SO","SO","SO","SO",
         "SO","SO","SO","SO","SO","SO","SO","SO","SO","SO",
         "SO","SO","SO","SO","SO","SO","SO","SO","SO","SO","SO"
