@@ -6,7 +6,6 @@ from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 from flask_cors import CORS
 
-# ===== Importação da escala =====
 try:
     from escala import ESCALA_MENSAL
 except ImportError:
@@ -15,11 +14,9 @@ except ImportError:
 
 app = Flask(__name__)
 
-# ===== CONFIGURAÇÃO DO BANCO DE DADOS =====
 database_url = os.environ.get("DATABASE_URL")
 if not database_url:
     print("❌ ERRO: variável DATABASE_URL não definida.")
-    # Fallback para desenvolvimento
     database_url = "postgresql://user:password@localhost/mydatabase"
 
 if database_url.startswith("postgres://"):
@@ -53,7 +50,6 @@ CORES = {
 
 PILOTOS_EXCLUIDOS = []
 
-# ===== MODELOS =====
 class Pilot(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(80), unique=True, nullable=False)
@@ -83,7 +79,7 @@ def normalizar_status(status):
         return "VO"
     return status
 
-def obtener_escala_dinamica(pilot_obj, month, year):
+def obter_escala_dinamica(pilot_obj, month, year):
     escala = list(ESCALA_MENSAL.get(pilot_obj.name, []))
     if not escala:
         return escala
@@ -93,9 +89,6 @@ def obtener_escala_dinamica(pilot_obj, month, year):
             escala[ov.day] = ov.status
     return escala
 
-# ============================
-# ROTAS
-# ============================
 @app.route("/")
 def landing():
     return app.send_static_file('index.html')
@@ -129,7 +122,7 @@ def get_data():
             result["logs"][log.pilot.name][log.day] = log.hours
 
         for p in pilots:
-            escala_pilot = obtener_escala_dinamica(p, month, year)
+            escala_pilot = obter_escala_dinamica(p, month, year)
             if escala_pilot:
                 result["escala"][p.name] = escala_pilot
 
@@ -182,7 +175,7 @@ def get_available_commanders(day_index):
         
         dia_solicitado = day_index + 1
         for pilot in pilots:
-            escala = obtener_escala_dinamica(pilot, month, year)
+            escala = obter_escala_dinamica(pilot, month, year)
             if not escala:
                 escala = ESCALA_MENSAL.get(pilot.name, [])
             if day_index < len(escala):
@@ -341,8 +334,9 @@ def povoar_dados_iniciais():
         "Serafim": "Tiago Carvalho Serafim"
     }
     for nome, group in grupos.items():
-        piloto = Pilot(name=nome, full_name=nomes_completos.get(nome, nome), group=group)
-        db.session.add(piloto)
+        if not Pilot.query.filter_by(name=nome).first():
+            piloto = Pilot(name=nome, full_name=nomes_completos.get(nome, nome), group=group)
+            db.session.add(piloto)
     db.session.commit()
     
     m_atual, y_atual = datetime.now().month, datetime.now().year
@@ -389,10 +383,11 @@ def povoar_dados_iniciais():
         p_obj = Pilot.query.filter_by(name=p_name).first()
         if p_obj:
             for d_num, h_val in dias_dados.items():
-                db.session.add(FlightLog(pilot_id=p_obj.id, day=d_num, month=m_atual, year=y_atual, hours=float(h_val)))
+                existente = FlightLog.query.filter_by(pilot_id=p_obj.id, day=d_num, month=m_atual, year=y_atual).first()
+                if not existente:
+                    db.session.add(FlightLog(pilot_id=p_obj.id, day=d_num, month=m_atual, year=y_atual, hours=float(h_val)))
     db.session.commit()
 
-# ===== INICIALIZAÇÃO DO BANCO COM RETRY =====
 def init_db():
     max_retries = 5
     for attempt in range(max_retries):
@@ -409,8 +404,6 @@ def init_db():
                 time.sleep(5)
             else:
                 print("❌ Não foi possível conectar ao banco após várias tentativas.")
-                # Não levanta exceção para não quebrar o app
-                # O app continuará rodando, mas as rotas podem falhar
 
 init_db()
 
