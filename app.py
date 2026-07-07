@@ -37,8 +37,28 @@ CORES = {
     "CQ": "azul_medio"
 }
 
-# ===== PILOTOS A SEREM EXCLUÍDOS DA EXIBIÇÃO =====
-PILOTOS_EXCLUIDOS = ["Felipe", "Tiago"]
+# ===== MAPEAMENTO DE NOMES (BACKEND) =====
+# Traduz nomes do banco para as chaves usadas em ESCALA_MENSAL
+NOME_MAP_BACKEND = {
+    "Ronalldo": "Ronaldo",
+    "Dany": "Daniela Pereira",
+    "Amarildo": "Joao Amarildo",
+    "Joao": "Joao Marcus",
+    "Victor": "Victor Augusto",
+    "Bento": "Vitor Bento",
+    "Mathias": "Mathias",
+    "Andrade": "Andrade",
+    "Sergio": "Sergio",
+    "Igorh": "Igorh",
+    "Cleiton": "Cleiton",
+    # outros nomes que podem precisar
+}
+
+def normalizar_nome_backend(nome):
+    return NOME_MAP_BACKEND.get(nome, nome)
+
+# ===== PILOTOS A SEREM EXCLUÍDOS DA EXIBIÇÃO (opcional) =====
+PILOTOS_EXCLUIDOS = []  # Agora vazio, pois a nova escala inclui Felipe e Tiago
 
 class Pilot(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -70,27 +90,31 @@ def normalizar_status(status):
     return status
 
 def obtener_escala_dinamica(pilot_obj, month, year):
-    escala = list(ESCALA_MENSAL.get(pilot_obj.name, []))
+    # Busca a escala usando o nome normalizado (mapeado)
+    nome_escala = normalizar_nome_backend(pilot_obj.name)
+    escala = list(ESCALA_MENSAL.get(nome_escala, []))
     if not escala:
         return escala
+    # Aplica overrides manuais (StatusOverride)
     overrides = StatusOverride.query.filter_by(pilot_id=pilot_obj.id, month=month, year=year).all()
     for ov in overrides:
         if ov.day < len(escala):
             escala[ov.day] = ov.status
-    logs = FlightLog.query.filter_by(pilot_id=pilot_obj.id, month=month, year=year).all()
-    dias_com_horas = {log.day for log in logs if log.hours > 0}
-    limite = min(10, len(escala))
-    for i in range(limite):
-        dia_num = i + 1
-        if dia_num in dias_com_horas and escala[i] == "FR":
-            sub_idx = i + 1
-            while sub_idx < len(escala):
-                sub_dia_num = sub_idx + 1
-                if escala[sub_idx] == "SO" and sub_dia_num not in dias_com_horas:
-                    escala[i] = "SO"
-                    escala[sub_idx] = "FR"
-                    break
-                sub_idx += 1
+    # ===== LÓGICA DE TROCA FR ↔ SO REMOVIDA (comentada) =====
+    # logs = FlightLog.query.filter_by(pilot_id=pilot_obj.id, month=month, year=year).all()
+    # dias_com_horas = {log.day for log in logs if log.hours > 0}
+    # limite = min(10, len(escala))
+    # for i in range(limite):
+    #     dia_num = i + 1
+    #     if dia_num in dias_com_horas and escala[i] == "FR":
+    #         sub_idx = i + 1
+    #         while sub_idx < len(escala):
+    #             sub_dia_num = sub_idx + 1
+    #             if escala[sub_idx] == "SO" and sub_dia_num not in dias_com_horas:
+    #                 escala[i] = "SO"
+    #                 escala[sub_idx] = "FR"
+    #                 break
+    #             sub_idx += 1
     return escala
 
 # ============================
@@ -116,16 +140,12 @@ def login():
 def get_data():
     month = request.args.get("month", default=datetime.now().month, type=int)
     year = request.args.get("year", default=datetime.now().year, type=int)
-    # Filtra os pilotos excluídos
     pilots = Pilot.query.filter(Pilot.name.notin_(PILOTOS_EXCLUIDOS)).all()
     logs = FlightLog.query.filter_by(month=month, year=year).all()
     result = {
         "pilots": [{"name": p.name, "group": p.group, "full_name": p.full_name or p.name} for p in pilots],
         "logs": {},
-        # ===== FONTE ÚNICA DA ESCALA: calculada a partir de escala.py =====
-        # Já inclui overrides manuais (StatusOverride) e trocas dinâmicas de FR/SO.
-        # O front-end (planilha.html) não deve mais ter ESCALA_MENSAL hardcoded.
-        "escala": {}
+        "escala": {}  # será preenchido com a escala dinâmica (inclui overrides manuais)
     }
     for log in logs:
         if log.pilot.name not in result["logs"]:
@@ -178,7 +198,6 @@ def save_data():
 @app.route("/api/available_commanders/<int:day_index>", methods=["GET"])
 def get_available_commanders(day_index):
     pilotos_com_horas = {"CESSNA 206/210": [], "CARAVAN": [], "COPILOTO": []}
-    # Filtra os pilotos excluídos
     pilots = Pilot.query.filter(Pilot.name.notin_(PILOTOS_EXCLUIDOS)).all()
     
     month = request.args.get("month", default=datetime.now().month, type=int)
@@ -188,7 +207,7 @@ def get_available_commanders(day_index):
     for pilot in pilots:
         escala = obtener_escala_dinamica(pilot, month, year)
         if not escala:
-            escala = ESCALA_MENSAL.get(pilot.name, [])
+            escala = ESCALA_MENSAL.get(normalizar_nome_backend(pilot.name), [])
         if day_index < len(escala):
             raw_status = escala[day_index]
             status = normalizar_status(raw_status)
@@ -200,7 +219,7 @@ def get_available_commanders(day_index):
             logs = FlightLog.query.filter_by(pilot_id=pilot.id, month=month, year=year).all()
             horas_acumuladas = sum(log.hours for log in logs if log.day <= dia_solicitado)
             pilotos_com_horas[pilot.group].append({
-                "name": pilot.name,  # <--- CORREÇÃO: agora envia o nome curto
+                "name": pilot.name,
                 "status": status,
                 "color": cor,
                 "horas_totais": horas_acumuladas
@@ -238,7 +257,7 @@ def update_status():
     db.session.commit()
     return jsonify({"success": True})
 
-# ===== ROTA PARA REMOVER DEFINITIVAMENTE OS PILOTOS EXCLUÍDOS =====
+# ===== ROTA PARA REMOVER DEFINITIVAMENTE OS PILOTOS EXCLUÍDOS (opcional) =====
 @app.route("/api/remove_excluded_pilots", methods=["POST"])
 def remove_excluded_pilots():
     data = request.get_json()
