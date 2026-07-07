@@ -95,7 +95,7 @@
             gap: 4px; margin: 0 8px 8px; padding: 8px;
             background: #ddcdac; border-radius: 28px;
             box-shadow: inset 0 0 0 2px #fef1cf, inset 0 0 0 4px #c2a570;
-            touch-action: none;
+            overflow-x: auto;
         }
         .btn-dia {
             background: radial-gradient(circle at 30% 20%, #f0dc9f, #c29a5e);
@@ -164,10 +164,11 @@
         .input-hora[data-status="SO"] { background: #ffffff; border-color: #999999; color: #333333; font-weight: bold; }
         .input-hora[data-status="default"] { background: #f9f2e0; border-color: #c9aa77; }
         .total-cell { background: #e7dbbc; font-weight: bold; font-size: 0.8rem; }
+        .total-geral { background: #c2efc2 !important; color: #004d00; font-weight: bold; }
         .group-title-row td {
             background: linear-gradient(135deg, #ccaa7a, #b1834d);
             font-weight: bold; font-size: 1rem; text-align: center;
-            padding: 6px;
+            padding: 6px; color: #fff4e0;
         }
         .info-footer {
             display: flex; justify-content: flex-end; align-items: center;
@@ -266,7 +267,20 @@
         <div class="cabecalho-skeuo">
             <div class="title-area">
                 <h1>✈️ REGISTRO DE HORAS</h1>
-                <input type="text" id="campoMes" class="mes-editavel" value="Julho" disabled>
+                <select id="campoMes" class="mes-editavel" disabled>
+                    <option value="Janeiro">Janeiro</option>
+                    <option value="Fevereiro">Fevereiro</option>
+                    <option value="Março">Março</option>
+                    <option value="Abril">Abril</option>
+                    <option value="Maio">Maio</option>
+                    <option value="Junho">Junho</option>
+                    <option value="Julho" selected>Julho</option>
+                    <option value="Agosto">Agosto</option>
+                    <option value="Setembro">Setembro</option>
+                    <option value="Outubro">Outubro</option>
+                    <option value="Novembro">Novembro</option>
+                    <option value="Dezembro">Dezembro</option>
+                </select>
             </div>
             <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
                 <span class="badge-dia-edicao" id="badgeDiaEdicao">✏️ DIA --</span>
@@ -449,7 +463,7 @@ function atualizarTotaisBotoesDias() {
     });
 }
 
-function ativarEdicaoDia(diaIndex) {
+function activarEdicaoDia(diaIndex) {
     if (diaEditandoIndex !== null && diaEditandoIndex !== diaIndex) sairEdicaoDia();
     diaEditandoIndex = diaIndex;
 
@@ -544,6 +558,7 @@ function habilitarEdicaoStatus(inp, row, diaIndex) {
                 inp.classList.remove('editando-longpress');
                 inp.disabled = true;
                 inp.placeholder = "";
+                if (!ESCALA_MENSAL[nome]) ESCALA_MENSAL[nome] = [];
                 ESCALA_MENSAL[nome][diaIndex] = novoValor;
                 atualizarCorInput(inp);
                 try {
