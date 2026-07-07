@@ -13,7 +13,6 @@
     <link rel="apple-touch-icon" href="/icon-192.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        /* ===== CSS COMPLETO ===== */
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body {
             margin: 0; min-height: 100vh;
@@ -712,6 +711,7 @@ function getMesNumero(nomeMes) {
     return mapa[nomeMes.toLowerCase()] || new Date().getMonth() + 1;
 }
 
+// ===== CARREGAR BACKEND COM LOGS E TRATAMENTO DE ERRO =====
 async function carregarDoBackend() {
     const syncSpan = document.getElementById('syncStatus');
     syncSpan.innerHTML = '⏳ Carregando...';
@@ -720,13 +720,20 @@ async function carregarDoBackend() {
         const mesNum = getMesNumero(mesNome);
         const ano = new Date().getFullYear();
         const url = `/api/data?month=${mesNum}&year=${ano}`;
+        console.log('🔍 Buscando dados:', url);
         const res = await fetch(url);
-        if (!res.ok) throw new Error('Falha na requisição');
+        console.log('📦 Status da resposta:', res.status);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
-        const pilots = data.pilots;
-        const logs = data.logs;
+        console.log('✅ Dados recebidos:', data);
+
+        if (!data.pilots || !data.logs) {
+            throw new Error('Resposta incompleta: faltam pilots ou logs');
+        }
 
         ESCALA_MENSAL = data.escala || {};
+        console.log('📊 Escala carregada:', Object.keys(ESCALA_MENSAL).length, 'pilotos');
+
         atualizarDias();
 
         const thead = document.getElementById('tableHeader');
@@ -735,7 +742,7 @@ async function carregarDoBackend() {
         const tbody = document.getElementById('planilhaBody');
         tbody.innerHTML = '';
         const grupos = { "CESSNA 206/210":[], "CARAVAN":[], "COPILOTO":[] };
-        pilots.forEach(p => {
+        data.pilots.forEach(p => {
             const grp = getGrupo(p.name);
             if (grupos[grp]) grupos[grp].push(p);
             else grupos["CESSNA 206/210"].push(p);
@@ -760,7 +767,7 @@ async function carregarDoBackend() {
                     inp.inputMode = 'decimal';
                     inp.classList.add('input-hora');
                     inp.placeholder = '';
-                    let valor = logs[p.name]?.[i+1] || 0;
+                    let valor = data.logs[p.name]?.[i+1] || 0;
                     if (p.name === "Daniela" && i === 1) valor = 0;
                     const statusOriginal = ESCALA_MENSAL[p.name]?.[i] || "";
                     if (valor > 0) {
@@ -774,6 +781,7 @@ async function carregarDoBackend() {
                     atualizarCorInput(inp);
                     inp.disabled = true;
 
+                    // ===== LONG PRESS =====
                     let lpTimer = null;
                     inp.addEventListener('touchstart', () => {
                         if (!isEditing || diaEditandoIndex !== i) return;
@@ -824,8 +832,11 @@ async function carregarDoBackend() {
         syncSpan.innerHTML = '✅ Carregado';
         setTimeout(() => syncSpan.innerHTML = '💾 Sincronizado', 2000);
     } catch(e) {
-        console.error(e);
+        console.error('❌ Erro ao carregar:', e);
         document.getElementById('syncStatus').innerHTML = '❌ Erro ao carregar';
+        showToast(`❌ Erro: ${e.message}`, 4000);
+        const tbody = document.getElementById('planilhaBody');
+        tbody.innerHTML = `<tr><td colspan="${DIAS+2}" style="text-align:center;padding:20px;color:#a00;">⚠️ Erro ao carregar dados. Verifique o console (F12) e os logs do servidor.</td></tr>`;
     }
 }
 
