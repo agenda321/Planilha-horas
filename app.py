@@ -1,5 +1,4 @@
 import os
-import time
 from flask import Flask, request, jsonify, render_template
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
@@ -8,7 +7,7 @@ from flask_cors import CORS
 
 app = Flask(__name__)
 
-# Configuração do banco de dados
+# Configuração do banco
 database_url = os.environ.get("DATABASE_URL", "postgresql://user:password@localhost/mydatabase")
 if database_url.startswith("postgres://"):
     database_url = database_url.replace("postgres://", "postgresql://", 1)
@@ -38,7 +37,7 @@ CORES = {
     "CQ": "azul_medio"
 }
 
-PILOTOS_EXCLUIDOS = []  # Deixe vazio para incluir todos
+PILOTOS_EXCLUIDOS = []
 
 class Pilot(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -113,12 +112,10 @@ def get_data():
         if log.pilot.name not in result["logs"]:
             result["logs"][log.pilot.name] = {}
         result["logs"][log.pilot.name][log.day] = log.hours
-
     for p in pilots:
         escala_pilot = obtener_escala_dinamica(p, month, year)
         if escala_pilot:
             result["escala"][p.name] = escala_pilot
-
     return jsonify(result)
 
 @app.route("/api/data", methods=["POST"])
@@ -126,29 +123,18 @@ def save_data():
     data = request.get_json()
     if data.get("password") not in [EDIT_PASSWORD, EDIT_PASSWORD_2]:
         return jsonify({"success": False}), 401
-    
     month = data.get("month")
     year = data.get("year")
-    
     if not month or not year:
         return jsonify({"success": False, "erro": "Mês e ano são obrigatórios"}), 400
-        
-    month = int(month)
-    year = int(year)
-
+    month = int(month); year = int(year)
     for pilot_name, days in data.get("logs", {}).items():
         pilot = Pilot.query.filter_by(name=pilot_name).first()
         if not pilot:
             continue
         for day_str, hours in days.items():
             day = int(day_str)
-            if hours is None or str(hours).strip() == "":
-                valor_horas = 0.0
-            else:
-                try:
-                    valor_horas = float(hours)
-                except ValueError:
-                    valor_horas = 0.0
+            valor_horas = float(hours) if hours and str(hours).strip() else 0.0
             log = FlightLog.query.filter_by(pilot_id=pilot.id, day=day, month=month, year=year).first()
             if log:
                 log.hours = valor_horas
@@ -161,10 +147,8 @@ def save_data():
 def get_available_commanders(day_index):
     pilotos_com_horas = {"CESSNA 206/210": [], "CARAVAN": [], "COPILOTO": []}
     pilots = Pilot.query.filter(Pilot.name.notin_(PILOTOS_EXCLUIDOS)).all()
-    
     month = request.args.get("month", default=datetime.now().month, type=int)
     year = request.args.get("year", default=datetime.now().year, type=int)
-    
     dia_solicitado = day_index + 1
     for pilot in pilots:
         escala = obtener_escala_dinamica(pilot, month, year)
@@ -175,8 +159,7 @@ def get_available_commanders(day_index):
             status = normalizar_status(raw_status)
             cor = CORES.get(status, "cinza")
         else:
-            status = "VO"
-            cor = "azul"
+            status = "VO"; cor = "azul"
         if status in CODIGOS_DISPONIVEIS:
             logs = FlightLog.query.filter_by(pilot_id=pilot.id, month=month, year=year).all()
             horas_acumuladas = sum(log.hours for log in logs if log.day <= dia_solicitado)
@@ -199,17 +182,12 @@ def update_status():
     new_status = data.get("status")
     month = data.get("month")
     year = data.get("year")
-    
     if not month or not year or not pilot_name or day is None or not new_status:
         return jsonify({"success": False, "erro": "Dados incompletos"}), 400
-        
-    month = int(month)
-    year = int(year)
-    
+    month = int(month); year = int(year)
     pilot = Pilot.query.filter_by(name=pilot_name).first()
     if not pilot:
         return jsonify({"success": False, "erro": "Piloto não encontrado"}), 404
-        
     override = StatusOverride.query.filter_by(pilot_id=pilot.id, day=day, month=month, year=year).first()
     if override:
         override.status = new_status
@@ -228,98 +206,47 @@ def reset_banco():
 
 def povoar_dados_iniciais():
     grupos = {
-        "Andre": "CESSNA 206/210", 
-        "Andrade": "CESSNA 206/210", 
-        "Luiz": "CESSNA 206/210",
-        "Adelio": "CESSNA 206/210",
-        "Amarildo": "CESSNA 206/210",
-        "Cleverson": "CESSNA 206/210", 
-        "Hazafe": "CESSNA 206/210",
-        "Dayvid": "CESSNA 206/210", 
-        "Edson": "CESSNA 206/210", 
-        "Frank": "CESSNA 206/210",
-        "Gabriel": "CESSNA 206/210", 
-        "Igorh": "CESSNA 206/210", 
-        "Leandro": "CESSNA 206/210",
-        "Milton": "CESSNA 206/210", 
-        "Paulo": "CESSNA 206/210",
-        "Ronie": "CESSNA 206/210", 
-        "Sergio": "CESSNA 206/210", 
-        "Otto": "CESSNA 206/210", 
-        "Dany": "CESSNA 206/210", 
-        "Lucas": "CESSNA 206/210",
-        "Roberto": "CESSNA 206/210", 
-        "Renan": "CESSNA 206/210", 
-        "Wellber": "CESSNA 206/210",
-        "Bento": "CESSNA 206/210",
-        "Costa": "CESSNA 206/210",
-        "Victor": "CESSNA 206/210",
-        "Matias": "CESSNA 206/210",
-        "Cleiton": "CARAVAN", 
-        "Joao": "CARAVAN", 
-        "Pascoal": "CARAVAN",
-        "Lindomar": "CARAVAN", 
-        "Perisson": "CARAVAN", 
-        "Rui": "CARAVAN", 
-        "Yago": "CARAVAN",
-        "Cauê": "COPILOTO", 
-        "Ruben": "COPILOTO",
-        "Ernesto": "COPILOTO", 
-        "Daniela": "COPILOTO", 
-        "Thales": "COPILOTO",
-        "Serafim": "COPILOTO",
-        "Ronalldo": "COPILOTO",
-        "Rodrigo": "COPILOTO"
+        "Andre": "CESSNA 206/210", "Andrade": "CESSNA 206/210", "Luiz": "CESSNA 206/210",
+        "Adelio": "CESSNA 206/210", "Amarildo": "CESSNA 206/210", "Cleverson": "CESSNA 206/210",
+        "Hazafe": "CESSNA 206/210", "Dayvid": "CESSNA 206/210", "Edson": "CESSNA 206/210",
+        "Frank": "CESSNA 206/210", "Gabriel": "CESSNA 206/210", "Igorh": "CESSNA 206/210",
+        "Leandro": "CESSNA 206/210", "Milton": "CESSNA 206/210", "Paulo": "CESSNA 206/210",
+        "Ronie": "CESSNA 206/210", "Sergio": "CESSNA 206/210", "Otto": "CESSNA 206/210",
+        "Dany": "CESSNA 206/210", "Lucas": "CESSNA 206/210", "Roberto": "CESSNA 206/210",
+        "Renan": "CESSNA 206/210", "Wellber": "CESSNA 206/210", "Bento": "CESSNA 206/210",
+        "Costa": "CESSNA 206/210", "Victor": "CESSNA 206/210", "Matias": "CESSNA 206/210",
+        "Cleiton": "CARAVAN", "Joao": "CARAVAN", "Pascoal": "CARAVAN",
+        "Lindomar": "CARAVAN", "Perisson": "CARAVAN", "Rui": "CARAVAN", "Yago": "CARAVAN",
+        "Cauê": "COPILOTO", "Ruben": "COPILOTO", "Ernesto": "COPILOTO", "Daniela": "COPILOTO",
+        "Thales": "COPILOTO", "Serafim": "COPILOTO", "Ronalldo": "COPILOTO", "Rodrigo": "COPILOTO"
     }
-    
     nomes_completos = {
-        "Adelio": "Adelio Costa Felinto", 
-        "Otto": "Albert Otto Azevedo",
-        "Andre": "Andre Luis Fernandes", 
-        "Cleiton": "Cleiton Taumaturgo",
-        "Cleverson": "Cleverson dos Santos", 
-        "Edson": "Edson Fonteles Portela",
-        "Frank": "Franker Wendell Dias", 
-        "Gabriel": "Gabriel de Oliveira",
-        "Costa": "Felipe Pereira Costa de Lima",
-        "Hazafe": "Hazafe Pacheco de Alencar",
-        "Amarildo": "João Amarildo Reis dos Santos", 
-        "Igorh": "Igorh Coutinho Martins",
-        "Joao": "Joao Marcus Oliveira",
-        "Dayvid": "Jose Deyvid Monteiro",
-        "Leandro": "Leandro Magalhães", 
-        "Lindomar": "Lindomar Bras Mota",
-        "Lucas": "Lucas Alves Pereira", 
-        "Luiz": "Luiz Andrade de Souza",
-        "Matias": "Matias Pires de Campos Junior",
-        "Milton": "Milton Braga de Souza",
-        "Pascoal": "Pascoal Brito de Araujo", 
-        "Paulo": "Paulo Andre Silva",
-        "Perisson": "Perisson Parmigiani", 
-        "Renan": "Renan da Silva Nascimento",
-        "Roberto": "Roberto Adolfo Boesing", 
-        "Ronie": "Ronie Welter",
-        "Rui": "Rui de Almeida Vasconcelos", 
-        "Sergio": "Sergio Carneiro Rodrigues",
-        "Victor": "Victor Augusto Fernandes Monteiro da Silva",
-        "Bento": "Vitor da Costa Bento", 
-        "Wellber": "Wellber Nogueira Barros",
-        "Andrade": "Wilken Andrade de Paulo", 
-        "Yago": "Yago Bezerra Correia",
-        "Cauê": "Caue Montanari", 
-        "Daniela": "Daniela Goncalves Fabricio",
-        "Ernesto": "Ernesto da Silva Kaster", 
-        "Ruben": "Francisco Rubenicio Souza",
-        "Rodrigo": "Rodrigo Silva Melo", 
-        "Ronalldo": "Ronalldo Rodrigues Parreao Junior",
-        "Thales": "Thales Araujo Penna", 
+        "Adelio": "Adelio Costa Felinto", "Otto": "Albert Otto Azevedo",
+        "Andre": "Andre Luis Fernandes", "Cleiton": "Cleiton Taumaturgo",
+        "Cleverson": "Cleverson dos Santos", "Edson": "Edson Fonteles Portela",
+        "Frank": "Franker Wendell Dias", "Gabriel": "Gabriel de Oliveira",
+        "Costa": "Felipe Pereira Costa de Lima", "Hazafe": "Hazafe Pacheco de Alencar",
+        "Amarildo": "João Amarildo Reis dos Santos", "Igorh": "Igorh Coutinho Martins",
+        "Joao": "Joao Marcus Oliveira", "Dayvid": "Jose Deyvid Monteiro",
+        "Leandro": "Leandro Magalhães", "Lindomar": "Lindomar Bras Mota",
+        "Lucas": "Lucas Alves Pereira", "Luiz": "Luiz Andrade de Souza",
+        "Matias": "Matias Pires de Campos Junior", "Milton": "Milton Braga de Souza",
+        "Pascoal": "Pascoal Brito de Araujo", "Paulo": "Paulo Andre Silva",
+        "Perisson": "Perisson Parmigiani", "Renan": "Renan da Silva Nascimento",
+        "Roberto": "Roberto Adolfo Boesing", "Ronie": "Ronie Welter",
+        "Rui": "Rui de Almeida Vasconcelos", "Sergio": "Sergio Carneiro Rodrigues",
+        "Victor": "Victor Augusto Fernandes Monteiro da Silva", "Bento": "Vitor da Costa Bento",
+        "Wellber": "Wellber Nogueira Barros", "Andrade": "Wilken Andrade de Paulo",
+        "Yago": "Yago Bezerra Correia", "Cauê": "Caue Montanari",
+        "Daniela": "Daniela Goncalves Fabricio", "Ernesto": "Ernesto da Silva Kaster",
+        "Ruben": "Francisco Rubenicio Souza", "Rodrigo": "Rodrigo Silva Melo",
+        "Ronalldo": "Ronalldo Rodrigues Parreao Junior", "Thales": "Thales Araujo Penna",
         "Serafim": "Tiago Carvalho Serafim"
     }
     for nome, group in grupos.items():
         piloto = Pilot(name=nome, full_name=nomes_completos.get(nome, nome), group=group)
         db.session.add(piloto)
     db.session.commit()
-    
     m_atual, y_atual = datetime.now().month, datetime.now().year
     dados_foto = {
         "Andrade": {1: 3.4, 2: 6.4, 3: 2.9, 5: 5.9, 6: 7.9, 7: 8.0, 9: 6.8},
@@ -367,27 +294,5 @@ def povoar_dados_iniciais():
                 db.session.add(FlightLog(pilot_id=p_obj.id, day=d_num, month=m_atual, year=y_atual, hours=float(h_val)))
     db.session.commit()
 
-# ===== REMOVIDA A DEPENDÊNCIA DE programacao.py =====
-# from programacao import register_routes
-# register_routes(app, db)
-
-# ===== INICIALIZAÇÃO COM RETRY =====
-with app.app_context():
-    max_retries = 5
-    for attempt in range(max_retries):
-        try:
-            db.create_all()
-            if Pilot.query.count() == 0:
-                povoar_dados_iniciais()
-            print("✅ Banco de dados conectado e inicializado com sucesso.")
-            break
-        except Exception as e:
-            print(f"⚠️ Tentativa {attempt+1}/{max_retries} falhou: {e}")
-            if attempt < max_retries - 1:
-                time.sleep(5)
-            else:
-                print("❌ Não foi possível conectar ao banco após várias tentativas.")
-                raise
-
-if __name__ == "__main__":
-    app.run(debug=True, host="0.0.0.0", port=os.environ.get("PORT", 5000))
+# NOTA: A inicialização do banco (db.create_all, povoar_dados_iniciais) será feita no wsgi.py
+# para evitar que o Gunicorn falhe durante a importação.
