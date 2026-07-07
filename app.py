@@ -37,28 +37,8 @@ CORES = {
     "CQ": "azul_medio"
 }
 
-# ===== MAPEAMENTO DE NOMES (BACKEND) =====
-# Traduz nomes do banco para as chaves usadas em ESCALA_MENSAL
-NOME_MAP_BACKEND = {
-    "Ronalldo": "Ronaldo",
-    "Dany": "Daniela Pereira",
-    "Amarildo": "Joao Amarildo",
-    "Joao": "Joao Marcus",
-    "Victor": "Victor Augusto",
-    "Bento": "Vitor Bento",
-    "Mathias": "Mathias",
-    "Andrade": "Andrade",
-    "Sergio": "Sergio",
-    "Igorh": "Igorh",
-    "Cleiton": "Cleiton",
-    # outros nomes que podem precisar
-}
-
-def normalizar_nome_backend(nome):
-    return NOME_MAP_BACKEND.get(nome, nome)
-
-# ===== PILOTOS A SEREM EXCLUÍDOS DA EXIBIÇÃO (opcional) =====
-PILOTOS_EXCLUIDOS = []  # Agora vazio, pois a nova escala inclui Felipe e Tiago
+# ===== PILOTOS A SEREM EXCLUÍDOS =====
+PILOTOS_EXCLUIDOS = []  # Deixe vazio para incluir todos
 
 class Pilot(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -90,9 +70,8 @@ def normalizar_status(status):
     return status
 
 def obtener_escala_dinamica(pilot_obj, month, year):
-    # Busca a escala usando o nome normalizado (mapeado)
-    nome_escala = normalizar_nome_backend(pilot_obj.name)
-    escala = list(ESCALA_MENSAL.get(nome_escala, []))
+    # Usa o nome do piloto diretamente (a escala já tem as chaves corretas)
+    escala = list(ESCALA_MENSAL.get(pilot_obj.name, []))
     if not escala:
         return escala
     # Aplica overrides manuais (StatusOverride)
@@ -100,21 +79,7 @@ def obtener_escala_dinamica(pilot_obj, month, year):
     for ov in overrides:
         if ov.day < len(escala):
             escala[ov.day] = ov.status
-    # ===== LÓGICA DE TROCA FR ↔ SO REMOVIDA (comentada) =====
-    # logs = FlightLog.query.filter_by(pilot_id=pilot_obj.id, month=month, year=year).all()
-    # dias_com_horas = {log.day for log in logs if log.hours > 0}
-    # limite = min(10, len(escala))
-    # for i in range(limite):
-    #     dia_num = i + 1
-    #     if dia_num in dias_com_horas and escala[i] == "FR":
-    #         sub_idx = i + 1
-    #         while sub_idx < len(escala):
-    #             sub_dia_num = sub_idx + 1
-    #             if escala[sub_idx] == "SO" and sub_dia_num not in dias_com_horas:
-    #                 escala[i] = "SO"
-    #                 escala[sub_idx] = "FR"
-    #                 break
-    #             sub_idx += 1
+    # ===== LÓGICA DE TROCA FR ↔ SO REMOVIDA =====
     return escala
 
 # ============================
@@ -145,7 +110,7 @@ def get_data():
     result = {
         "pilots": [{"name": p.name, "group": p.group, "full_name": p.full_name or p.name} for p in pilots],
         "logs": {},
-        "escala": {}  # será preenchido com a escala dinâmica (inclui overrides manuais)
+        "escala": {}
     }
     for log in logs:
         if log.pilot.name not in result["logs"]:
@@ -207,7 +172,7 @@ def get_available_commanders(day_index):
     for pilot in pilots:
         escala = obtener_escala_dinamica(pilot, month, year)
         if not escala:
-            escala = ESCALA_MENSAL.get(normalizar_nome_backend(pilot.name), [])
+            escala = ESCALA_MENSAL.get(pilot.name, [])
         if day_index < len(escala):
             raw_status = escala[day_index]
             status = normalizar_status(raw_status)
@@ -256,22 +221,6 @@ def update_status():
         db.session.add(override)
     db.session.commit()
     return jsonify({"success": True})
-
-# ===== ROTA PARA REMOVER DEFINITIVAMENTE OS PILOTOS EXCLUÍDOS (opcional) =====
-@app.route("/api/remove_excluded_pilots", methods=["POST"])
-def remove_excluded_pilots():
-    data = request.get_json()
-    if data.get("password") not in [EDIT_PASSWORD, EDIT_PASSWORD_2]:
-        return jsonify({"success": False}), 401
-    
-    for nome in PILOTOS_EXCLUIDOS:
-        pilot = Pilot.query.filter_by(name=nome).first()
-        if pilot:
-            FlightLog.query.filter_by(pilot_id=pilot.id).delete()
-            StatusOverride.query.filter_by(pilot_id=pilot.id).delete()
-            db.session.delete(pilot)
-    db.session.commit()
-    return jsonify({"success": True, "removidos": PILOTOS_EXCLUIDOS})
 
 @app.route("/api/debug/reset-banco")
 def reset_banco():
