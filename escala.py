@@ -1,3 +1,6 @@
+# ============================================================
+# 1. escala.py
+# ============================================================
 # -*- coding: utf-8 -*-
 # Escala Mensal de Folgas - Julho de 2026 - Voare Táxi Aéreo
 # CHAVES CORRIGIDAS PARA COINCIDIR COM OS NOMES DO BANCO
