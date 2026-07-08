@@ -1,4 +1,4 @@
-services:
+Services:
   - type: web
     name: agenda321
     env: python
@@ -6,15 +6,9 @@ services:
     startCommand: "gunicorn app:app"
     envVars:
       - key: DATABASE_URL
-        fromDatabase:
-          name: agenda321_db
-          property: connectionString
+        value: "postgresql://postgres:voarecoordenacao@aws-0-sa-east-1.pooler.supabase.com:6543/postgres?sslmode=require"
       - key: EDIT_PASSWORD
-        value: Emerson
+        value: "Emerson"
+      - key: EDIT_PASSWORD_2
+        value: "Bispo"
     autoDeploy: true
-
-databases:
-  - name: agenda321_db
-    databaseName: agenda321
-    user: agenda321
-    plan: free
